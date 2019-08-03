@@ -107,16 +107,19 @@ class Motor(Process):
         delta = wanted - self.curr
         wanted_dir = Motor.DIR_FWD if delta > 0 else Motor.DIR_BCK
 
+        print("")
+        print("--")
+
+        print("speed", self.speed)
+        print("dir", self.dir)
+        print("min", Motor.MIN_SPEED)
+        print("wanted_dir", wanted_dir)
         if wanted_dir != self.dir and self.speed > Motor.MIN_SPEED:
-            print("speed", self.speed)
-            print("dir", self.dir)
-            print("min", Motor.MIN_SPEED)
-            print("wanted_dir", wanted_dir)
             reverse = self.get_speeds_dirs(self.speed, self.dir, Motor.MIN_SPEED, self.dir)
             ramp_up = self.get_speeds_dirs(Motor.MIN_SPEED, wanted_dir, Motor.MAX_SPEED, wanted_dir)
         else:
             reverse = np.array([])
-            ramp_up = self.get_speeds_dirs(self.speed, self.dir, Motor.MAX_SPEED, wanted_dir)
+            ramp_up = self.get_speeds_dirs(self.speed, wanted_dir, Motor.MAX_SPEED, wanted_dir)
 
         ramp_down = self.get_speeds_dirs(Motor.MAX_SPEED, wanted_dir, Motor.MIN_SPEED, wanted_dir)
 
@@ -125,8 +128,6 @@ class Motor(Process):
         full_speed_duration = abd - (len(ramp_up) + len(ramp_down))
         full_speed = np.array([wanted_dir * Motor.MAX_SPEED for _ in range(full_speed_duration)])
 
-        print("")
-        print("--")
         print("wanted", wanted)
         print("current", self.curr)
         print("delta", delta)
@@ -135,16 +136,18 @@ class Motor(Process):
         print("full_speed_duration", full_speed_duration)
 
         if full_speed_duration < 0:
-            missing_steps = int(((len(ramp_up) + len(ramp_down)) - abs(full_speed_duration)) / 2)
+            print("ramp_up", len(ramp_up))
+            print("ramp_down", len(ramp_down))
+            missing_steps = ((len(ramp_up) + len(ramp_down)) - abs(full_speed_duration)) / 2
             print("missing_steps", missing_steps)
-            if missing_steps == 0:
-                ramp_up = []
-                ramp_down = []
+            if missing_steps < 1:
+                ramp_up   = np.array([wanted_dir * Motor.MIN_SPEED] * int(missing_steps * 2))
+                ramp_down = np.array([])
             else:
-                ramp_up   = ramp_up[:missing_steps]
+                ramp_up   = ramp_up[:int(missing_steps)]
                 end_speed = abs(ramp_up[-1])
-                ramp_down = self.get_speeds_dirs(end_speed, wanted_dir, Motor.MIN_SPEED, wanted_dir)
-                if delta % 2 == 0:
+                ramp_down = np.append(self.get_speeds_dirs(end_speed, wanted_dir, Motor.MIN_SPEED, wanted_dir), wanted_dir * Motor.MIN_SPEED)
+                if int(missing_steps) != missing_steps:
                     full_speed = [ramp_up[-1]]
 
         total_speeds = np.concatenate([reverse, ramp_up, full_speed, ramp_down])
@@ -154,6 +157,7 @@ class Motor(Process):
 
         print("lens", [len(x) for x in [reverse, ramp_up, full_speed, ramp_down]])
         print("total_speeds len", len(total_speeds))
+        # print("total_speeds", total_speeds)
         print("--")
         print("")
 
