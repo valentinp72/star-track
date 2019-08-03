@@ -6,12 +6,8 @@ wp.wiringPiSetup()
 
 e = Axis.azimuth()
 #e.motor.set_dist(209)
-e.move_angle(degrees=50)
+e.move_angle(degrees=-90)
 
-time.sleep(2)
+time.sleep(10)
 
-#e.move_angle(degrees=-90)
-
-#time.sleep(5)
-
-e.move_angle(seconds=1)
+e.move_angle(seconds=0)
