@@ -1,5 +1,8 @@
+import wiringpi as wp
 
 class Mapping:
+
+    wp.wiringPiSetup()
 
     ALTITUDE_DIR  = 24
     ALTITUDE_STEP = 25

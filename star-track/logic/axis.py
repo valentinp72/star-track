@@ -1,11 +1,13 @@
 
 import time
-# import threading
+import datetime
+#import threading
 import numpy as np
 import wiringpi as wp
 
-# from queue import Queue
+#from queue import Queue
 from logic.mapping import Mapping
+from logic.emergency import Emergency
 
 from multiprocessing import Process, Queue
 
@@ -26,18 +28,26 @@ class Axis:
     #########
 
     def __init__(self, dir_pin, step_pin):
+        self.set_current_angle()
         self.motor = Motor(dir_pin, step_pin)
         self.motor.start()
-
         self.current = 0
+        self.last_asked_steps = None
 
     def move_angle(self, degrees=0, minutes=0, seconds=0):
-        total = seconds + 60 * (minutes + 60 * degrees)
+        s = seconds - self.seconds_offset
+        m = 60 * (minutes - self.minutes_offset)
+        d = 3600 * (degrees - self.degrees_offset)
+        total = d + m + s
         steps = int(1 / (Axis.SECOND_ARC_PER_STEP) * total)
-        print(total, steps)
-        self.motor.set_dist(steps)
+        if steps != self.last_asked_steps:
+            self.motor.set_dist(steps)
+            self.last_asked_steps = steps
 
-    def set_position(self, steps):
+    def set_current_angle(self, degrees=0, minutes=0, seconds=0):
+        self.degrees_offset = degrees
+        self.minutes_offset = minutes
+        self.seconds_offset = seconds
         pass
 
 class Motor(Process):
@@ -47,7 +57,7 @@ class Motor(Process):
 
     ACCELERATION = 5  # 0.01
     MIN_SPEED    = 10  # 0.01
-    MAX_SPEED    = 2000  # 0.0005
+    MAX_SPEED    = 500  # 0.0005
 
     def __init__(self, dir_pin, step_pin):
         super(Motor, self).__init__()
@@ -107,13 +117,6 @@ class Motor(Process):
         delta = wanted - self.curr
         wanted_dir = Motor.DIR_FWD if delta > 0 else Motor.DIR_BCK
 
-        print("")
-        print("--")
-
-        print("speed", self.speed)
-        print("dir", self.dir)
-        print("min", Motor.MIN_SPEED)
-        print("wanted_dir", wanted_dir)
         if wanted_dir != self.dir and self.speed > Motor.MIN_SPEED:
             reverse = self.get_speeds_dirs(self.speed, self.dir, Motor.MIN_SPEED, self.dir)
             ramp_up = self.get_speeds_dirs(Motor.MIN_SPEED, wanted_dir, Motor.MAX_SPEED, wanted_dir)
@@ -123,50 +126,52 @@ class Motor(Process):
 
         ramp_down = self.get_speeds_dirs(Motor.MAX_SPEED, wanted_dir, Motor.MIN_SPEED, wanted_dir)
 
-        abd = abs(delta) + len(reverse)# - 4
+        abd = abs(delta) + len(reverse)
 
         full_speed_duration = abd - (len(ramp_up) + len(ramp_down))
         full_speed = np.array([wanted_dir * Motor.MAX_SPEED for _ in range(full_speed_duration)])
 
-        print("wanted", wanted)
-        print("current", self.curr)
-        print("delta", delta)
-        print("abd", abd)
-        print("")
-        print("full_speed_duration", full_speed_duration)
-
         if full_speed_duration < 0:
-            print("ramp_up", len(ramp_up))
-            print("ramp_down", len(ramp_down))
             missing_steps = ((len(ramp_up) + len(ramp_down)) - abs(full_speed_duration)) / 2
-            print("missing_steps", missing_steps)
             if missing_steps < 1:
                 ramp_up   = np.array([wanted_dir * Motor.MIN_SPEED] * int(missing_steps * 2))
                 ramp_down = np.array([])
             else:
-                ramp_up   = ramp_up[:int(missing_steps)]
-                end_speed = abs(ramp_up[-1])
-                ramp_down = np.append(self.get_speeds_dirs(end_speed, wanted_dir, Motor.MIN_SPEED, wanted_dir), wanted_dir * Motor.MIN_SPEED)
-                if int(missing_steps) != missing_steps:
-                    full_speed = [ramp_up[-1]]
+                ramp_down = ramp_down[len(ramp_down) - int(missing_steps):]
+                end_speed = abs(ramp_down[0])
+                ramp_up   = self.get_speeds_dirs(self.speed, self.dir, end_speed, wanted_dir)
+
+        difference = abd - (len(ramp_up) + len(full_speed) + len(ramp_down))
+        if difference > 0:
+            for _ in range(difference):
+                full_speed = np.append(full_speed, ramp_up[-1])
+        elif difference < 0:
+            taken = 0
+            left = True
+            while taken > difference:
+                if len(full_speed) > 0:
+                    full_speed = np.delete(full_speed, -1)
+                else:
+                    if left:
+                        ramp_up = np.delete(ramp_up, -1)
+                        left = False
+                    else:
+                        left = True
+                        ramp_down = np.delete(ramp_down, 0)
+                taken -= 1
 
         total_speeds = np.concatenate([reverse, ramp_up, full_speed, ramp_down])
 
         total_speeds[((total_speeds < Motor.MIN_SPEED) & (total_speeds >= 0))]  = Motor.MIN_SPEED
         total_speeds[((total_speeds > -Motor.MIN_SPEED) & (total_speeds <= 0))] = -Motor.MIN_SPEED
 
-        print("lens", [len(x) for x in [reverse, ramp_up, full_speed, ramp_down]])
-        print("total_speeds len", len(total_speeds))
-        # print("total_speeds", total_speeds)
-        print("--")
-        print("")
-
+        assert (abd - (len(ramp_up) + len(full_speed) + len(ramp_down))) == 0
         return total_speeds
 
     def run(self):
         self.i_speed = 0
         self.speeds  = []
-        o = 0
+        self.last = datetime.datetime.now()
         while True:
             if not self.queue.empty():
                 self.dest    = self.queue.get()
@@ -174,14 +179,18 @@ class Motor(Process):
                 self.i_speed = 0
 
             delta = self.dest - self.curr
-            # print(delta)
+
             if self.i_speed >= len(self.speeds):
                 if delta != 0:
-                    print(delta)
-                    print(o)
-                    exit()
-                else:
-                    time.sleep(1 / Motor.MAX_SPEED)
+                    raise ValueError("Delta is {} and not 0, but no more information given".format(delta))
+                time.sleep(1 / Motor.MAX_SPEED)
+                continue
+
+            if not Emergency.allowed_move():
+                self.i_speed = 0
+                self.speed   = Motor.MIN_SPEED
+                self.speeds  = []
+                self.dest    = self.curr
                 continue
 
             speed_dir  = self.speeds[self.i_speed]
@@ -191,10 +200,16 @@ class Motor(Process):
             if self.speed != 0:
                 self.set_dir(np.sign(speed_dir))
                 self.curr += self.dir
-                o += self.dir
 
                 wp.digitalWrite(self.step_pin, 1)
                 wp.digitalWrite(self.step_pin, 0)
 
+                elapsed = (datetime.datetime.now() - self.last).total_seconds()
+                if elapsed > 0.005:
+                    print(elapsed)
                 tosleep = (1.0 / self.speed)
-                time.sleep(tosleep)
+                if tosleep - elapsed > 0:
+                    time.sleep(tosleep - elapsed)
+                else:
+                    print("-@")
+            self.last = datetime.datetime.now()
