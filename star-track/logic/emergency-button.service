@@ -1,0 +1,9 @@
+[Unit]
+Description=Emergency stop daemon worker
+
+[Service]
+Restart=on-failure
+ExecStart=/usr/local/bin/emergency
+
+[Install]
+WantedBy=multi-user.target

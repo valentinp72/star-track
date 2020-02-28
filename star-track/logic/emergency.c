@@ -2,18 +2,13 @@
 
 #include <sched.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <fcntl.h>
 #include <stdbool.h>
 #include <wiringPi.h>
 
 #include "consts.h"
 
-#define EMERGENCY_REFRESH_RATE 500
+#define EMERGENCY_REFRESH_RATE 50000000
 
 void setup() {
 	wiringPiSetup();
@@ -28,13 +23,22 @@ void setup() {
 }
 
 int main() {
+	setup();
+
 	struct timespec ts;
 	ts.tv_sec  = 0;
 	ts.tv_nsec = EMERGENCY_REFRESH_RATE;
 
+	int last_state = digitalRead(EMERGENCY);
+	int tmp_state;
+	digitalWrite(ENABLE, last_state);
+
 	while (true) {
-		int emergency = digitalRead(EMERGENCY);
-		digitalWrite(ENABLE, emergency);
+		tmp_state = digitalRead(EMERGENCY);
+		if (tmp_state != last_state) {
+			last_state = tmp_state;
+			digitalWrite(ENABLE, last_state);
+		}
 		nanosleep(&ts, &ts);
 	}
 

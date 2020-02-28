@@ -13,9 +13,12 @@
 
 #include "consts.h"
 
-#define START_SLEEP 8000000
-#define MIN_SLEEP 1500000
-#define ACCELERATION 5000
+// Bigger number : slower
+#define START_SLEEP 19000000 // => minimum speed
+#define MIN_SLEEP    2000000 // => maximum speed
+
+// Bigger number : faster acceleration
+#define ACCELERATION   10000 // => acceleration
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
@@ -34,6 +37,9 @@ typedef struct actions {
 	int current;
 	int size;
 } actions;
+
+int DIR_PIN;
+int STEP_PIN;
 
 bool parse_command(char * buffer, command * cmd) {
 	char command_str[1024];
@@ -73,24 +79,6 @@ bool check_command(command * cmd) {
 		printf("Error while reading: %i | %s", errno, strerror(errno));
 		return false;
 	}
-}
-
-void setup() {
-	wiringPiSetup();
-	pinMode(AZ_DIR, OUTPUT);
-	pinMode(AZ_STEP, OUTPUT);
-	digitalWrite(AZ_DIR, 0);
-	
-	// Allow reading from STDIN without blocking
-	int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
-	if(fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK))
-		exit(1);
-
-	// Set this process onto the asked CPU
-	cpu_set_t  mask;
-	CPU_ZERO(&mask);
-	CPU_SET(CPU_ID, &mask);
-	int result = sched_setaffinity(0, sizeof(mask), &mask);
 }
 
 direction get_dir(int current_pos, int dest_pos) {
@@ -150,7 +138,47 @@ void update_actions(int current_pos, int dest_pos, actions * actions) {
 	actions->size = total_steps;
 }
 
-int main(void){
+void setup() {
+	wiringPiSetup();
+	pinMode(DIR_PIN, OUTPUT);
+	pinMode(STEP_PIN, OUTPUT);
+	digitalWrite(DIR_PIN, 0);
+	
+	// Allow reading from STDIN without blocking
+	int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
+	if(fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK))
+		exit(1);
+
+	// Set this process onto the asked CPU
+	cpu_set_t  mask;
+	CPU_ZERO(&mask);
+	CPU_SET(CPU_ID, &mask);
+	int result = sched_setaffinity(0, sizeof(mask), &mask);
+}
+
+void usage(char * argv[]) {
+	fprintf(stderr, "Usage: %s <azimuth/altitude>\n", argv[0]);
+}
+
+int main(int argc, char * argv[]){
+
+	if (argc != 2) {
+		usage(argv);
+		exit(1);
+	}
+	else if (strcmp(argv[1], "azimuth") == 0) {
+		STEP_PIN = AZ_STEP;
+		DIR_PIN  = AZ_DIR;
+	}
+	else if (strcmp(argv[1], "altitude") == 0) {
+		STEP_PIN = AL_STEP;
+		DIR_PIN  = AL_DIR;
+	}
+	else {
+		usage(argv);
+		exit(1);
+	}
+
 	command last_command;
 	actions actions;
 	struct timespec ts;
@@ -191,14 +219,14 @@ int main(void){
 			current_dir = actions.dirs[actions.current];
 			if (current_dir == FORWARD) {
 				current_pos += 1;
-				digitalWrite(AZ_DIR, 1);
+				digitalWrite(DIR_PIN, 1);
 			}
 			else {
 				current_pos -= 1;
-				digitalWrite(AZ_DIR, 0);
+				digitalWrite(DIR_PIN, 0);
 			}
-			digitalWrite(AZ_STEP, 1);
-			digitalWrite(AZ_STEP, 0);
+			digitalWrite(STEP_PIN, 1);
+			digitalWrite(STEP_PIN, 0);
 		
 			ts.tv_nsec = actions.times[actions.current];
 
