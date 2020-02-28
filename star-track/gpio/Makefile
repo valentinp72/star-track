@@ -4,6 +4,10 @@ PREFIX=/usr/local
 
 all: motor emergency
 
+clean:
+	rm motor
+	rm emergency
+
 motor: motor.c consts.h
 	gcc -o motor motor.c ${FLAGS}
 emergency: emergency.c consts.h
