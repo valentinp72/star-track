@@ -1,31 +1,34 @@
+import os
 import time
 from flask import Flask
-from celery import Celery
+from queue import Queue, Empty
+from threading import Thread
 
+commands = Queue()
 app = Flask(__name__)
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
 
-celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-celery.conf.update(app.config)
+def main_loop():
+    # https://stackoverflow.com/a/69869088
+    while True:
+        try:
+            command = commands.get_nowait()
+            print(command)
+        except Empty:
+            pass
+        time.sleep(1)
 
-@celery.task
-def add_together(a, b):
-    return a + b
+if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+    # starting the main background process only once, even if we are in the
+    # debugging mode which can potentially reload the code
+    # TODO: reloading should kill the old thread and start a new one
+    Thread(target=main_loop, daemon=True).start()
 
 @app.route("/")
 def root():
+    commands.put_nowait({ 'action': 'something' })
     return {
         "message": "Welcome to the API for the star-track server."
     }
 
-
-@celery.task
-def heavy_func():
-    for i in range(10):
-        time.sleep(1)
-        print(i)
-    # while True:
-    #     pass
-
-heavy_func()
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port='5090', use_reloader=False)
