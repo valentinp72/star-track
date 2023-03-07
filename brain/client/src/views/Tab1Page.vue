@@ -11,13 +11,62 @@
           <ion-title size="large">Tab 1</ion-title>
         </ion-toolbar>
       </ion-header>
-
       <ExploreContainer name="Tab 1 page" />
+		<ion-list>
+			<ion-item>
+				<ion-label>Latitude: {{ coords.latitude }}</ion-label>
+			</ion-item>
+			<ion-item>
+				<ion-label>Longitude : {{ coords.longitude }}</ion-label>
+			</ion-item>
+			<ion-item>
+				<ion-label>Accuracy: {{ coords.accuracy }}</ion-label>
+			</ion-item>
+			<ion-item>
+				<ion-label>Timestamp: {{ coords.timestamp }}</ion-label>
+			</ion-item>
+		</ion-list>
     </ion-content>
   </ion-page>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
+import { IonItem, IonLabel, IonList } from '@ionic/vue';
 import ExploreContainer from '@/components/ExploreContainer.vue';
+import { Geolocation } from '@capacitor/geolocation';
+import { defineComponent, ref, onMounted } from 'vue';
+export default defineComponent({
+	components: { IonPage, IonHeader, IonContent, IonToolbar, IonTitle, ExploreContainer, IonItem, IonList, IonLabel },
+	/* data() { */
+	/* 	return { */
+	/* 		latitude: null, */
+	/* 		longitude: null, */
+	/* 		accuracy: null, */
+	/* 		timestamp: null */
+	/* 	} */
+	/* }, */
+	setup() {
+		const coords = ref({latitude: 0, longitude: 0, accuracy: 0, timestamp: 0});
+		onMounted(async () => {
+			const response = await Geolocation.getCurrentPosition();
+			if (response) {
+				coords.value = {
+					latitude: response.coords.latitude,
+					longitude: response.coords.longitude,
+					accuracy: response.coords.accuracy,
+					timestamp: response.timestamp,
+				};
+				console.log(response);
+			}
+		});
+		return { coords };
+		/* if (response) { */
+		/* 	this.latitude = response.coords.latitude; */
+		/* 	this.longitude = response.coords.longitude; */
+		/* 	this.accuracy = response.coords.accuracy; */
+		/* 	this.timestamp = response.timestamp; */
+		/* } */
+	}
+});
 </script>
