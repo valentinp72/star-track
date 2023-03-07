@@ -2,33 +2,52 @@ import os
 import time
 from flask import Flask
 from queue import Queue, Empty
-from threading import Thread
+import multiprocessing
 
-commands = Queue()
+################################################################################
+
+commands = multiprocessing.Queue()
 app = Flask(__name__)
 
-def main_loop():
-    # https://stackoverflow.com/a/69869088
+################################################################################
+
+def main_loop(commands):
+    i = 0
     while True:
         try:
             command = commands.get_nowait()
             print(command)
         except Empty:
             pass
+        print(i)
+        i += 1
         time.sleep(1)
 
-if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-    # starting the main background process only once, even if we are in the
-    # debugging mode which can potentially reload the code
-    # TODO: reloading should kill the old thread and start a new one
-    Thread(target=main_loop, daemon=True).start()
+@app.before_first_request
+def setup_main_process():
+    main_process = multiprocessing.Process(
+        target=main_loop,
+        args=(commands,),
+        daemon=True
+    )
+    main_process.start()
 
-@app.route("/")
-def root():
-    commands.put_nowait({ 'action': 'something' })
+################################################################################
+
+@app.route('/alive')
+def alive():
     return {
-        "message": "Welcome to the API for the star-track server."
-    }
+        'message': "I'm alive!"
+    }, 200
+
+@app.route('/')
+def root():
+    commands.put_nowait({'action': 'something'})
+    return {
+        'message': 'Welcome to the API for the star-track server.'
+    }, 200
+
+################################################################################
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port='5090', use_reloader=False)

@@ -7,7 +7,7 @@ Current brain: Orange Pi Lite
 ```bash
 cd client
 
-# for debug:
+# for development:
 ionic serve
 
 # for production:
@@ -20,8 +20,8 @@ ionic build
 cd server
 source env/bin/activate
 
-# for debug:
-flask --app server --debug run --host=0.0.0.0 --port=5090
+# for development 
+python3 server.py
 
 # for production:
 gunicorn -w 1 -b 0.0.0.0:5090 'server:app'
