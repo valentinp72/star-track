@@ -1,30 +1,17 @@
-import os
-import time
 from flask import Flask
-from queue import Queue, Empty
 import multiprocessing
+
+from backend import main_loop
 
 ################################################################################
 
 commands = multiprocessing.Queue()
 app = Flask(__name__)
 
-################################################################################
-
-def main_loop(commands):
-    i = 0
-    while True:
-        try:
-            command = commands.get_nowait()
-            print(command)
-        except Empty:
-            pass
-        print(i)
-        i += 1
-        time.sleep(1)
-
 @app.before_first_request
 def setup_main_process():
+    # setting up the main backend process that computes everything and talks
+    # with the arduino
     main_process = multiprocessing.Process(
         target=main_loop,
         args=(commands,),
