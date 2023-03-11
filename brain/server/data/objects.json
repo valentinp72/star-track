@@ -1,0 +1,72 @@
+{
+	"SUN": {
+		"image": "static/images/sun.jpg",
+		"image_source": "https://en.wikipedia.org/wiki/Sun#/media/File:The_Sun_in_white_light.jpg",
+		"type": "star",
+		"description": "The Sun is the star at the center of the Solar System.",
+		"external_link": "https://en.wikipedia.org/wiki/Sun"
+	},
+	"MERCURY": {
+		"image": "static/images/mercury.jpg",
+		"image_source": "https://en.wikipedia.org/wiki/Mercury_(planet)#/media/File:Mercury_in_true_color.jpg",
+		"type": "planet",
+		"description": "Mercury is the smallest planet in the Solar System and the closest to the Sun. Its orbit around the Sun takes 87.97 Earth days, the shortest of all the Sun's planets.",
+		"external_link": "https://en.wikipedia.org/wiki/Mercury_(planet)"
+	},
+	"VENUS": {
+		"image": "static/images/venus.jpg",
+		"image_source": "https://en.wikipedia.org/wiki/Venus#/media/File:Venus_2_Approach_Image.jpg",
+		"type": "planet",
+		"description": "Venus is the second planet from the Sun.",
+		"external_link": "https://en.wikipedia.org/wiki/Venus"
+	},
+	"EARTH": {
+		"image": "static/images/earth.jpg",
+		"image_source": "https://en.wikipedia.org/wiki/Earth#/media/File:The_Blue_Marble_(remastered).jpg",
+		"type": "planet",
+		"description": "Earth is the third planet from the Sun and the only place known in the universe where life has originated and found habitability.",
+		"external_link": "https://en.wikipedia.org/wiki/Earth"
+	},
+	"MARS": {
+		"image": "static/images/mars.png",
+		"image_source": "https://en.wikipedia.org/wiki/Mars#/media/File:Tharsis_and_Valles_Marineris_-_Mars_Orbiter_Mission_(30055660701).png",
+		"type": "planet",
+		"description": "Mars is the fourth planet from the Sun and the second-smallest planet in the Solar System, larger only than Mercury.",
+		"external_link": "https://en.wikipedia.org/wiki/Mars"
+	},
+	"JUPITER": {
+		"image": "static/images/jupiter.jpg",
+		"image_source": "https://en.wikipedia.org/wiki/Jupiter#/media/File:Jupiter_New_Horizons.jpg",
+		"type": "planet",
+		"description": "Jupiter is the fifth planet from the Sun and the largest in the Solar System. It is a gas giant with a mass more than two and a half times that of all the other planets in the Solar System combined, and slightly less than one one-thousandth the mass of the Sun.",
+		"external_link": "https://en.wikipedia.org/wiki/Jupiter"
+	},
+	"SATURN": {
+		"image": "static/images/saturn.jpg",
+		"image_source": "https://en.wikipedia.org/wiki/Saturn#/media/File:Saturn_during_Equinox.jpg",
+		"type": "planet",
+		"description": "Saturn is the sixth planet from the Sun and the second-largest in the Solar System, after Jupiter. It is a gas giant with an average radius of about nine and a half times that of Earth.",
+		"external_link": "https://en.wikipedia.org/wiki/Saturn"
+	},
+	"URANUS": {
+		"image": "static/images/uranus.jpg",
+		"image_source": "https://en.wikipedia.org/wiki/Uranus#/media/File:Uranus_as_seen_by_NASA's_Voyager_2_(remastered)_-_JPEG_converted.jpg",
+		"type": "planet",
+		"description": "Uranus is the seventh planet from the Sun. Uranus has the third-largest planetary radius and fourth-largest planetary mass in the Solar System. The planet is similar in composition to Neptune, and both have bulk chemical compositions which differ from those of the other two giant planets, Jupiter and Saturn (the gas giants). For this reason, scientists often distinguish Uranus and Neptune as \"ice giants\"",
+		"external_link": "https://en.wikipedia.org/wiki/Uranus"
+	},
+	"NEPTUNE": {
+		"image": "static/images/neptune.jpg",
+		"image_source": "https://en.wikipedia.org/wiki/Neptune#/media/File:Neptune_-_Voyager_2_(29347980845)_flatten_crop.jpg",
+		"type": "planet",
+		"description": "Neptune is the eighth planet from the Sun and the farthest known planet in the Solar System. It is the fourth-largest planet in the Solar System by diameter, the third-most-massive planet, and the densest giant planet. It is 17 times the mass of Earth, and slightly more massive than its near-twin Uranus. Being composed primarily of gases and liquids, it has no well-defined solid surface.",
+		"external_link": "https://en.wikipedia.org/wiki/Neptune"
+	},
+	"MOON": {
+		"image": "static/images/moon.jpg",
+		"image_source": "https://en.wikipedia.org/wiki/Moon#/media/File:FullMoon2010.jpg",
+		"type": "moon",
+		"description": "The Moon is Earth's only natural satellite. It is the fifth largest satellite in the Solar System and the largest and most massive relative to its parent planet, with a diameter about one-quarter that of Earth (comparable to the width of Australia).",
+		"external_link": "https://en.wikipedia.org/wiki/Moon"
+	}
+}
