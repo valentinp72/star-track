@@ -10,7 +10,7 @@ from flask import (
 )
 
 import commands
-from backend import main_loop
+from backend import Backend
 
 logging.basicConfig(
     format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
@@ -28,7 +28,7 @@ def setup_main_process():
     # setting up the main backend process that computes everything and talks
     # with the arduino
     main_process = multiprocessing.Process(
-        target=main_loop,
+        target=Backend.start_backend,
         args=(commands.pipe_back,),
         daemon=True
     )
@@ -89,4 +89,5 @@ def root():
 ################################################################################
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port='5090', use_reloader=False)
+    app.run(debug=True, host='0.0.0.0', port='5090')
+    # app.run(debug=True, host='0.0.0.0', port='5090', use_reloader=False)

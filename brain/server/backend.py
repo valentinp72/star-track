@@ -1,11 +1,13 @@
 import time
 import logging
 
+import filelock
 from skyfield.api import load
 
 import commands
 
 logger = logging.getLogger(__name__)
+lock = filelock.FileLock('/tmp/telescope_backend.lock')
 
 class Backend:
 
@@ -19,6 +21,11 @@ class Backend:
 
         self.timescale = load.timescale()
         self.lanets = load('de405.bsp')
+
+    def __main_loop__(self):
+        while True:
+            commands.Command.receive_handle_command(self)
+            time.sleep(self.sleep_delay)
 
     @property
     def gps_location(self):
@@ -52,10 +59,18 @@ class Backend:
         else:
             raise NotImplementedError(f"Unkown command type for {command}.")
 
-def main_loop(pipe_back):
-    commands.pipe_back = pipe_back
-    backend = Backend()
-
-    while True:
-        commands.Command.receive_handle_command(backend)
-        time.sleep(backend.sleep_delay)
+    @classmethod
+    def start_backend(cls, pipe_back):
+        try:
+            with lock.acquire(timeout=5):
+                commands.pipe_back = pipe_back
+                logger.info("Creating the backend and starting it.")
+                backend = cls()
+                backend.__main_loop__()
+        except filelock.Timeout:
+            logger.error(
+                f"Error when starting backend. Could not acquire the lock " \
+                f"{lock.lock_file}. Either the backend is already running " \
+                f"in another process, or the file lock is dangling. " \
+                f"Please make sure only ONE backend process is launched."
+            )
