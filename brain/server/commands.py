@@ -29,6 +29,10 @@ class Command(Enum):
     # set the target object to track
     SET_track_object = auto()
 
+    # send/receive the current temperature and atmospheric pressure
+    SET_weather = auto()
+    GET_weather = auto()
+
     @property
     def is_getter(self):
         return self.name.startswith('GET_')

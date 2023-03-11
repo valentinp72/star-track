@@ -40,11 +40,12 @@ def setup_main_process():
 @app.route('/toggle', methods=['GET', 'POST'])
 def toggle():
     """
-    Toggle ('on' or 'off') the telescope tracking loop.
-    Arguments to the POST method:
-        {
-            'state': true / false
-        }
+    - GET the current telescope tracking status.
+    - SET the toggle ('on' or 'off') the telescope tracking loop.
+        Arguments:
+            {
+                'state': true / false
+            }
     """
     if request.method == 'GET':
         return Command.GET_toggle_state()
@@ -62,13 +63,16 @@ def toggle():
 @app.route('/gps', methods=['GET', 'POST'])
 def gps():
     """
-    Get the current configured GPS location, or update it.
+    - GET the current configured GPS location.
+    - SET the current GPS location.
+        Arguments:
+            {
+                'latitude': DD latitude (float),
+                'longitude' DD longitude (float),
+                'elevation': elevation above sea lever (float, optional)
+                ''
+            }
     Locations are and should be given in the Decimal Degrees (DD) format.
-    Arguments to the POST method:
-        {
-            'latitude': latitude in float format,
-            'longitude' longitude in float format
-        }
     """
     if request.method == 'GET':
         return Command.GET_gps_location()
@@ -76,6 +80,7 @@ def gps():
         data = request.json
         latitude = data.get('latitude')
         longitude = data.get('longitude')
+        elevation = data.get('elevation')
 
         if latitude is None or longitude is None:
             abort(400)
@@ -83,19 +88,52 @@ def gps():
         return Command.SET_gps_location({
             "latitude": latitude,
             "longitude": longitude,
+            "elevation": elevation,
         })
     else:
         abort(405)
 
+@app.route('/weather', methods=['GET', 'POST'])
+def weather():
+    """
+    - GET the current configured temperature (in °C) and atmospheric pressure
+       used in the system (in mbar).
+    - SET the temperature (in °C) and atmospheric pressure (in mbar).
+        Arguments:
+            {
+                'temperature_C': temp (float),
+                'pressure_mbar': pressure (float, optional)
+            }
+    The temperature and pressure are used to adjust the target position
+    according to the atmospheric refraction. If the pressure is not specified
+    (by default), then the refraction will be computed using the elevation
+    specified in the GPS coordinates and an approximation of the pressure at
+    that elevation.
+    """
+    if request.method == 'GET':
+        return Command.GET_weather()
+    elif request.method == 'POST':
+        data = request.json
+        temperature_C = data.get('temperature_C')
+        pressure_mbar = data.get('pressure_mbar')
+
+        if temperature_C is None:
+            abort(400)
+
+        return Command.SET_weather({
+            "temperature_C": temperature_C,
+            "pressure_mbar": pressure_mbar
+        })
+
 @app.route('/planets', methods=['GET', 'POST'])
 def planets():
     """
-    - Get all the available planets that can be tracked.
-    - Set the ephemeris file (.bsp) for the loading the planets.
-    Arguments to the POST method:
-        {
-            'ephemeris_name': 'de440s.bsp'
-        }
+    - GET all the available planets that can be tracked.
+    - SET the ephemeris file (.bsp) for the loading the planets.
+        Arguments:
+            {
+                'ephemeris_name': 'de440s.bsp'
+            }
     """
     if request.method == 'GET':
         return Command.GET_planets()
@@ -110,11 +148,11 @@ def planets():
 @app.route('/track', methods=['POST'])
 def track():
     """
-    Track the specified object.
-    Arguments to the POST method:
-        {
-            'target': name or code for the target
-        }
+    - SET: Ask the server to track the specified object.
+        Arguments:
+            {
+                'target': name or code for the target
+            }
     """
     data = request.json
     target = data.get('target')
@@ -132,15 +170,24 @@ def root():
     for r in app.url_map._rules:
         routes[r.rule] = {}
         routes[r.rule]["function"] = r.endpoint
-        routes[r.rule]["methods"] = list(r.methods)
+        routes[r.rule]["methods"] = sorted(list(r.methods))
         doc = app.view_functions[r.endpoint].__doc__
         if doc is not None:
-            routes[r.rule]["documentation"] = " ".join(doc.split())
+            routes[r.rule]["documentation"] = doc
+        else:
+            routes[r.rule]["documentation"] = "Not documented."
     routes.pop("/static/<path:filename>")
-    return {
-        'message': 'Welcome to the API for the star-track server.',
-        'methods': routes
-    }
+    out = """
+        <h1>Star-Track Telescope REST API</h1>
+        Welcome to the REST API of the star-track server.
+        <hr>
+        <ul>
+    """
+    for route in routes:
+        out += f"<li><font color='red'>{route}</font> - {' | '.join(routes[route]['methods'])} <pre>{routes[route]['documentation']}</pre></li>"
+    out += "</ul>"
+    out += "<hr>"
+    return out
 
 ################################################################################
 

@@ -22,6 +22,7 @@ class Backend:
 
         self.planets = 'de440s.bsp'
         self.gps_location = {}
+        self.weather = {}
 
         with open('data/objects.json', 'r') as f:
             self.objects_infos = json.load(f)
@@ -35,7 +36,11 @@ class Backend:
             if self.running and self.tracked is not None:
                 t = self.timescale.now()
                 astrometric = self.current_pos.at(t).observe(self.tracked)
-                alt, az, d = astrometric.apparent().altaz()
+                alt, az, d = astrometric.apparent().altaz(
+                    temperature_C=self._temp_C,
+                    pressure_mbar=self._pressure_mbar
+                )
+                # returns https://rhodesmill.org/skyfield/api-units.html#skyfield.units.Angle
                 print(f"Altitude: {alt}, Azimuth: {az}")
             else:
                 time.sleep(self.sleep_delay)
@@ -110,7 +115,8 @@ class Backend:
     def gps_location(self):
         return {
             'latitude': self._latitude,
-            'longitude': self._longitude
+            'longitude': self._longitude,
+            'elevation': self._elevation,
         }
 
     @gps_location.setter
@@ -118,12 +124,47 @@ class Backend:
         # default location if invalid data: Paris (France)
         self._latitude = loc.get('latitude',  48.864716)
         self._longitude = loc.get('longitude', 2.349014)
+        self._elevation = loc.get('elevation', 35) # elevation in meters
 
         self.current_pos = self.earth + wgs84.latlon(
-            self._latitude, self._longitude
+            self._latitude, self._longitude, elevation_m=self._elevation
         )
 
         logger.info(f"Location has changed to {self.gps_location}")
+
+    @property
+    def weather(self):
+        # set the temperature and atmospheric pressure to adjust for 
+        # atmospheric refraction
+        return {
+            'temperature_C': self._temp_C,
+            'pressure_mbar': self._pressure_mbar
+        }
+
+    @weather.setter
+    def weather(self, current_weather):
+        # default fo of 10.0°C and 'standard' (computed using elevation)
+        temp_C = current_weather.get('temperature_C', 10.0)
+        pressure_mbar = current_weather.get('pressure_mbar', 'standard')
+
+        if not -20 < temp_C < 60:
+            logger.warning(
+                f"Setting temperature to {temp_C} °C, but suspecting a " \
+                f"temperature in °F."
+            )
+        if isinstance(pressure_mbar, float) and not 800 < pressure_mbar < 1200:
+            logger.warning(
+                f"Setting pressure to {pressure_mbar} mbar, but the unit " \
+                "seems off."
+            )
+        elif pressure_mbar != 'standard':
+            logger.error(
+                f"Invalid pressure_mbar. Should be a float or `standard`. " \
+                f"Got pressure_mbar={pressure_mbar} ({type(pressure_mbar)})"
+            )
+
+        self._temp_C = temp_C
+        self._pressure_mbar = pressure_mbar
 
     ########################################################################
     #              METHODS FOR COMMUNICATION WITH FLASK                    #
