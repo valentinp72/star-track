@@ -1,11 +1,26 @@
-from flask import Flask
+import os
+import logging
 import multiprocessing
 
+from flask import (
+    Flask,
+    request,
+    abort,
+    jsonify
+)
+
+import commands
 from backend import main_loop
+
+logging.basicConfig(
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    level=os.environ.get("LOGLEVEL", "INFO").upper(),
+)
+logger = logging.getLogger(__name__)
 
 ################################################################################
 
-commands = multiprocessing.Queue()
 app = Flask(__name__)
 
 @app.before_first_request
@@ -14,25 +29,62 @@ def setup_main_process():
     # with the arduino
     main_process = multiprocessing.Process(
         target=main_loop,
-        args=(commands,),
+        args=(commands.pipe_back,),
         daemon=True
     )
     main_process.start()
 
 ################################################################################
 
-@app.route('/alive')
-def alive():
-    return {
-        'message': "I'm alive!"
-    }, 200
+@app.route('/status')
+def status():
+    """
+    Return if the backend is 'running' or 'stopped.'
+    """
+    return commands.Command.GET_status()
+
+@app.route('/gps', methods=['GET', 'POST'])
+def gps():
+    """
+    Get the current configured GPS location, or update it.
+    Locations are and should be given in the Decimal Degrees (DD) format.
+    """
+    if request.method == 'GET':
+        return commands.Command.GET_gps_location()
+    elif request.method == 'POST':
+        data = request.json
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+
+        if latitude is None or longitude is None:
+            abort(400)
+
+        return commands.Command.SET_gps_location({
+            "latitude": latitude,
+            "longitude": longitude,
+        })
+    else:
+        abort(405)
 
 @app.route('/')
 def root():
-    commands.put_nowait({'action': 'something'})
+    """
+    Say hello to the API and get the available endpoints.
+    """
+    routes = {}
+    for r in app.url_map._rules:
+        routes[r.rule] = {}
+        routes[r.rule]["function"] = r.endpoint
+        routes[r.rule]["methods"] = list(r.methods)
+        doc = app.view_functions[r.endpoint].__doc__
+        if doc is not None:
+            routes[r.rule]["documentation"] = " ".join(doc.split())
+    routes.pop("/static/<path:filename>")
+    print(routes)
     return {
-        'message': 'Welcome to the API for the star-track server.'
-    }, 200
+        'message': 'Welcome to the API for the star-track server.',
+        'methods': routes
+    }
 
 ################################################################################
 
