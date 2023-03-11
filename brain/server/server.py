@@ -41,11 +41,14 @@ def setup_main_process():
 def toggle():
     """
     - GET the current telescope tracking status.
-    - SET the toggle ('on' or 'off') the telescope tracking loop.
+    - SET the toggle of telescope tracking loop.
         Arguments:
             {
                 'state': true / false
             }
+    If `true`, the tracking loop is running, `false` otherwise. Note that the
+    loop will run only if toggle=True AND that a track target has been
+    configured (see /track).
     """
     if request.method == 'GET':
         return Command.GET_toggle_state()
@@ -70,7 +73,6 @@ def gps():
                 'latitude': DD latitude (float),
                 'longitude' DD longitude (float),
                 'elevation': elevation above sea lever (float, optional)
-                ''
             }
     Locations are and should be given in the Decimal Degrees (DD) format.
     """
@@ -166,27 +168,24 @@ def root():
     """
     Say hello to the API and get the available endpoints.
     """
-    routes = {}
-    for r in app.url_map._rules:
-        routes[r.rule] = {}
-        routes[r.rule]["function"] = r.endpoint
-        routes[r.rule]["methods"] = sorted(list(r.methods))
-        doc = app.view_functions[r.endpoint].__doc__
-        if doc is not None:
-            routes[r.rule]["documentation"] = doc
-        else:
-            routes[r.rule]["documentation"] = "Not documented."
-    routes.pop("/static/<path:filename>")
     out = """
         <h1>Star-Track Telescope REST API</h1>
         Welcome to the REST API of the star-track server.
         <hr>
         <ul>
     """
-    for route in routes:
-        out += f"<li><font color='red'>{route}</font> - {' | '.join(routes[route]['methods'])} <pre>{routes[route]['documentation']}</pre></li>"
+    for r in app.url_map._rules:
+        doc = app.view_functions[r.endpoint].__doc__ or "Not documented."
+        methods = " | ".join(sorted(list(r.methods)))
+        out += f"""
+            <li>
+                <font color='red'>{r.rule}</font> -
+                {methods}
+                <pre>{doc}</pre>
+            </li>
+        """
     out += "</ul>"
-    out += "<hr>"
+    out += "<hr>\n"
     return out
 
 ################################################################################
