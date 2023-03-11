@@ -1,8 +1,12 @@
 import time
+import json
 import logging
 
 import filelock
-from skyfield.api import load
+from skyfield.api import (
+    load,
+    wgs84
+)
 
 import commands
 
@@ -11,21 +15,96 @@ lock = filelock.FileLock('/tmp/telescope_backend.lock')
 
 class Backend:
 
-    STATUS_RUNNING = "running"
-    STATUS_STOPPED = "stopped"
-
     def __init__(self):
-        self.status = Backend.STATUS_RUNNING
-        self.gps_location = {}
-        self.sleep_delay = 0.01
-
+        self.toggle_state = False
         self.timescale = load.timescale()
-        self.lanets = load('de405.bsp')
+        self.tracked = None
+
+        self.planets = 'de440s.bsp'
+        self.gps_location = {}
+
+        with open('data/objects.json', 'r') as f:
+            self.objects_infos = json.load(f)
 
     def __main_loop__(self):
+        """
+        The main loop that runs in its own process and does everything.
+        """
         while True:
             commands.Command.receive_handle_command(self)
-            time.sleep(self.sleep_delay)
+            if self.running and self.tracked is not None:
+                t = self.timescale.now()
+                astrometric = self.current_pos.at(t).observe(self.tracked)
+                alt, az, d = astrometric.apparent().altaz()
+                print(f"Altitude: {alt}, Azimuth: {az}")
+            else:
+                time.sleep(self.sleep_delay)
+
+    ########################################################################
+    #           GETTERS AND SETTERS for COMMUNICATION WITH FLASK)          #
+    ########################################################################
+
+    @property
+    def toggle_state(self):
+        return self.running
+
+    @toggle_state.setter
+    def toggle_state(self, state):
+        if not isinstance(state, bool):
+            logger.error(
+                f"toggle_state received invalid state={state}. Ignoring it."
+            )
+            return
+
+        if hasattr(self, "running") and self.running == state:
+            return
+        self.running = state
+
+        # adjust sleeping delay in the main loop (no need to have a
+        # high-freq loop when not running skyfield computations)
+        if self.running:
+            self.sleep_delay = 0.01
+            logger.info("Main telescope loop enabled.")
+            if self.tracked is None:
+                logger.warning(
+                    'No tracking target currently selected, nothing will be ' \
+                    'computed. You can call /track with the target.'
+                )
+        else:
+            self.sleep_delay = 1
+            logger.info("Main telescope loop is disabled.")
+
+    @property
+    def planets(self):
+        out = []
+        for code, object_names in self._planets.names().items():
+            name = object_names[-1]
+            object_name = name.replace('BARYCENTER', '').strip()
+            try:
+                additional_info = self.objects_infos[object_name]
+            except KeyError:
+                additional_info = {}
+            out.append({
+                'code': code,
+                'name': name.title(),
+                'object_name': object_name.title(),
+                'additional_info': additional_info
+            })
+        return out
+
+    @planets.setter
+    def planets(self, ephemeris_name):
+        self._planets = load(ephemeris_name)
+        self.earth = self._planets['earth']
+
+    @property
+    def track_object(self):
+        return self.tracked
+
+    @track_object.setter
+    def track_object(self, object_name):
+        self.tracked = self._planets[object_name]
+        logger.info(f'Current tracking target: {object_name}')
 
     @property
     def gps_location(self):
@@ -39,8 +118,16 @@ class Backend:
         # default location if invalid data: Paris (France)
         self._latitude = loc.get('latitude',  48.864716)
         self._longitude = loc.get('longitude', 2.349014)
+
+        self.current_pos = self.earth + wgs84.latlon(
+            self._latitude, self._longitude
+        )
+
         logger.info(f"Location has changed to {self.gps_location}")
-        # TODO: notify the backend that the GPS location has changed
+
+    ########################################################################
+    #              METHODS FOR COMMUNICATION WITH FLASK                    #
+    ########################################################################
 
     def handle_command(self, command, data):
         """
@@ -51,8 +138,8 @@ class Backend:
         """
         if command.is_getter:
             property_name = command.property_name
-            info = getattr(self, property_name) # retreiving the information
-            commands.pipe_back.send(info)       # sending it back to flask
+            info = getattr(self, property_name)      # retreiving the info
+            commands.pipe_back.send((command, info)) # sending it back to flask
         elif command.is_setter:
             property_name = command.property_name
             setattr(self, property_name, data)
@@ -61,6 +148,12 @@ class Backend:
 
     @classmethod
     def start_backend(cls, pipe_back):
+        """
+        This is the method invoked when creating the special process for the
+        backend. We setup a file lock to prevent multiple backend from running
+        simultaneously, however this won't prevent the webserver from trying to
+        reach other backends if they have been launched.
+        """
         try:
             with lock.acquire(timeout=5):
                 commands.pipe_back = pipe_back
