@@ -13,16 +13,14 @@ in the settings page of the web app.
 ```bash
 # creating a certificate authority (CA)
 mkcert -install
-ca_root="`mkcert -CAROOT`/rootCA.pem"
+cp "`mkcert -CAROOT`/rootCA.pem" client/public/assets/rootCA.pem
 
-# creating the 
+# creating the website certificate 
 hostname=`hostname`
 mkcert \
-	-key-file ssl/$hostname.key \
-	-cert-file ssl/$hostname.crt \
+	-key-file ssl/certificate.key \
+	-cert-file ssl/certificate.crt \
 	$hostname $hostname.local localhost 127.0.0.1 ::1
-
-cp "$ca_root" client/public/assets/rootCA.pem
 ```
 
 ## Client
