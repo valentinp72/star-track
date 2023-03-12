@@ -49,7 +49,6 @@ export default defineComponent({
 					accuracy: response.coords.accuracy,
 					timestamp: response.timestamp,
 				};
-				console.log(response);
 			}
 		});
 		return { coords };

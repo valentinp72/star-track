@@ -26,6 +26,9 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+// Added by the CLI
+import './registerServiceWorker';
+
 const app = createApp(App)
   .use(IonicVue)
   .use(router)
