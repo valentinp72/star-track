@@ -4,6 +4,9 @@ import router from './router';
 
 import { IonicVue } from '@ionic/vue';
 
+/* To disable swipe gesture for tabs */
+import { DisableSwipeBackDirective } from 'v-disable-swipe-back';
+
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
 
@@ -25,7 +28,8 @@ import './theme/variables.css';
 
 const app = createApp(App)
   .use(IonicVue)
-  .use(router);
+  .use(router)
+  .directive('disable-swipe-back', DisableSwipeBackDirective);
   
 router.isReady().then(() => {
   app.mount('#app');

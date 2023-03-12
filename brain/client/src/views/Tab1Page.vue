@@ -1,8 +1,8 @@
 <template>
   <ion-page>
-    <ion-header>
+    <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-title>Tab 1</ion-title>
+        <ion-title>Telescope</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
@@ -38,14 +38,6 @@ import { Geolocation } from '@capacitor/geolocation';
 import { defineComponent, ref, onMounted } from 'vue';
 export default defineComponent({
 	components: { IonPage, IonHeader, IonContent, IonToolbar, IonTitle, ExploreContainer, IonItem, IonList, IonLabel },
-	/* data() { */
-	/* 	return { */
-	/* 		latitude: null, */
-	/* 		longitude: null, */
-	/* 		accuracy: null, */
-	/* 		timestamp: null */
-	/* 	} */
-	/* }, */
 	setup() {
 		const coords = ref({latitude: 0, longitude: 0, accuracy: 0, timestamp: 0});
 		onMounted(async () => {
@@ -61,12 +53,6 @@ export default defineComponent({
 			}
 		});
 		return { coords };
-		/* if (response) { */
-		/* 	this.latitude = response.coords.latitude; */
-		/* 	this.longitude = response.coords.longitude; */
-		/* 	this.accuracy = response.coords.accuracy; */
-		/* 	this.timestamp = response.timestamp; */
-		/* } */
 	}
 });
 </script>
