@@ -8,10 +8,9 @@
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-title size="large">Tab 1</ion-title>
+          <ion-title size="large">Telescope</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ExploreContainer name="Tab 1 page" />
 		<ion-list>
 			<ion-item>
 				<ion-label>Latitude: {{ coords.latitude }}</ion-label>
@@ -33,11 +32,10 @@
 <script lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
 import { IonItem, IonLabel, IonList } from '@ionic/vue';
-import ExploreContainer from '@/components/ExploreContainer.vue';
 import { Geolocation } from '@capacitor/geolocation';
 import { defineComponent, ref, onMounted } from 'vue';
 export default defineComponent({
-	components: { IonPage, IonHeader, IonContent, IonToolbar, IonTitle, ExploreContainer, IonItem, IonList, IonLabel },
+	components: { IonPage, IonHeader, IonContent, IonToolbar, IonTitle, IonItem, IonList, IonLabel },
 	setup() {
 		const coords = ref({latitude: 0, longitude: 0, accuracy: 0, timestamp: 0});
 		onMounted(async () => {

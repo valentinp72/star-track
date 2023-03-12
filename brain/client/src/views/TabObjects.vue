@@ -2,15 +2,39 @@
   <ion-page>
   <ion-header >
     <ion-toolbar>
-      <ion-title>Header</ion-title>
+      <ion-title>Objects</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content :fullscreen="true">
     <ion-header collapse="condense">
       <ion-toolbar>
-        <ion-title size="large">Header</ion-title>
+        <ion-title size="large">Objects</ion-title>
       </ion-toolbar>
     </ion-header>
+	<ion-card>
+		<img alt="Picture of Saturn" src="https://malak:5090/static/images/saturn.jpg" height="150" width="1000" />
+		<ion-card-header>
+			<ion-card-title>Saturn</ion-card-title>
+			<ion-card-subtitle>Planet of the Solar System</ion-card-subtitle>
+		</ion-card-header>
+
+		<ion-card-content>
+			Saturn is the sixth planet from the Sun and the second-largest in the Solar System, after Jupiter. It is a gas giant with an average radius of about nine and a half times that of Earth.
+		</ion-card-content>
+	</ion-card>
+	
+	<ion-card>
+		<img alt="Picture of Jupiter" src="https://malak:5090/static/images/jupiter.jpg" height="150" width="1000"/>
+		<ion-card-header>
+			<ion-card-title>Jupiter</ion-card-title>
+			<ion-card-subtitle>Planet of the Solar System</ion-card-subtitle>
+		</ion-card-header>
+
+		<ion-card-content>
+			Jupiter is the fifth planet from the Sun and the largest in the Solar System. It is a gas giant with a mass more than two and a half times that of all the other planets in the Solar System combined, and slightly less than one one-thousandth the mass of the Sun.
+		</ion-card-content>
+	</ion-card>
+
 
     <div class="ion-padding">
       <h1>Animal Facts</h1>
@@ -39,36 +63,24 @@
   </ion-page>
 </template>
 
-<!--
 <script lang="ts">
-  import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/vue';
-  import { defineComponent } from 'vue';
-
-  export default defineComponent({
-    components: { IonContent, IonHeader, IonTitle, IonToolbar },
-  });
-</script>
-
-<template>
-  <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Tab 2</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Tab 2</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
-      <ExploreContainer name="Tab 2 page" />
-    </ion-content>
-  </ion-page>
-</template>-->
-
-<script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-/* import ExploreContainer from '@/components/ExploreContainer.vue'; */
+import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/vue';
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+	components: { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle },
+});
 </script>
+
+<style scoped>
+  /* iOS places the subtitle above the title */
+  ion-card-header.ios {
+    display: flex;
+    flex-flow: column-reverse;
+  }
+img {
+	object-fit: cover;
+}
+</style>
+

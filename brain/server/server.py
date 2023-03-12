@@ -191,5 +191,10 @@ def root():
 ################################################################################
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port='5090')
+    app.run(
+        debug=True,
+        host='0.0.0.0',
+        port='5090',
+        ssl_context=('../ssl/certificate.crt', '../ssl/certificate.key')
+    )
     # app.run(debug=True, host='0.0.0.0', port='5090', use_reloader=False)
