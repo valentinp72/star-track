@@ -2,7 +2,42 @@
 
 Current brain: Orange Pi Lite
 
-## Creating SSL certificates
+## Installation
+
+Make sure the environment variable `STAR_TRACK` is exported in the `.bashrc`/`.zshrc` file:
+```bash
+export STAR_TRACK="/path/to/the/star-track/git/repo"
+```
+
+### Installing packages
+
+```bash
+# client
+apt-get install nodejs npm
+npm install -g @ionic/cli
+npm install $STAR_TRACK/brain/client
+
+# server
+apt-get install python3 python3-venv
+python3 -m venv $STAR_TRACK/brain/server/env
+source $STAR_TRACK/brain/server/env/bin/activate
+pip3 install -r $STAR_TRACK/brain/server/requirements.txt
+```
+
+### Optional: (Re)building the icons and splashscreens:
+You need a chromium browser installed, not compatible with CLI systems.
+```bash
+npx pwa-asset-generator \
+	$STAR_TRACK/brain/client/public/assets/telescope-light.svg \
+	$STAR_TRACK/brain/client/public/assets/icon \
+	--background "linear-gradient(0deg, rgba(88,86,214,1) 0%, rgba(198,68,252,1) 100%)" \
+	--mstile \
+	--favicon \
+	--type png \
+	--manifest $STAR_TRACK/brain/client/dist/manifest.json
+```
+
+### Creating SSL certificates
 
 We create a self-signed CA authority with a site certificate with. On iOS, for
 icons and other images to load, you have to download the root CA and to
@@ -12,31 +47,24 @@ in the settings page of the web app.
 
 ```bash
 # creating a certificate authority (CA)
+apt-get install mkcert
 mkcert -install
-cp "`mkcert -CAROOT`/rootCA.pem" client/public/assets/rootCA.pem
+cp "`mkcert -CAROOT`/rootCA.pem" $STAR_TRACK/brain/client/public/assets/rootCA.pem
 
 # creating the website certificate 
 hostname=`hostname`
 mkcert \
-	-key-file ssl/certificate.key \
-	-cert-file ssl/certificate.crt \
+	-key-file $STAR_TRACK/brain/ssl/certificate.key \
+	-cert-file $STAR_TRACK/brain/ssl/certificate.crt \
 	$hostname $hostname.local localhost 127.0.0.1 ::1
 ```
 
-## Client
+## Utilisation
+
+### Client
 
 ```bash
-cd client
-
-# optional: to (re)build the icons and splashscreens:
-npx pwa-asset-generator \
-	public/assets/telescope-light.svg \
-	public/assets/icon \
-	--background "linear-gradient(0deg, rgba(88,86,214,1) 0%, rgba(198,68,252,1) 100%)" \
-	--mstile \
-	--favicon \
-	--type png \
-	--manifest dist/manifest.json
+cd $STAR_TRACK/brain/client
 
 # for development:
 ionic serve
@@ -48,7 +76,7 @@ ionic build
 ## Server
 
 ```bash
-cd server
+cd $STAR_TRACK/brain/server
 source env/bin/activate
 
 # for development 
