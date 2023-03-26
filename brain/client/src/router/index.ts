@@ -21,7 +21,13 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'objects',
-        component: () => import('@/views/TabObjects.vue')
+        component: () => import('@/views/TabObjects.vue'),
+		children: [
+			{
+				path: 'Earth',
+				component: () => import('@/views/TabTelescope.vue')
+			}
+		]
       },
       {
         path: 'settings',

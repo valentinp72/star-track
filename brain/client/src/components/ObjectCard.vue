@@ -1,4 +1,8 @@
 <template>
+	<router-link
+		:to="'/tabs/objects/' + this.name" router-direction="back"
+		class="router-link"
+	>
 	<ion-card>
 		<img :src="`${image_url}`" height="150" width="1000" v-if="image_url !== undefined" />
 		<ion-card-header>
@@ -9,15 +13,33 @@
 			{{ description }}
 		</ion-card-content>
 	</ion-card>
+	</router-link>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/vue';
-defineProps({
-	name: String,
-	type: String,
-	description: String,
-	image_url: String,
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+	name: 'ObjectCard',
+	components: {
+		IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle
+	},
+	props: {
+		name: String,
+		type: String,
+		description: String,
+		image_url: String,
+	},
+	methods: {
+		/* on_card_click() { */
+		/* 	console.log("clicked", this.name); */
+		/* 	this.$router.push({ */
+		/* 		name: 't', */
+		/* 		params: { this } */
+		/* 	}); */
+		/* } */
+	}
 });
 </script>
 
@@ -32,6 +54,10 @@ ion-card-subtitle {
 }
 img {
 	object-fit: cover;
+}
+.router-link {
+	text-decoration: none;
+	color: inherit;
 }
 </style>
 
