@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router';
+import axios from './plugins/axios'
 
 import { IonicVue } from '@ionic/vue';
 
@@ -32,7 +33,11 @@ import './registerServiceWorker';
 const app = createApp(App)
   .use(IonicVue)
   .use(router)
-  .directive('disable-swipe-back', DisableSwipeBackDirective);
+  .directive('disable-swipe-back', DisableSwipeBackDirective)
+  .use(axios, {
+	baseUrl: '/api',
+  })
+  ;
   
 router.isReady().then(() => {
   app.mount('#app');

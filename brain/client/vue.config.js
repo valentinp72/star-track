@@ -24,8 +24,16 @@ module.exports = {
 				key: fs.readFileSync('../ssl/certificate.key').toString(),
 				cert: fs.readFileSync('../ssl/certificate.crt').toString()
 			}
-        }
-    }
+        },
+		proxy: {
+			"/api": {
+				"target": 'https://telescopi:5090',
+				"pathRewrite": { '^/api': '' },
+				"changeOrigin": true,
+				"secure": true
+			}
+		},
+	}
 }
 
 
