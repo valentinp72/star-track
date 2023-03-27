@@ -66,7 +66,10 @@ class Command(Enum):
             command = None
             while command != self:
                 if pipe_flask.poll(timeout=15):
-                    command, answer = pipe_flask.recv()
+                    try:
+                        command, answer = pipe_flask.recv()
+                    except EOFError:
+                        continue
                     if command != self:
                         logger.warning(
                             f"Received {command} but waiting for {self}. " \

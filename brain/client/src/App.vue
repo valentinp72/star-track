@@ -1,6 +1,6 @@
 <template>
-  <ion-app>
-    <ion-router-outlet />
+  <ion-app v-disable-swipe-back>
+    <ion-router-outlet swipeGesture="false" animated="false" />
   </ion-app>
 </template>
 

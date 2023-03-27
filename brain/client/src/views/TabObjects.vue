@@ -17,6 +17,7 @@
 			:type="object.additional_info.type"
 			:description="object.additional_info.description"
 			:image_url="object.additional_info.image"
+			:id="object.code"
 			:index="index"
 			:key="object.id"
 		/>
@@ -28,7 +29,6 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import type {AxiosInstance} from 'axios'
-/* import axios from "axios"; */
 import ObjectCard from '@/components/ObjectCard.vue';
 
 declare module '@vue/runtime-core' {

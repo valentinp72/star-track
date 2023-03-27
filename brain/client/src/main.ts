@@ -31,13 +31,16 @@ import './theme/variables.css';
 import './registerServiceWorker';
 
 const app = createApp(App)
-  .use(IonicVue)
-  .use(router)
-  .directive('disable-swipe-back', DisableSwipeBackDirective)
-  .use(axios, {
-	baseUrl: '/api',
-  })
-  ;
+	.directive('disable-swipe-back', DisableSwipeBackDirective)
+	.use(IonicVue, {
+		rippleEffect: false,
+		swipeBackEnabled: false,
+		mode: 'ios'
+	})
+	.use(router)
+	.use(axios, {
+		baseUrl: '/api',
+	});
   
 router.isReady().then(() => {
   app.mount('#app');

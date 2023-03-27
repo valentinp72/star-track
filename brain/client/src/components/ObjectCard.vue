@@ -1,6 +1,6 @@
 <template>
 	<router-link
-		:to="'/tabs/objects/' + this.name" router-direction="back"
+		:to="'/tabs/objects/' + this.id" router-direction="back"
 		class="router-link"
 	>
 	<ion-card>
@@ -26,19 +26,11 @@ export default defineComponent({
 		IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle
 	},
 	props: {
+		id: Number,
 		name: String,
 		type: String,
 		description: String,
 		image_url: String,
-	},
-	methods: {
-		/* on_card_click() { */
-		/* 	console.log("clicked", this.name); */
-		/* 	this.$router.push({ */
-		/* 		name: 't', */
-		/* 		params: { this } */
-		/* 	}); */
-		/* } */
 	}
 });
 </script>
