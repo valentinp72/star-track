@@ -24,6 +24,15 @@ source $STAR_TRACK/brain/server/env/bin/activate
 pip3 install -r $STAR_TRACK/brain/server/requirements.txt
 ```
 
+### Preparing Nginx
+
+```bash
+apt-get install nginx
+```
+
+You need to copy/link the file `config/nginx_star_track` to `/etc/nginx/sites-enabled`.
+You might have some edits to do in it (paths for example).
+
 ### Optional: (Re)building the icons and splashscreens:
 You need a chromium browser installed, not compatible with CLI systems.
 ```bash
