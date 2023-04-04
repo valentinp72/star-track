@@ -18,22 +18,18 @@ const routes: Array<RouteRecordRaw> = [
 			{
 				path: 'telescope',
 				component: () => import('@/views/TabTelescope.vue'),
-				props: { replaceUrl: true }
 			},
 			{
 				path: 'objects',
 				component: () => import('@/views/TabObjects.vue'),
-				props: { replaceUrl: true }
 			},
 			{
 				path: 'objects/:id',
 				component: () => import('@/views/ObjectDetail.vue'),
-				props: { replaceUrl: true }
 			},
 			{
 				path: 'settings',
 				component: () => import('@/views/TabSettings.vue'),
-				props: { replaceUrl: true }
 			},
 		]
 	}

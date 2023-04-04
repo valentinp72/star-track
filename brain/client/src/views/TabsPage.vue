@@ -1,5 +1,5 @@
 <template>
-	<ion-page v-disable-swipe-back>
+	<ion-page>
 		<ion-tabs>
 			<ion-router-outlet></ion-router-outlet>
 			<ion-tab-bar slot="bottom">

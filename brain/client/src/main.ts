@@ -5,9 +5,6 @@ import axios from './plugins/axios'
 
 import { IonicVue } from '@ionic/vue';
 
-/* To disable swipe gesture for tabs */
-import { DisableSwipeBackDirective } from 'v-disable-swipe-back';
-
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
 
@@ -31,10 +28,8 @@ import './theme/variables.css';
 import './registerServiceWorker';
 
 const app = createApp(App)
-	.directive('disable-swipe-back', DisableSwipeBackDirective)
 	.use(IonicVue, {
 		rippleEffect: false,
-		swipeBackEnabled: false,
 		mode: 'ios'
 	})
 	.use(router)
