@@ -12,55 +12,59 @@ jobs:
       - name: checking out the repository
         uses: actions/checkout@v3
 
-      - name: building the app archive
-        run: |
-          xcodebuild clean archive \
-            -workspace brain/client/ios/App/App.xcworkspace \
-            -scheme App \
-            -archivePath App.xcarchive \
-            -sdk iphoneos \
-            -configuration development
+      # - name: building the app archive
+      #   run: |
+      #     export CODE_SIGN_IDENTITY=""
+      #     export CODE_SIGNING_REQUIRED="NO"
+      #     export CODE_SIGN_ENTITLEMENTS=""
+      #     export CODE_SIGNING_ALLOWED="NO"
+      #     xcodebuild clean archive \
+      #       -workspace brain/client/ios/App/App.xcworkspace \
+      #       -scheme App \
+      #       -archivePath App.xcarchive \
+      #       -sdk iphoneos \
+      #       -configuration development
 
-      - name: creating the IPA file
-        run: |
-          mkdir ${{ runner.temp }}/Payload
-          cp -r App.xcarchive/Products/Applications/App.app ${{ runner.temp }}/Payload/.
-          zip -r ${{ runner.temp }}/StarTrack.ipa ${{ runner.temp }}/Payload
+      # - name: creating the IPA file
+      #   run: |
+      #     mkdir ${{ runner.temp }}/Payload
+      #     cp -r App.xcarchive/Products/Applications/App.app ${{ runner.temp }}/Payload/.
+      #     zip -r ${{ runner.temp }}/StarTrack.ipa ${{ runner.temp }}/Payload
 
-      - name: uploading the IPA file
-        uses: actions/upload-artifact@v3
-        with:
-          name: app
-          path: ${{ runner.temp }}/StarTrack.ipa
-          # you can also archive the entire directory 
-          # path: ${{ runner.temp }}/build
-          retention-days: 3
-
-      # - uses: sparkfabrik/ios-build-action@v1.2.0
+      # - name: uploading the IPA file
+      #   uses: actions/upload-artifact@v3
       #   with:
-      #       build-pods: true
-      #       pods-path: "brain/client/ios/App/Podfile"
-      #       configuration: Release
-      #       export-method: development
-      #       workspace-path: "brain/client/ios/App/App.xcworkspace"
-      #       project-path: 'brain/client/ios/App/App.xcodeproj'
-      #       scheme: App
-      #       output-path: build-${{ github.sha }}.ipa
-      #       p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-      #       certificate-password: ${{ secrets.P12_PASSWORD }}
-      #       mobileprovision-base64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
-      #       code-signing-identity: ${{ secrets.TEAM_NAME }}
-      #       # apple-key-id: ${{ secrets.APPLE_KEY_ID }}
-      #       # apple-key-issuer-id: ${{ secrets.APPLE_KEY_ISSUER_ID }}
-      #       # apple-key-content: ${{ secrets.APPLE_KEY_CONTENT }}
-      #       team-id: ${{ secrets.TEAM_ID }}
-      #       # team-name: ${{ secrets.TEAM_NAME }}
-      #       # match-password: ${{ secrets.MATCH_PASSWORD }}
-      #       # match-git-url: ${{ secrets.MATCH_GIT_URL }}
-      #       # match-git-basic-authorization: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-      #       # match-build-type: "development"
-      #       # browserstack-upload: true
-      #       # browserstack-username: ${{ secrets.BROWSERSTACK_USERNAME }}
-      #       # browserstack-access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-      #       # fastlane-env: stage
-      #       # ios-app-id: eu.vpelloin.startrack
+      #     name: app
+      #     path: ${{ runner.temp }}/StarTrack.ipa
+      #     # you can also archive the entire directory 
+      #     # path: ${{ runner.temp }}/build
+      #     retention-days: 3
+
+      - uses: sparkfabrik/ios-build-action@v1.2.0
+        with:
+            build-pods: true
+            pods-path: "brain/client/ios/App/Podfile"
+            configuration: Release
+            export-method: development
+            workspace-path: "brain/client/ios/App/App.xcworkspace"
+            project-path: 'brain/client/ios/App/App.xcodeproj'
+            scheme: App
+            output-path: build-${{ github.sha }}.ipa
+            p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+            certificate-password: ${{ secrets.P12_PASSWORD }}
+            mobileprovision-base64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+            code-signing-identity: ${{ secrets.TEAM_NAME }}
+            # apple-key-id: ${{ secrets.APPLE_KEY_ID }}
+            # apple-key-issuer-id: ${{ secrets.APPLE_KEY_ISSUER_ID }}
+            # apple-key-content: ${{ secrets.APPLE_KEY_CONTENT }}
+            team-id: ${{ secrets.TEAM_ID }}
+            # team-name: ${{ secrets.TEAM_NAME }}
+            # match-password: ${{ secrets.MATCH_PASSWORD }}
+            # match-git-url: ${{ secrets.MATCH_GIT_URL }}
+            # match-git-basic-authorization: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+            # match-build-type: "development"
+            # browserstack-upload: true
+            # browserstack-username: ${{ secrets.BROWSERSTACK_USERNAME }}
+            # browserstack-access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+            # fastlane-env: stage
+            # ios-app-id: eu.vpelloin.startrack
