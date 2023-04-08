@@ -25,7 +25,7 @@ jobs:
         run: |
           mkdir ${{ runner.temp }}/Payload
           cp -r App.xcarchive/Products/Applications/App.app ${{ runner.temp }}/Payload/.
-          zip ${{ runner.temp }}/StarTrack.ipa ${{ runner.temp }}/Payload
+          zip -r ${{ runner.temp }}/StarTrack.ipa ${{ runner.temp }}/Payload
 
       - name: uploading the IPA file
         uses: actions/upload-artifact@v3
