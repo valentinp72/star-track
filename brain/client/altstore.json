@@ -1,0 +1,24 @@
+{
+  "name": "StarTrack",
+  "identifier": "eu.vpelloin.startrack",
+  "apps": [
+    {
+      "beta": false,
+      "name": "StarTrack",
+      "bundleIdentifier": "eu.vpelloin.startrack",
+      "developerName": "Valentin Pellin",
+      "subtitle": "A star tracking app",
+      "version": "$CURRENT_VERSION",
+      "versionDate": "$CURRENT_DATE",
+      "versionDescription": "$CURRENT_DESCRIPTION",
+      "downloadURL": "$CURRENT_DOWNLOAD_IPA_URL",
+      "localizedDescription": "StarTrack is an application made for tracking star and other sky objects with a telescope.",
+      "iconURL": "https://raw.githubusercontent.com/valentinp72/star-track/main/brain/client/public/img/icons/apple-icon-180.png",
+      "tintColor": "5856d6",
+      "size": $CURRENT_SIZE,
+      "screenshotURLs": [
+      ]
+    }
+  ]
+}
+
