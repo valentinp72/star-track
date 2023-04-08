@@ -1,5 +1,19 @@
 const fs = require('fs')
 
+let server = {
+	type: 'http'
+}
+
+if (fs.existsSync('../ssl/certificate.key') && fs.existsSync('../ssl/certificate.crt')) {
+	server = {
+		type: 'https',
+		options: {
+			key: fs.readFileSync('../ssl/certificate.key').toString(),
+			cert: fs.readFileSync('../ssl/certificate.crt').toString()
+		}
+	};
+}
+
 module.exports = {
 	pwa: {
 		name: 'StarTrack',
@@ -18,13 +32,7 @@ module.exports = {
 	},
     devServer: {
 		allowedHosts: 'all',
-        server: {
-			type: 'https',
-			options: {
-				key: fs.readFileSync('../ssl/certificate.key').toString(),
-				cert: fs.readFileSync('../ssl/certificate.crt').toString()
-			}
-        },
+		server: server,
 		proxy: {
 			"/api": {
 				"target": 'https://telescopi:5090',
@@ -35,5 +43,4 @@ module.exports = {
 		},
 	}
 }
-
 

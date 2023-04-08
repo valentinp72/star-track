@@ -16,7 +16,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 19.x
-          # cache: 'npm'
+          cache: 'npm'
+          cache-dependency-path: 'brain/client/package-lock.json'
 
       - name: Install app dependencies
         working-directory: brain/client
