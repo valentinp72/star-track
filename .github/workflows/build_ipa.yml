@@ -9,7 +9,7 @@ jobs:
   build_with_signing:
     runs-on: macos-latest
     steps:
-      - uses: sparkfabrik/ios-build-action@v2.1.0
+      - uses: sparkfabrik/ios-build-action@v1.2.0
         with:
             upload-to-testflight: false
             increment-build-number: false
@@ -21,11 +21,14 @@ jobs:
             project-path: "brain/client/ios/App/App.xcodeproj"
             scheme: StarTrack
             output-path: build-${{ github.sha }}.ipa
+            p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+            mobileprovision-base64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+            code-signing-identity: ${{ secrets.TEAM_NAME }}
             # apple-key-id: ${{ secrets.APPLE_KEY_ID }}
             # apple-key-issuer-id: ${{ secrets.APPLE_KEY_ISSUER_ID }}
             # apple-key-content: ${{ secrets.APPLE_KEY_CONTENT }}
             team-id: ${{ secrets.TEAM_ID }}
-            team-name: ${{ secrets.TEAM_NAME }}
+            # team-name: ${{ secrets.TEAM_NAME }}
             # match-password: ${{ secrets.MATCH_PASSWORD }}
             # match-git-url: ${{ secrets.MATCH_GIT_URL }}
             # match-git-basic-authorization: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
