@@ -19,8 +19,8 @@ jobs:
             configuration: Release
             export-method: development
             # workspace-path: "App.xcworkspace"
-            project-path: 'star-track/brain/client/ios/App/App.xcodeproj'
-            scheme: StarTrack
+            project-path: 'brain/client/ios/App/App.xcodeproj'
+            scheme: App
             output-path: build-${{ github.sha }}.ipa
             p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
             certificate-password: ${{ secrets.P12_PASSWORD }}
