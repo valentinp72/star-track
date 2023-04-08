@@ -12,6 +12,20 @@ jobs:
       - name: checking out the repository
         uses: actions/checkout@v3
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19.x
+
+      - name: Install app dependencies
+        working-directory: brain/client
+        run: npm install
+
+      - name: Build Ionic
+        run: |
+          ionic capacitor copy ios
+          ionic capacitor update
+
       - name: Install the Apple certificate and provisioning profile
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
