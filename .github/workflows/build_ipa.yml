@@ -17,8 +17,8 @@ jobs:
             pods-path: "brain/client/ios/App/Podfile"
             configuration: Release
             export-method: development
-            workspace-path: "App.xcworkspace"
-            project-path: "App.xcodeproj"
+            # workspace-path: "App.xcworkspace"
+            project-path: "brain/client/ios/App/App.xcodeproj"
             scheme: StarTrack
             output-path: build-${{ github.sha }}.ipa
             p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
