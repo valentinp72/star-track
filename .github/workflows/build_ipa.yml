@@ -9,6 +9,7 @@ jobs:
   build_with_signing:
     runs-on: macos-latest
     steps:
+      - run: ls ${{ github.workspace }}
       - uses: sparkfabrik/ios-build-action@v1.2.0
         with:
             # upload-to-testflight: false
