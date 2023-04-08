@@ -11,8 +11,8 @@ jobs:
     steps:
       - uses: sparkfabrik/ios-build-action@v1.2.0
         with:
-            upload-to-testflight: false
-            increment-build-number: false
+            # upload-to-testflight: false
+            # increment-build-number: false
             build-pods: true
             pods-path: "brain/client/ios/App/Podfile"
             configuration: Release
@@ -22,6 +22,7 @@ jobs:
             scheme: StarTrack
             output-path: build-${{ github.sha }}.ipa
             p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+            certificate-password: ${{ secrets.P12_PASSWORD }}
             mobileprovision-base64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
             code-signing-identity: ${{ secrets.TEAM_NAME }}
             # apple-key-id: ${{ secrets.APPLE_KEY_ID }}
@@ -37,4 +38,4 @@ jobs:
             # browserstack-username: ${{ secrets.BROWSERSTACK_USERNAME }}
             # browserstack-access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
             # fastlane-env: stage
-            ios-app-id: eu.vpelloin.startrack
+            # ios-app-id: eu.vpelloin.startrack
