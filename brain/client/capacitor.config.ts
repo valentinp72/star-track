@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'client',
+  appId: 'eu.vpelloin.startrack',
+  appName: 'StarTrack',
   webDir: 'dist',
   bundledWebRuntime: false
 };

@@ -77,10 +77,22 @@ cd $STAR_TRACK/brain/client
 
 # for development:
 ionic serve
-
-# for production:
-ionic build
 ```
+
+To build the app with Xcode and sideload it:
+
+```bash
+ionic capacitor copy ios
+ionic capacitor update
+ionic capacitor open ios
+```
+> (stolen from [stackoverflow](https://stackoverflow.com/a/36449958) and [reddit](https://www.reddit.com/r/Xcode/comments/kc3qu4/comment/gfrv8gz/?utm_source=share&utm_medium=web2x&context=3))
+> 1. Archive your project as a generic iOS device
+> 2. Right click the archive and click “Find in Finder”
+> 3. Explore the contents of the archive until you find the .app
+> 4. Now, create directory and name it as Payload, copy .app into Payload directory.
+> 5. Archive/Compress(.zip) this Payload directory, rename file extension from .zip to .ipa
+
 
 ## Server
 
