@@ -22,6 +22,7 @@ jobs:
       - name: Install app dependencies
         working-directory: brain/client
         run: |
+          npm install -g @ionic/cli
           npm ci
 
       - name: Build Ionic
