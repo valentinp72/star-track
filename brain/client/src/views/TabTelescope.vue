@@ -13,16 +13,16 @@
       </ion-header>
 		<ion-list>
 			<ion-item>
-				<ion-label>Latitude: {{ coords.latitude }}</ion-label>
+				<ion-label>Latitude : {{ coords.latitude }}</ion-label>
 			</ion-item>
 			<ion-item>
 				<ion-label>Longitude : {{ coords.longitude }}</ion-label>
 			</ion-item>
 			<ion-item>
-				<ion-label>Accuracy: {{ coords.accuracy }}</ion-label>
+				<ion-label>Accuracy : {{ coords.accuracy }}</ion-label>
 			</ion-item>
 			<ion-item>
-				<ion-label>Timestamp: {{ coords.timestamp }}</ion-label>
+				<ion-label>Timestamp : {{ coords.timestamp }}</ion-label>
 			</ion-item>
 		</ion-list>
     </ion-content>
