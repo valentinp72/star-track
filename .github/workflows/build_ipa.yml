@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 jobs:
-  build_with_signing:
+  build_ios_ipa:
     runs-on: macos-latest
     steps:
       - name: checking out the repository
@@ -18,8 +18,9 @@ jobs:
           node-version: 19.x
 
       - name: Install app dependencies
-        working-directory: brain/client
-        run: npm install
+        run: |
+          npm install -g @ionic/cli
+          npm install brain/client
 
       - name: Build Ionic
         run: |
