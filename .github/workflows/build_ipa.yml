@@ -25,6 +25,7 @@ jobs:
           npm install
 
       - name: Build Ionic
+        working-directory: brain/client
         run: |
           ionic capacitor copy ios
           ionic capacitor update
@@ -56,7 +57,8 @@ jobs:
 
           # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles   
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
       - name: building the app archive
         run: |
           # export CODE_SIGN_IDENTITY=""
@@ -66,14 +68,14 @@ jobs:
           xcodebuild clean archive \
             -workspace brain/client/ios/App/App.xcworkspace \
             -scheme App \
-            -archivePath App.xcarchive \
+            -archivePath ${{ runner.temp }}/App.xcarchive \
             -sdk iphoneos \
             -configuration development
 
       - name: creating the IPA file
         run: |
           mkdir ${{ runner.temp }}/Payload
-          cp -r App.xcarchive/Products/Applications/App.app ${{ runner.temp }}/Payload/.
+          cp -r ${{ runner.temp }}/App.xcarchive/Products/Applications/App.app ${{ runner.temp }}/Payload/.
           zip -r ${{ runner.temp }}/StarTrack.ipa ${{ runner.temp }}/Payload
 
       - name: uploading the IPA file
@@ -81,8 +83,6 @@ jobs:
         with:
           name: app
           path: ${{ runner.temp }}/StarTrack.ipa
-          # you can also archive the entire directory 
-          # path: ${{ runner.temp }}/build
           retention-days: 3
 
       # - uses: sparkfabrik/ios-build-action@v1.2.0
