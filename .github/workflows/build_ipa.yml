@@ -14,7 +14,7 @@ jobs:
         with:
             # upload-to-testflight: false
             # increment-build-number: false
-            build-pods: true
+            build-pods: false
             pods-path: "brain/client/ios/App/Podfile"
             configuration: Release
             export-method: development
