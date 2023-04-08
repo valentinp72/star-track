@@ -9,15 +9,17 @@ jobs:
   build_with_signing:
     runs-on: macos-latest
     steps:
+      - name: checkout repository
+        uses: actions/checkout@v3
       - run: ls ${{ github.workspace }}
       - uses: yukiarrr/ios-build-action@v1.8.0
         with:
-          project-path: /brain/client/ios/App/App.xcodeproj
+          project-path: brain/client/ios/App/App.xcodeproj
           p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           mobileprovision-base64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
           code-signing-identity: ${{ secrets.TEAM_NAME }}
           team-id: ${{ secrets.TEAM_ID }}
-          workspace-path: /brain/client/ios/App/App.xcworkspace # optional
+          workspace-path: brain/client/ios/App/App.xcworkspace # optional
       # - uses: sparkfabrik/ios-build-action@v1.2.0
       #   with:
       #       # upload-to-testflight: false
