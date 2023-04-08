@@ -14,12 +14,12 @@ jobs:
         with:
             # upload-to-testflight: false
             # increment-build-number: false
-            build-pods: false
+            build-pods: true
             pods-path: "brain/client/ios/App/Podfile"
             configuration: Release
             export-method: development
             # workspace-path: "App.xcworkspace"
-            project-path: '${{ github.workspace }}/brain/client/ios/App/App.xcodeproj'
+            project-path: '${{ github.workspace }}/brain/client/ios/app/app.xcodeproj'
             scheme: StarTrack
             output-path: build-${{ github.sha }}.ipa
             p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
