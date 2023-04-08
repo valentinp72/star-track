@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 jobs:
-  build_with_signing:
+  build_ipa:
     runs-on: macos-latest
     steps:
       - name: checking out the repository
@@ -22,8 +22,7 @@ jobs:
       - name: Install app dependencies
         working-directory: brain/client
         run: |
-          npm install -g @ionic/cli
-          npm install
+          npm ci
 
       - name: Build Ionic
         working-directory: brain/client
@@ -71,13 +70,15 @@ jobs:
             -scheme App \
             -archivePath ${{ runner.temp }}/App.xcarchive \
             -sdk iphoneos \
-            -configuration development
+            -configuration 'Release' \
+            -destination 'generic/platform=iOS'
 
       - name: creating the IPA file
         run: |
-          mkdir ${{ runner.temp }}/Payload
-          cp -r ${{ runner.temp }}/App.xcarchive/Products/Applications/App.app ${{ runner.temp }}/Payload/.
-          zip -r ${{ runner.temp }}/StarTrack.ipa ${{ runner.temp }}/Payload
+          cd ${{ runner.temp }}
+          mkdir Payload
+          cp -r App.xcarchive/Products/Applications/App.app Payload/.
+          zip -r StarTrack.ipa Payload
 
       - name: uploading the IPA file
         uses: actions/upload-artifact@v3
