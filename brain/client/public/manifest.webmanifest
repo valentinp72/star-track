@@ -1,5 +1,7 @@
 {
   "background_color": "#5856d6",
+  "start_url": ".",
+  "display": "standalone",
   "icons": [
     {
       "src": "assets/icons/icon-48.webp",

@@ -47,7 +47,7 @@ npx pwa-asset-generator \
 	$STAR_TRACK/brain/client/public/assets/telescope-light.svg \
 	$STAR_TRACK/brain/client/public/assets/icons \
 	--background "linear-gradient(0deg, rgba(88,86,214,1) 0%, rgba(198,68,252,1) 100%)" \
-	--splash-only --portrait-only \
+	--portrait-only \
 	--type png \
 	--manifest $STAR_TRACK/brain/client/dist/manifest.json
 ```
