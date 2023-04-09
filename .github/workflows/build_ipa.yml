@@ -4,6 +4,8 @@ name: "Build iOS IPA app"
 # https://www.andrewhoog.com/post/how-to-build-an-ios-app-with-github-actions-2023/
 
 on:
+  workflow_dispatch:
+    branches: [main]
   push:
     tags:
       - "v*.*.*"
@@ -82,9 +84,17 @@ jobs:
           cp -r App.xcarchive/Products/Applications/App.app Payload/.
           zip -r StarTrack.ipa Payload
 
+      - name: Uploading the IPA file as an artifact
+        uses: actions/upload-artifact@v3
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        with:
+          name: IPA Application
+          path: ${{ runner.temp }}/StarTrack.ipa
+          retention-days: 3
+
       - name: Uploading the IPA file to the release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+        if: ${{ github.event_name == 'push' }}
         with:
           files: ${{ runner.temp }}/StarTrack.ipa
 
