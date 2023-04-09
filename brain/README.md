@@ -34,17 +34,23 @@ You need to copy/link the file `config/nginx_star_track` to `/etc/nginx/sites-en
 You might have some edits to do in it (paths for example).
 
 ### Optional: (Re)building the icons and splashscreens:
+
+```bash
+npx @capacitor/assets generate
+```
+
+<!--
 You need a chromium browser installed, not compatible with CLI systems.
 ```bash
 npx pwa-asset-generator \
 	$STAR_TRACK/brain/client/public/assets/telescope-light.svg \
 	$STAR_TRACK/brain/client/public/assets/icon \
 	--background "linear-gradient(0deg, rgba(88,86,214,1) 0%, rgba(198,68,252,1) 100%)" \
-	--mstile \
 	--favicon \
 	--type png \
 	--manifest $STAR_TRACK/brain/client/dist/manifest.json
 ```
+-->
 
 ### Creating SSL certificates
 
