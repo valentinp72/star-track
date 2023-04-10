@@ -33,14 +33,6 @@ module.exports = {
     devServer: {
 		allowedHosts: 'all',
 		server: server,
-		proxy: {
-			"/api": {
-				"target": 'https://telescopi:5090',
-				"pathRewrite": { '^/api': '' },
-				"changeOrigin": true,
-				"secure": true
-			}
-		},
 	}
 }
 

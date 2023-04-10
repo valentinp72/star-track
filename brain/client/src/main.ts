@@ -1,7 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router';
-import axios from './plugins/axios'
 
 import { IonicVue } from '@ionic/vue';
 
@@ -32,10 +31,7 @@ const app = createApp(App)
 		rippleEffect: false,
 		mode: 'ios'
 	})
-	.use(router)
-	.use(axios, {
-		baseUrl: '/api',
-	});
+	.use(router);
   
 router.isReady().then(() => {
   app.mount('#app');

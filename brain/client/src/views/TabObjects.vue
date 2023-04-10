@@ -16,7 +16,7 @@
 			:name="object.object_name"
 			:type="object.additional_info.type"
 			:description="object.additional_info.description"
-			:image_url="object.additional_info.image"
+			:image_url="getImagePath(object)"
 			:id="object.code"
 			:index="index"
 			:key="object.id"
@@ -28,14 +28,9 @@
 <script lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
 import { defineComponent } from 'vue';
-import type {AxiosInstance} from 'axios'
+import axios from 'axios';
+import { getAPIPath } from '@/plugins/config';
 import ObjectCard from '@/components/ObjectCard.vue';
-
-declare module '@vue/runtime-core' {
-	interface ComponentCustomProperties {
-		$axios: AxiosInstance
-	}
-}
 
 export default defineComponent({
 	name: 'TabObjects',
@@ -49,15 +44,29 @@ export default defineComponent({
 	},
 	data() {
 		return {
-			objects: null
+			objects: [],
+			api_path: null as any
 		}
 	},
-	beforeMount() {
-		this.$axios
-			.get('/planets')
-			.then(reponse => {
-				this.objects = reponse.data
-			})
+	async beforeMount() {
+		getAPIPath().then(api_path => {
+			this.api_path = api_path;
+			axios
+				.get(this.api_path + '/planets')
+				.then(reponse => {
+					this.objects = reponse.data
+				})
+		});
+	},
+	methods: {
+		getImagePath(object) {
+			if (object.additional_info.image == undefined) {
+				return undefined
+			}
+			else {
+				return this.api_path + object.additional_info.image
+			}
+		}	
 	}
 });
 </script>
