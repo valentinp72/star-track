@@ -25,7 +25,7 @@ const routes: Array<RouteRecordRaw> = [
 			},
 			{
 				path: 'objects/:id',
-				component: () => import('@/views/ObjectDetail.vue'),
+				component: () => import('@/views/objects/ObjectDetail.vue'),
 			},
 			{
 				path: 'settings',
@@ -34,6 +34,10 @@ const routes: Array<RouteRecordRaw> = [
 			{
 				path: 'settings/telescope',
 				component: () => import('@/views/settings/TelescopeSettings.vue'),
+			},
+			{
+				path: 'settings/gps',
+				component: () => import('@/views/settings/GPSSettings.vue'),
 			},
 		]
 	}
