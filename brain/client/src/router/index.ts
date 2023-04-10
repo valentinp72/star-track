@@ -31,6 +31,10 @@ const routes: Array<RouteRecordRaw> = [
 				path: 'settings',
 				component: () => import('@/views/TabSettings.vue'),
 			},
+			{
+				path: 'settings/telescope',
+				component: () => import('@/views/settings/TelescopeSettings.vue'),
+			},
 		]
 	}
 ]
