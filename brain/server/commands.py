@@ -33,6 +33,9 @@ class Command(Enum):
     SET_weather = auto()
     GET_weather = auto()
 
+    # to check that the server is alive
+    GET_ping = auto()
+
     @property
     def is_getter(self):
         return self.name.startswith('GET_')

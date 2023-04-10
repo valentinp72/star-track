@@ -8,6 +8,7 @@ from flask import (
     abort,
     jsonify
 )
+from flask_cors import CORS
 
 import commands
 from commands import Command
@@ -23,6 +24,7 @@ logger = logging.getLogger(__name__)
 ################################################################################
 
 app = Flask(__name__)
+CORS(app)
 
 @app.before_first_request
 def setup_main_process():
@@ -162,6 +164,17 @@ def track():
     if target is None:
         abort(400)
     return Command.SET_track_object(target)
+
+@app.route('/ping')
+def ping():
+    """
+    Check that the server is alive.
+    If no answers, this means something went wrong. It should always answer:
+        {
+            'message': 'pong'
+        }
+    """
+    return Command.GET_ping()
 
 @app.route('/')
 def root():

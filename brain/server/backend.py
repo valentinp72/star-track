@@ -166,6 +166,12 @@ class Backend:
         self._temp_C = temp_C
         self._pressure_mbar = pressure_mbar
 
+    @property
+    def ping(self):
+        return {
+            'message': 'pong'
+        }
+
     ########################################################################
     #              METHODS FOR COMMUNICATION WITH FLASK                    #
     ########################################################################
