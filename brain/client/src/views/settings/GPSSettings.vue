@@ -94,7 +94,7 @@
 </template>
 
 <script lang="ts">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonBackButton, IonButtons, IonList, IonItem, IonLabel, IonListHeader, IonInput, IonBadge, IonToggle, IonNote } from '@ionic/vue';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonBackButton, IonButtons, IonButton, IonList, IonItem, IonLabel, IonListHeader, IonInput, IonBadge, IonToggle, IonNote } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import { getDefaultGPSCoords, getManualGPSCoords, setManualGPSCoords, getGPSType, setGPSType, getAPIPath } from '@/plugins/config';
 import { Geolocation } from '@capacitor/geolocation';
@@ -109,7 +109,7 @@ export default defineComponent({
 		IonTitle,
 		IonToolbar,
 		IonBackButton,
-		IonButtons,
+		IonButtons, IonButton,
 		IonList, IonItem, IonLabel, IonListHeader, IonNote,
 		IonInput,
 		IonBadge,
