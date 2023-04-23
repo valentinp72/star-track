@@ -39,6 +39,10 @@ const routes: Array<RouteRecordRaw> = [
 				path: 'settings/gps',
 				component: () => import('@/views/settings/GPSSettings.vue'),
 			},
+			{
+				path: 'settings/security',
+				component: () => import('@/views/settings/SecuritySettings.vue'),
+			},
 		]
 	}
 ]

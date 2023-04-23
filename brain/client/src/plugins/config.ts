@@ -70,3 +70,4 @@ export async function getGPSType() {
 export async function setGPSType(gps_type) {
 	return setter('gps_coords_type', gps_type)
 }
+

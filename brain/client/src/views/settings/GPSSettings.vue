@@ -19,11 +19,13 @@
 				<ion-item>
 					<ion-label>
 						Current position:
+						<ion-note>
 						<p>Latitude: {{ global_coords.latitude }}</p>
 						<p>Longitude: {{ global_coords.longitude }}</p>
 						<p>Elevation: {{ global_coords.elevation == null ? 'Unknown' : global_coords.elevation + 'm' }}</p>
 						<p>Accuracy: {{ global_coords.accuracy}}m</p>
 						<p>Obtained: {{ pretty_timestamp(global_coords.timestamp) }}</p>
+						</ion-note>
 					</ion-label>
 				</ion-item>
 				<ion-button @click="send_telescope()" expand="block" color="medium">Send to the telescope</ion-button>
@@ -38,7 +40,7 @@
 				</ion-item>
 				<ion-item>
 					<ion-label>
-						Permissions: {{ is_gps_allowed }}
+						Permission: {{ is_gps_allowed }}
 					</ion-label>
 				</ion-item>
 			</ion-list>
