@@ -83,7 +83,7 @@ export default defineComponent({
 					}
 				}
 				this.isAlive = isAlive;
-			}, 15 * 1000); // every 15 seconds
+			}, 1 * 1000); // every 15 seconds
 		}
 	},
 	async mounted() {
