@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Star-Track Mount Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one column; the 3D viewer is the centrepiece, with a short shopping list and fitting steps below. */
+:root {
+  --paper: #eef1f4;
+  --sheet: #ffffff;
+  --ink: #1b2430;
+  --muted: #5a6676;
+  --rule: #cfd6de;
+  --accent: #2f639e;  --accent-fill: #d6e3f2;
+  --printed: #c4651a; --printed-fill: #f8dcc2;
+  --chip: #dfe4ea;
+  /* 3D colours */
+  --v-bg: #e6eaef;
+  --v-steel: #4f86c6;
+  --v-printed: #e5822f;
+  --v-alu: #c9d0d8;
+  --v-yours: #f3f4f6;
+  --v-tubein: #2a2f36;
+  --v-motor: #3b4148;
+  --v-motorcap: #aab3bd;
+  --v-base: #8e98a3;
+  --v-dark: #2b3138;
+  --v-belt: #1d2126;
+  --v-hole: #1b2430;
+  --v-axis: #7a8594;
+  --v-select: #00a7c7;
+  --v-ground: #d5dbe2;
+  --v-crate: #2f639e;
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-body: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e1318; --sheet: #151c24; --ink: #e2e8ef; --muted: #98a4b3; --rule: #2b3541;
+    --accent: #82b2e8; --accent-fill: #1c3049; --printed: #f2a663; --printed-fill: #46301c; --chip: #26303b;
+    --v-bg: #131a21; --v-steel: #6ea2de; --v-printed: #f0954a; --v-alu: #9aa5b1; --v-yours: #dfe3e8;
+    --v-tubein: #15191e; --v-motor: #4a5058; --v-motorcap: #9aa3ad; --v-base: #67717c; --v-dark: #22272d;
+    --v-belt: #0d1013; --v-hole: #05070a; --v-axis: #7f8b99; --v-select: #22d3ee;
+    --v-ground: #1b232c; --v-crate: #82b2e8;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e1318; --sheet: #151c24; --ink: #e2e8ef; --muted: #98a4b3; --rule: #2b3541;
+  --accent: #82b2e8; --accent-fill: #1c3049; --printed: #f2a663; --printed-fill: #46301c; --chip: #26303b;
+  --v-bg: #131a21; --v-steel: #6ea2de; --v-printed: #f0954a; --v-alu: #9aa5b1; --v-yours: #dfe3e8;
+  --v-tubein: #15191e; --v-motor: #4a5058; --v-motorcap: #9aa3ad; --v-base: #67717c; --v-dark: #22272d;
+  --v-belt: #0d1013; --v-hole: #05070a; --v-axis: #7f8b99; --v-select: #22d3ee;
+  --v-ground: #1b232c; --v-crate: #82b2e8;
+  color-scheme: dark;
+}
+
+body { background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.55; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header.wrap { padding-block: 36px 20px; }
+main.wrap { padding-block: 4px 64px; display: grid; gap: 48px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+h1, h2 { font-family: var(--font-display); font-weight: 600; line-height: 1.1; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(34px, 6vw, 50px); }
+h2 { font-size: 28px; }
+p { margin: 0; max-width: 66ch; }
+.lede { font-size: 19px; color: var(--muted); margin-top: 12px; }
+section { display: grid; gap: 14px; }
+
+/* Viewer */
+.viewer { margin: 0; background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.bar { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--rule); }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button, .tg { font: 500 14px/1 var(--font-body); color: var(--ink); background: var(--sheet); border: 1px solid var(--rule); border-radius: 5px; padding: 8px 12px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent-fill); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.seg button:focus-visible, .tg:focus-within, input[type=range]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.toggles { display: flex; flex-wrap: wrap; gap: 6px; }
+.tg { display: inline-flex; align-items: center; gap: 7px; user-select: none; }
+.tg input { margin: 0; accent-color: var(--accent); }
+.stage { position: relative; height: clamp(380px, 66vh, 700px); background: var(--v-bg); touch-action: none; }
+.stage canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+.stage canvas:active { cursor: grabbing; }
+.labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.lbl { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); font: 600 11.5px/1.2 var(--font-mono); color: var(--ink); background: var(--sheet); background: color-mix(in srgb, var(--sheet) 88%, transparent); border: 1px solid var(--rule); border-radius: 4px; padding: 3px 6px; white-space: nowrap; }
+.labels.off { display: none; }
+.lbl.pack { color: var(--accent); background: var(--accent-fill); border-color: var(--accent); font-size: 12.5px; padding: 4px 8px; }
+.hint { position: absolute; left: 10px; bottom: 8px; margin: 0; font: 12px/1.3 var(--font-mono); color: var(--muted); pointer-events: none; max-width: calc(100% - 20px); }
+.fail { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--muted); }
+.sliders { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 14px; align-items: center; padding: 12px 14px; border-top: 1px solid var(--rule); }
+.sliders label { font: 600 13px/1 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.sliders output { display: inline-block; min-width: 4.2ch; text-align: right; color: var(--ink); font-variant-numeric: tabular-nums; }
+.sliders input { width: 100%; accent-color: var(--accent); }
+.info { border-top: 1px solid var(--rule); padding: 12px 14px 14px; min-height: 76px; display: grid; gap: 4px; align-content: start; }
+.info .name { font-weight: 600; font-size: 17px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.info .desc { color: var(--muted); font-size: 15.5px; }
+
+.src { font: 600 11px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; padding: 4px 7px; border-radius: 3px; white-space: nowrap; }
+.src.buy { color: var(--accent); background: var(--accent-fill); }
+.src.print { color: var(--printed); background: var(--printed-fill); }
+.src.yours { color: var(--muted); background: var(--chip); }
+.src.drill { color: var(--ink); border: 1px solid var(--ink); }
+
+/* Table */
+.tablewrap { overflow-x: auto; background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; min-width: 600px; font-size: 15.5px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
+thead th { font: 600 12px/1.2 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+tbody tr[data-part] { cursor: pointer; }
+tbody tr[data-part]:hover td { background: var(--accent-fill); }
+tfoot td { font-weight: 600; border-bottom: 0; }
+.steps { margin: 0; padding-left: 22px; display: grid; gap: 8px; max-width: 70ch; }
+.note { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; max-width: 66ch; color: var(--muted); }
+.note.warn { border-left-color: var(--printed); color: var(--ink); }
+.pieces { margin: 0; padding-left: 22px; display: grid; gap: 8px; max-width: 70ch; }
+</style>
+</head>
+<body>
+<header class="wrap">
+  <p class="eyebrow">Star-Track · alt-az mount · hardware</p>
+  <h1>One bearing kit, used on both axes</h1>
+  <p class="lede">Each axis gets the same parts: a 20 mm steel shaft through the extrusion, with a UCFL204GP flange bearing from Kramp bolted on each side. One hole is drilled per axis. Nothing is custom-machined.</p>
+</header>
+
+<main class="wrap">
+  <figure class="viewer">
+    <div class="bar">
+      <div class="seg" role="group" aria-label="Camera view">
+        <button type="button" data-view="whole" aria-pressed="true">Whole mount</button>
+        <button type="button" data-view="alt" aria-pressed="false">Altitude bearings</button>
+        <button type="button" data-view="az" aria-pressed="false">Azimuth bearings</button>
+      </div>
+      <div class="toggles">
+        <label class="tg"><input type="checkbox" id="tg-pack"> Pack for transport</label>
+        <label class="tg"><input type="checkbox" id="tg-explode"> Pull apart</label>
+        <label class="tg"><input type="checkbox" id="tg-xray"> See through aluminium</label>
+        <label class="tg"><input type="checkbox" id="tg-labels" checked> Labels</label>
+      </div>
+    </div>
+    <div class="stage" id="stage">
+      <canvas id="cv" aria-label="Interactive 3D model of the mount. Use the buttons, toggles and sliders, or the parts list below, to explore it."></canvas>
+      <div class="labels" id="labels"></div>
+      <p class="hint" id="hint">Drag to turn · scroll or pinch to zoom · right-drag or two fingers to move · tap a part</p>
+    </div>
+    <div class="sliders">
+      <label for="sl-az">Azimuth <output id="o-az">0°</output></label>
+      <input type="range" id="sl-az" min="-180" max="180" step="1" value="-30">
+      <label for="sl-alt">Altitude <output id="o-alt">0°</output></label>
+      <input type="range" id="sl-alt" min="-10" max="90" step="1" value="25">
+    </div>
+    <div class="info" id="info" aria-live="polite">
+      <div class="name">Tap any part to see what it is</div>
+      <div class="desc">Blue parts are bought, orange parts are 3D printed, grey and white are existing parts. Move the sliders to see what turns and what stays still.</div>
+    </div>
+  </figure>
+
+  <section>
+    <h2>Changes from the current build</h2>
+    <p>The model follows the CAD export (STEP) of the current build: same T base, same L, same bearing heights. Differences:</p>
+    <ol class="steps">
+      <li><b>Both 95×70 cases come out,</b> with their thrust bearings. Each axis gets a 20 mm shaft through the bar, with a flange bearing on each wide face.</li>
+      <li><b>Azimuth.</b> The shaft stands in a flange coupling bolted to the existing 95×70 plate. The plate and its two 32.5 mm blocks slide 8 cm along the stem toward the crossbar, for stability (see below). The motor moves from the base to under the far end of the bar, and the existing Ø159 mm pulley is now fixed on the shaft.</li>
+      <li><b>Altitude.</b> The shaft goes through the arm 120 mm below its top, where the current case is. The pulley and motor move to the outer face of the arm. The tube still hangs over the bar, but on a dovetail saddle instead of being bolted to the pulley.</li>
+      <li><b>The electronics case</b> moves lower on the outer face, below the altitude motor, because the outer bearing and pulley take its place.</li>
+      <li><b>The L sits about 8 cm higher,</b> because the azimuth bearing stack is taller than the current case. At zenith the tube still clears the bar by about 5 cm.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Why this removes the play</h2>
+    <p>A thrust bearing only carries weight, so the axis can still rock on it. Two ordinary ball bearings about 75 mm apart on the same shaft hold the axis straight. Clamping them toward each other when the set screws are tightened removes the last bit of play. The thrust bearings and aluminium cases are no longer needed.</p>
+    <p>The bars stay as built: the 380 mm bar lies flat, and the arm stands on its end with its wide faces along the bar. Both shafts cross the 45 mm thickness, so each pair of bearings sits about 75 mm apart. That's plenty once they're clamped toward each other.</p>
+    <p>On azimuth, the shaft is fixed to the base and the L turns around it. On altitude, the shaft turns with the tube. Both motors are mounted on the L, so the electronics can be too, and only the power cable has to cross the turning joint.</p>
+  </section>
+
+  <section>
+    <h2>Shopping list</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Part</th><th scope="col">Altitude</th><th scope="col">Azimuth</th><th scope="col">≈ Price</th><th scope="col">Source</th></tr></thead>
+        <tbody>
+          <tr data-part="altbrg"><td>Flange bearing UCFL204GP (Gopart, from Kramp)</td><td class="n">2</td><td class="n">2</td><td class="n">check Kramp</td><td><span class="src buy">Buy</span></td></tr>
+          <tr data-part="azshaft"><td>Hardened 20 mm steel shaft, cut to 200 mm</td><td class="n">1</td><td class="n">1</td><td class="n">€8 each</td><td><span class="src buy">Buy</span></td></tr>
+          <tr data-part="altcpl"><td>Rigid flange coupling, 20 mm</td><td class="n">1</td><td class="n">1</td><td class="n">€5 each</td><td><span class="src buy">Buy</span></td></tr>
+          <tr data-part="azcollar"><td>Shaft collar 20 × 32 × 14 mm (Kramp "stelring", listed as 705A20)</td><td class="n">–</td><td class="n">1</td><td class="n">€2.50</td><td><span class="src buy">Buy</span></td></tr>
+          <tr data-part="azbrg"><td>M8 bolts, large washers (DIN 9021) and T-nuts for 45-series slots</td><td class="n">4</td><td class="n">4</td><td class="n">€5 per bag</td><td><span class="src buy">Buy</span></td></tr>
+          <tr data-part="belts"><td>Closed GT2 belt + 20-tooth motor pulley</td><td class="n">1</td><td class="n">1</td><td class="n">€4 each</td><td><span class="src buy">Buy</span></td></tr>
+          <tr data-part="altpul"><td>Large GT2 pulley + motor bracket (PETG)</td><td class="n">1</td><td class="n">1</td><td class="n">filament</td><td><span class="src print">Print</span></td></tr>
+          <tr data-part="L"><td>Ø24 mm hole through the extrusion</td><td class="n">1</td><td class="n">1</td><td class="n">step drill</td><td><span class="src drill">Drill</span></td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="3">Both axes together</td><td class="n" colspan="2">≈ €40–50 + the 4 bearings</td></tr></tfoot>
+      </table>
+    </div>
+    <p class="note">The bearings in the model now match the UCFL204GP's listed dimensions: 113 mm long, 60 mm wide, 33.3 mm tall, 11 mm flange, Ø12 mm bolt holes 90 mm apart. The holes would take M10, but 45-series slots usually take M8 T-nuts, so use M8 with large washers. Get the bearings and collar at Kramp. For the <b>20mm linear shaft</b> and the <b>rigid flange coupling 20mm</b>, search AliExpress. Prices are rough. Tap a row to find that part in the model.</p>
+  </section>
+
+  <section>
+    <h2>Fitting it (the same on both axes)</h2>
+    <ol class="steps">
+      <li>Drill a Ø24 mm hole through the 45 mm thickness of the bar, in the middle of the wide face, between its two slots. Use a step drill from both sides. It doesn't need to be precise, because the bearings hold the shaft, not the hole.</li>
+      <li>Bolt a flange bearing on each wide face. Turn it 30° from the length of the bar so that one bolt lands in each slot: the T-nuts sit about 39 mm either side of the hole, one in each slot. Leave the bolts snug, push the shaft through, then tighten. The bearings line themselves up with the shaft.</li>
+      <li>Tighten the set screws on one bearing. Push the other bearing's inner ring firmly toward the extrusion and tighten its set screws. The play is gone.</li>
+      <li>Azimuth only: before fitting the L onto the shaft, clamp the shaft collar just below where the lower bearing will sit. It carries the weight.</li>
+    </ol>
+    <p class="note">Bar lengths, bearing heights and the base layout come from the CAD export (STEP). The telescope tube wasn't in it, so its size (900 mm long, Ø145 mm) comes from the earlier Fusion 360 design.</p>
+  </section>
+
+  <section>
+    <h2>Taking it in the car</h2>
+    <p>Split it into three pieces that come apart in about a minute, without tools. Turn on <b>Pack for transport</b> in the model to see them laid out, with their sizes.</p>
+    <ol class="pieces">
+      <li><b>Telescope.</b> Its rings sit on a standard Vixen dovetail bar, and a saddle on the altitude coupling clamps it with one knob. Undo the knob and the tube slides out. It travels in its bag or box.</li>
+      <li><b>Mount head</b> (the L with bearings, shafts, motors, belts and electronics case). Four thumb screws hold its azimuth coupling to the base: undo them and lift it off. Leave the bearings assembled so they keep their preload. A plastic crate with some foam protects the printed pulleys and belts.</li>
+      <li><b>Base.</b> The T stays in one piece with its plate, and lies flat in the trunk.</li>
+    </ol>
+    <p>Putting it back doesn't need to be precise: the two-star alignment at the start of each night absorbs any small shift. One plug for power between the head and the battery keeps the cabling to a single connection.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Transport extras</th><th scope="col">Qty</th><th scope="col">≈ Price</th><th scope="col">Source</th></tr></thead>
+        <tbody>
+          <tr data-part="saddle"><td>Vixen-style dovetail saddle</td><td class="n">1</td><td class="n">€15–25</td><td><span class="src buy">Buy</span></td></tr>
+          <tr data-part="tube"><td>Vixen dovetail bar, about 30 cm</td><td class="n">1</td><td class="n">€10–15</td><td><span class="src buy">Buy</span></td></tr>
+          <tr data-part="azcpl"><td>M6 knurled thumb screws (DIN 464)</td><td class="n">4</td><td class="n">€4</td><td><span class="src buy">Buy</span></td></tr>
+          <tr><td>Plastic crate and foam for the head</td><td class="n">1</td><td class="n">€10–20</td><td><span class="src buy">Buy</span></td></tr>
+          <tr><td>Panel power connector (GX16 or XT60)</td><td class="n">1</td><td class="n">€3</td><td><span class="src buy">Buy</span></td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="2">Total</td><td class="n" colspan="2">≈ €40–65</td></tr></tfoot>
+      </table>
+    </div>
+    <p class="note">If the head is too tall for the car, the arm can be made removable too: replace the corner bracket's bolts with knob bolts. The alignment again absorbs the small differences each time.</p>
+    <p class="note warn"><b>Bearing plate moved toward the crossbar.</b> In the current build the azimuth axis is in the middle of the stem, with only about 7.5 cm to spare toward the two long sides of the triangle of feet. With the plate 8 cm closer to the crossbar, the axis sits near the middle of that triangle, with about 11 cm of margin in every direction. Since the plate and blocks are held by T-nuts in the stem, this only means sliding them along it.</p>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function () {
+  var stage = document.getElementById('stage');
+  var canvas = document.getElementById('cv');
+  if (!window.THREE || !THREE.OrbitControls) {
+    var f = document.createElement('div'); f.className = 'fail';
+    f.textContent = 'The 3D view could not load. Check your connection and reload the page.';
+    stage.appendChild(f); return;
+  }
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function tok(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+  // ---------- renderer, camera, lights ----------
+  var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(0x000000, 0);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(32, 1, 5, 20000);
+  var controls = new THREE.OrbitControls(camera, canvas);
+  controls.enableDamping = true; controls.dampingFactor = 0.1;
+  controls.minDistance = 120; controls.maxDistance = 6000; controls.screenSpacePanning = true;
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x7d8896, 0.75));
+  var l1 = new THREE.DirectionalLight(0xffffff, 0.75); l1.position.set(700, 1300, 900); scene.add(l1);
+  var l2 = new THREE.DirectionalLight(0xffffff, 0.3); l2.position.set(-900, 300, -700); scene.add(l2);
+
+  // ---------- materials (registered so the theme can recolour them) ----------
+  var TOK = { ground: '--v-ground', steel: '--v-steel', printed: '--v-printed', alu: '--v-alu', yours: '--v-yours', tubein: '--v-tubein',
+    motor: '--v-motor', motorcap: '--v-motorcap', base: '--v-base', dark: '--v-dark', belt: '--v-belt', hole: '--v-hole' };
+  var mats = [];
+  function mat(key, extra) {
+    var metal = (key === 'steel' || key === 'dark' || key === 'motorcap') ? 0.35 : 0.05;
+    var m = new THREE.MeshStandardMaterial({ metalness: metal, roughness: key === 'printed' ? 0.75 : 0.5 });
+    if (extra) for (var k in extra) m[k] = extra[k];
+    m.userData.key = key; mats.push(m); return m;
+  }
+  var edgeMat = new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28 });
+  var axisMat = new THREE.LineDashedMaterial({ color: 0x7a8594, dashSize: 14, gapSize: 8 });
+
+  // ---------- parts registry ----------
+  var parts = {};
+  function P(id, name, src, srcLabel, desc) { parts[id] = { id: id, name: name, src: src, srcLabel: srcLabel, desc: desc, meshes: [] }; }
+  P('L', 'L (45×90 bars, existing)', 'yours', 'Existing', 'As in the current build: the 380 mm bar lies flat, centred on the azimuth axis, and the 620 mm arm stands on its end with the corner bracket. The only change is one Ø24 mm hole through the 45 mm thickness of each bar. Turn on "See through aluminium" to see them.');
+  P('tube', 'Telescope (900 mm) and rings, on a Vixen dovetail bar', 'yours', 'Existing + buy', 'Over the bar, as in the current build. The rings bolt onto a standard Vixen dovetail bar: slide it in the saddle to balance the tube, or slide it out for transport.');
+  P('saddle', 'Vixen-style dovetail saddle', 'buy', 'Buy', 'Bolted to the altitude flange coupling on the inner side of the arm. One knob clamps the dovetail bar.');
+  P('base', 'T base (two 350 mm 30×60 bars, existing)', 'yours', 'Existing', 'Both bars stand on edge, as in the current build. The 95×70 plate and its two 32.5 mm blocks now sit 8 cm closer to the crossbar than in the current build (slide their T-nuts along the stem), and carry the azimuth flange coupling.');
+  P('board', 'Electronics case (existing)', 'yours', 'Existing', 'Moved lower on the outer face of the arm, because the outer altitude bearing and pulley now sit where it was.');
+  P('altbrg', '2 × flange bearing UCFL204GP (Gopart, Kramp), altitude', 'buy', 'Buy', 'Cast iron, 113 × 60 mm, 33.3 mm tall, with a grease nipple and two set screws. One on each wide face of the arm, 120 mm below its top like the current case. Each is turned 30° so its two M8 bolts (with large washers, as the holes are 12 mm) land in T-nuts in the two slots. Clamped toward each other, they leave no play.');
+  P('azbrg', '2 × flange bearing UCFL204GP (Gopart, Kramp), azimuth', 'buy', 'Buy', 'Same bearing, above and below the middle of the 380 mm bar, turned 30° the same way. They turn with the L around the fixed shaft.');
+  P('altshaft', '20 mm steel shaft, about 200 mm, altitude', 'buy', 'Buy', 'Turns with the tube. The set screws of both bearings lock it.');
+  P('azshaft', '20 mm steel shaft, about 200 mm, azimuth', 'buy', 'Buy', 'Stands in the flange coupling on the base plate and never turns. The L turns around it.');
+  P('altcpl', 'Rigid flange coupling 20 mm, altitude', 'buy', 'Buy', 'Clamps the inner end of the shaft. The dovetail saddle bolts to its flange.');
+  P('azcpl', 'Rigid flange coupling 20 mm, azimuth', 'buy', 'Buy', 'Holds the shaft upright on the existing 95×70 plate. Four M6 thumb screws hold it down, so the whole mount head lifts off without tools.');
+  P('azcollar', 'Shaft collar 20 × 32 × 14 mm (Kramp "stelring")', 'buy', 'Buy', 'The lower bearing rests on it, so it carries the weight of everything above.');
+  P('altpul', 'Large GT2 pulley, altitude', 'print', 'Print', 'On the outer side of the arm, clamped on the shaft. It no longer carries the tube: the saddle does.');
+  P('azpul', 'Ø159 mm GT2 pulley, azimuth (existing)', 'print', 'Existing + print', 'The existing 250-tooth pulley, now clamped on the fixed shaft with a printed 20 mm hub. The motor on the L walks around it.');
+  P('altmot', 'Altitude motor on a printed bracket', 'print', 'Existing + print', 'Moved to the outer face of the arm, 200 mm below the shaft. Slotted holes allow sliding it down to tighten the belt.');
+  P('azmot', 'Azimuth motor on a printed bracket', 'print', 'Existing + print', 'Moved from the base to under the far end of the bar, so it turns with the L. The electronics case is already on the arm, so only the power cable crosses the turning joint.');
+  P('belts', 'Closed GT2 belts', 'buy', 'Buy', 'Choose the length once the pulleys are printed. The slotted brackets take up the difference.');
+
+  function addMesh(parent, geom, key, partId, opts) {
+    opts = opts || {};
+    var extra = {};
+    if (opts.side !== undefined) extra.side = opts.side;
+    var m = new THREE.Mesh(geom, mat(key, extra));
+    m.userData.part = partId;
+    if (partId) parts[partId].meshes.push(m);
+    if (!opts.noEdges) m.add(new THREE.LineSegments(new THREE.EdgesGeometry(geom, 28), edgeMat));
+    parent.add(m); return m;
+  }
+  function G(parent, x, y, z) { var g = new THREE.Group(); if (x !== undefined) g.position.set(x, y, z); parent.add(g); return g; }
+
+  // ---------- geometry helpers (mm) ----------
+  function cylZ(r, h, z0, seg) { var g = new THREE.CylinderGeometry(r, r, h, seg || 40); g.rotateX(Math.PI / 2); g.translate(0, 0, z0 + h / 2); return g; }
+  function cylY(r, h, y0, seg) { var g = new THREE.CylinderGeometry(r, r, h, seg || 40); g.translate(0, y0 + h / 2, 0); return g; }
+  function cylX(r, h, x0, seg) { var g = new THREE.CylinderGeometry(r, r, h, seg || 40); g.rotateZ(-Math.PI / 2); g.translate(x0 + h / 2, 0, 0); return g; }
+  function boxAt(sx, sy, sz, x, y, z) { var g = new THREE.BoxGeometry(sx, sy, sz); g.translate(x, y, z); return g; }
+  function hexZ(r, h, x, y, z0) { var g = new THREE.CylinderGeometry(r, r, h, 6); g.rotateX(Math.PI / 2); g.translate(x, y, z0 + h / 2); return g; }
+  function basisQ(xv, zv) {
+    var x = new THREE.Vector3(xv[0], xv[1], xv[2]), z = new THREE.Vector3(zv[0], zv[1], zv[2]);
+    var y = new THREE.Vector3().crossVectors(z, x);
+    return new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
+  }
+
+  // T-slot profile, W × 2W (45×90 or 30×60), W along u, H along v
+  function profileShape(W, H) {
+    var k = W / 45, hw = W / 2, hh = H / 2, o = 5 * k, d1 = 3 * k, cw = 10 * k, d2 = 12 * k, q = H / 4, pts = [];
+    var faces = [
+      { c: [0, -hh], t: [1, 0], n: [0, -1], half: hw, slots: [0] },
+      { c: [hw, 0], t: [0, 1], n: [1, 0], half: hh, slots: [-q, q] },
+      { c: [0, hh], t: [-1, 0], n: [0, 1], half: hw, slots: [0] },
+      { c: [-hw, 0], t: [0, -1], n: [-1, 0], half: hh, slots: [-q, q] }
+    ];
+    faces.forEach(function (f) {
+      function p(a, b) { pts.push([f.c[0] + f.t[0] * a - f.n[0] * b, f.c[1] + f.t[1] * a - f.n[1] * b]); }
+      p(-f.half, 0);
+      f.slots.forEach(function (s) {
+        p(s - o, 0); p(s - o, d1); p(s - cw, d1); p(s - cw, d2); p(s + cw, d2); p(s + cw, d1); p(s + o, d1); p(s + o, 0);
+      });
+    });
+    var sh = new THREE.Shape();
+    pts.forEach(function (q, i) { if (i) sh.lineTo(q[0], q[1]); else sh.moveTo(q[0], q[1]); });
+    [-q, q].forEach(function (v) { var h = new THREE.Path(); h.absarc(0, v, 4.2 * k, 0, Math.PI * 2, true); sh.holes.push(h); });
+    return sh;
+  }
+  function extrusion(len, W, H) { return new THREE.ExtrudeGeometry(profileShape(W || 45, H || 90), { depth: len, bevelEnabled: false, curveSegments: 12 }); }
+
+  // UCFL204 flange outline: convex hull of three circles, with the shaft hole
+  function hull(points) {
+    points.sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
+    function cross(o, a, b) { return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]); }
+    var lo = [], up = [], i;
+    for (i = 0; i < points.length; i++) { while (lo.length >= 2 && cross(lo[lo.length - 2], lo[lo.length - 1], points[i]) <= 0) lo.pop(); lo.push(points[i]); }
+    for (i = points.length - 1; i >= 0; i--) { while (up.length >= 2 && cross(up[up.length - 2], up[up.length - 1], points[i]) <= 0) up.pop(); up.push(points[i]); }
+    up.pop(); lo.pop(); return lo.concat(up);
+  }
+  var ucflGeom = (function () {
+    var pts = [];
+    function add(cx, r) { for (var i = 0; i < 64; i++) { var a = i / 64 * Math.PI * 2; pts.push([cx + r * Math.cos(a), r * Math.sin(a)]); } }
+    add(0, 30); add(-45, 11.5); add(45, 11.5);
+    var h = hull(pts), s = new THREE.Shape();
+    h.forEach(function (q, i) { if (i) s.lineTo(q[0], q[1]); else s.moveTo(q[0], q[1]); });
+    [[0, 10.5], [-45, 6], [45, 6]].forEach(function (c) { var hole = new THREE.Path(); hole.absarc(c[0], 0, c[1], 0, Math.PI * 2, true); s.holes.push(hole); });
+    return new THREE.ExtrudeGeometry(s, { depth: 11, bevelEnabled: false, curveSegments: 24 });
+  })();
+
+  // Flange bearing: housing (bolted to the extrusion) + inner ring (locked to the shaft)
+  function flangeBearing(partId, housingParent, hPos, innerParent, iPos, q) {
+    var hg = new THREE.Group(); hg.position.copy(hPos); hg.quaternion.copy(q); housingParent.add(hg);
+    addMesh(hg, ucflGeom.clone(), 'steel', partId);
+    addMesh(hg, cylZ(28, 14.5, 11, 48), 'steel', partId);
+    [-45, 45].forEach(function (x) {
+      var w = cylZ(12, 2, 11, 28); w.translate(x, 0, 0); addMesh(hg, w, 'dark', partId, { noEdges: true });
+      addMesh(hg, hexZ(7.5, 5.3, x, 0, 13), 'dark', partId);
+    });
+    // grease nipple on the housing
+    var gn = new THREE.CylinderGeometry(3, 3, 6, 12); gn.translate(0, 30, 18); addMesh(hg, gn, 'dark', partId, { noEdges: true });
+    var gh = new THREE.CylinderGeometry(4.5, 4.5, 3, 6); gh.translate(0, 34.5, 18); addMesh(hg, gh, 'dark', partId, { noEdges: true });
+    var gt = new THREE.SphereGeometry(2.6, 12, 8); gt.translate(0, 38.5, 18); addMesh(hg, gt, 'dark', partId, { noEdges: true });
+    // inner ring sticks out 7.8 mm past the housing (33.3 mm overall), with two set screws 120° apart
+    var ig = new THREE.Group(); ig.position.copy(iPos); ig.quaternion.copy(q); innerParent.add(ig);
+    addMesh(ig, cylZ(14.5, 7.8, 25.5, 40), 'steel', partId);
+    [Math.PI / 6, 5 * Math.PI / 6].forEach(function (a) {
+      var ss = new THREE.CylinderGeometry(3, 3, 5, 12); ss.rotateZ(a - Math.PI / 2); ss.translate(16.5 * Math.cos(a), 16.5 * Math.sin(a), 29.4);
+      addMesh(ig, ss, 'dark', partId, { noEdges: true });
+    });
+    return { housing: hg, inner: ig };
+  }
+  function coupling(partId, parent, pos, q, knobs) {
+    var g = new THREE.Group(); g.position.copy(pos); g.quaternion.copy(q); parent.add(g);
+    addMesh(g, cylZ(40, 12, 0, 56), 'steel', partId);
+    addMesh(g, cylZ(20, 22, 12, 40), 'steel', partId);
+    for (var i = 0; i < 4; i++) {
+      var a = Math.PI / 4 + i * Math.PI / 2;
+      if (knobs) { var kn = cylZ(6.5, 8, 12, 24); kn.translate(28 * Math.cos(a), 28 * Math.sin(a), 0); addMesh(g, kn, 'motor', partId); }
+      else addMesh(g, hexZ(5.5, 5, 28 * Math.cos(a), 28 * Math.sin(a), 12), 'dark', partId, { noEdges: true });
+    }
+    var ss = new THREE.CylinderGeometry(2.6, 2.6, 7, 12); ss.translate(0, 21.5, 24); addMesh(g, ss, 'dark', partId, { noEdges: true });
+    return g;
+  }
+  function bigPulley(partId, parent, pos, q, hubDir, hubLen) {
+    var g = new THREE.Group(); g.position.copy(pos); g.quaternion.copy(q); parent.add(g);
+    addMesh(g, cylZ(80, 9, -4.5, 120), 'printed', partId);
+    var ring = new THREE.Shape(); ring.absarc(0, 0, 84, 0, Math.PI * 2, false);
+    var rh = new THREE.Path(); rh.absarc(0, 0, 76, 0, Math.PI * 2, true); ring.holes.push(rh);
+    [-6, 4.5].forEach(function (z) { var fg = new THREE.ExtrudeGeometry(ring, { depth: 1.5, bevelEnabled: false, curveSegments: 60 }); fg.translate(0, 0, z); addMesh(g, fg, 'printed', partId); });
+    var hl = hubLen || 8;
+    addMesh(g, hubDir > 0 ? cylZ(20, hl, 4.5, 40) : cylZ(20, hl, -4.5 - hl, 40), 'printed', partId);
+    for (var i = 0; i < 5; i++) {
+      var a = i / 5 * Math.PI * 2, c = cylZ(14, 9.4, -4.7, 32); c.translate(48 * Math.cos(a), 48 * Math.sin(a), 0);
+      addMesh(g, c, 'hole', partId, { noEdges: true });
+    }
+    return g;
+  }
+  function stepper(partId, parent, pos, q) {
+    var g = new THREE.Group(); g.position.copy(pos); g.quaternion.copy(q); parent.add(g);
+    addMesh(g, boxAt(42, 42, 8, 0, 0, 4), 'motorcap', partId);
+    addMesh(g, boxAt(42, 42, 24, 0, 0, 20), 'motor', partId);
+    addMesh(g, boxAt(42, 42, 8, 0, 0, 36), 'motorcap', partId);
+    addMesh(g, cylZ(11, 2, -2, 32), 'motorcap', partId, { noEdges: true });
+    addMesh(g, cylZ(2.5, 22, -22, 16), 'steel', partId, { noEdges: true });
+    addMesh(g, cylZ(6.4, 9, -14.5, 28), 'steel', partId);
+    addMesh(g, cylZ(8, 1, -15.5, 28), 'steel', partId, { noEdges: true });
+    addMesh(g, cylZ(8, 1, -5.5, 28), 'steel', partId, { noEdges: true });
+    addMesh(g, cylZ(7.5, 6.5, -22, 28), 'steel', partId);
+    return g;
+  }
+  // Belt as a ribbon around two pulleys (2D path mapped into 3D)
+  function beltPath(c1, R, c2, r) {
+    var dx = c2[0] - c1[0], dy = c2[1] - c1[1], d = Math.hypot(dx, dy), base = Math.atan2(dy, dx), phi = Math.acos((R - r) / d), pts = [], i, a;
+    for (i = 0; i <= 18; i++) { a = base + phi - 2 * phi * i / 18; pts.push([c2[0] + r * Math.cos(a), c2[1] + r * Math.sin(a)]); }
+    for (i = 0; i <= 140; i++) { a = base - phi - (2 * Math.PI - 2 * phi) * i / 140; pts.push([c1[0] + R * Math.cos(a), c1[1] + R * Math.sin(a)]); }
+    return pts;
+  }
+  function belt(parent, c1, R, c2, r, map, wv) {
+    var pts = beltPath(c1, R, c2, r), pos = [], idx = [], n = pts.length;
+    pts.forEach(function (p) { var v = map(p[0], p[1]); pos.push(v.x + wv.x * 3, v.y + wv.y * 3, v.z + wv.z * 3, v.x - wv.x * 3, v.y - wv.y * 3, v.z - wv.z * 3); });
+    for (var i = 0; i < n; i++) { var j = (i + 1) % n, a = 2 * i, b = a + 1, c = 2 * j, d = c + 1; idx.push(a, b, c, b, d, c); }
+    var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+    return addMesh(parent, g, 'belt', 'belts', { noEdges: true, side: THREE.DoubleSide });
+  }
+  function axisLine(parent, a, b) {
+    var g = new THREE.BufferGeometry().setFromPoints([a, b]); var l = new THREE.Line(g, axisMat); l.computeLineDistances(); parent.add(l); return l;
+  }
+
+  // ---------- model ----------
+  // Ground
+  (function () { var gg = new THREE.CircleGeometry(3200, 72); gg.rotateX(-Math.PI / 2); gg.translate(0, -0.6, 0); var gmat = new THREE.MeshBasicMaterial(); gmat.userData.key = 'ground'; mats.push(gmat); scene.add(new THREE.Mesh(gg, gmat)); })();
+
+  // T base, from the STEP export: two 350 mm 30×60 bars on edge; the azimuth axis is at the middle of the stem
+  var baseG = G(scene);
+  (function () {
+    var cross = extrusion(350, 30, 60); cross.translate(110, 30, -175); addMesh(baseG, cross, 'alu', 'base');
+    var stem = extrusion(350, 30, 60); stem.rotateY(Math.PI / 2); stem.translate(-255, 30, 0); addMesh(baseG, stem, 'alu', 'base');
+    [1, -1].forEach(function (sg) {
+      addMesh(baseG, boxAt(60, 30, 32.5, 0, 45, sg * 31.25), 'alu', 'base');
+      addMesh(baseG, boxAt(4, 57, 57, 93, 28.5, sg * 43.5), 'dark', 'base');
+      addMesh(baseG, boxAt(57, 57, 4, 66.5, 28.5, sg * 17), 'dark', 'base');
+    });
+    addMesh(baseG, boxAt(70, 9.5, 95, 0, 64.75, 0), 'base', 'base');
+  })();
+
+  // Mount head (lifts off the base): fixed azimuth parts + the turning L
+  var headG = G(scene);
+  var fixedG = G(headG);
+  var qUp = basisQ([1, 0, 0], [0, 1, 0]), qDown = basisQ([1, 0, 0], [0, -1, 0]);
+  var azCplG = G(fixedG); coupling('azcpl', azCplG, new THREE.Vector3(0, 69.5, 0), qUp, true);
+  var azPulG = G(fixedG); bigPulley('azpul', azPulG, new THREE.Vector3(0, 117.5, 0), qUp, -1, 8);
+  var azShaftG = G(fixedG); addMesh(azShaftG, cylY(10, 176, 82, 32), 'steel', 'azshaft');
+  var azCollarG = G(fixedG);
+  addMesh(azCollarG, cylY(16, 14, 125.5, 40), 'steel', 'azcollar');
+  (function () { var c = new THREE.CylinderGeometry(2.6, 2.6, 7, 12); c.rotateZ(Math.PI / 2); c.translate(17.5, 132.5, 0); addMesh(azCollarG, c, 'dark', 'azcollar', { noEdges: true }); })();
+  var azInLowG = G(fixedG), azInUpG = G(fixedG);
+  axisLine(fixedG, new THREE.Vector3(0, -10, 0), new THREE.Vector3(0, 300, 0));
+
+  // The L (turns in azimuth): 380 mm bar lying flat and centred on the axis, 620 mm arm standing on its end
+  var BAR_Y0 = 172.8, BAR_Y1 = 217.8, ARM_X0 = 145, ARM_X1 = 190, ALT_Y = 717.8, ALT_PX = (ARM_X0 + ARM_X1) / 2;
+  var LG = G(headG);
+  var legArmG = G(LG);
+  var leg = extrusion(380); leg.applyMatrix4(new THREE.Matrix4().set(0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1)); leg.translate(-190, (BAR_Y0 + BAR_Y1) / 2, 0); addMesh(legArmG, leg, 'alu', 'L');
+  var arm = extrusion(620); arm.rotateX(-Math.PI / 2); arm.translate(ALT_PX, BAR_Y1, 0); addMesh(legArmG, arm, 'alu', 'L');
+  (function () {
+    var b = new THREE.Shape(); b.moveTo(ARM_X0 - 90, BAR_Y1); b.lineTo(ARM_X0, BAR_Y1); b.lineTo(ARM_X0, BAR_Y1 + 90); b.lineTo(ARM_X0 - 5, BAR_Y1 + 90); b.lineTo(ARM_X0 - 85, BAR_Y1 + 5); b.lineTo(ARM_X0 - 90, BAR_Y1 + 5); b.lineTo(ARM_X0 - 90, BAR_Y1);
+    var bg = new THREE.ExtrudeGeometry(b, { depth: 88, bevelEnabled: false }); bg.translate(0, 0, -44); addMesh(legArmG, bg, 'dark', 'L');
+  })();
+  var holes = [];
+  (function () {
+    holes.push(addMesh(legArmG, cylY(12, 45, BAR_Y0, 32), 'hole', 'L', { noEdges: true }));
+    var h2 = cylX(12, 45, ARM_X0, 32); h2.translate(0, ALT_Y, 0); holes.push(addMesh(legArmG, h2, 'hole', 'L', { noEdges: true }));
+    holes.forEach(function (h) { h.visible = false; });
+  })();
+  var azHLowG = G(LG), azHUpG = G(LG);
+  var q30x = [Math.cos(Math.PI / 6), 0, Math.sin(Math.PI / 6)];
+  var azLow = flangeBearing('azbrg', azHLowG, new THREE.Vector3(0, BAR_Y0, 0), azInLowG, new THREE.Vector3(0, BAR_Y0, 0), basisQ(q30x, [0, -1, 0]));
+  var azUp = flangeBearing('azbrg', azHUpG, new THREE.Vector3(0, BAR_Y1, 0), azInUpG, new THREE.Vector3(0, BAR_Y1, 0), basisQ(q30x, [0, 1, 0]));
+  var azMotG = G(LG);
+  addMesh(azMotG, boxAt(60, 5.3, 60, -132, BAR_Y0 - 2.65, 0), 'printed', 'azmot');
+  stepper('azmot', azMotG, new THREE.Vector3(-132, 127.5, 0), qUp);
+  var azBeltG = G(LG);
+  belt(azBeltG, [0, 0], 80.8, [-132, 0], 7.2, function (a, b) { return new THREE.Vector3(a, 117.5, b); }, new THREE.Vector3(0, 1, 0));
+
+  // Altitude: shaft through the arm's 45 mm thickness, 120 mm below its top; pulley and motor outside, tube inside over the bar
+  var q30yz = [0, Math.cos(Math.PI / 6), Math.sin(Math.PI / 6)];
+  var altHAG = G(LG), altHBG = G(LG);
+  var altMotG = G(LG);
+  addMesh(altMotG, boxAt(6, 84, 70, ARM_X1 + 3, ALT_Y - 200, 0), 'printed', 'altmot');
+  stepper('altmot', altMotG, new THREE.Vector3(ARM_X1 + 46, ALT_Y - 200, 0), basisQ([0, 1, 0], [-1, 0, 0]));
+  var altBeltG = G(LG);
+  belt(altBeltG, [ALT_Y, 0], 80.8, [ALT_Y - 200, 0], 7.2, function (a, b) { return new THREE.Vector3(ARM_X1 + 56, a, b); }, new THREE.Vector3(1, 0, 0));
+  axisLine(LG, new THREE.Vector3(-320, ALT_Y, 0), new THREE.Vector3(330, ALT_Y, 0));
+  var boardG = G(LG);
+  addMesh(boardG, boxAt(73, 150, 90, ARM_X1 + 36.5, 375, 0), 'base', 'board');
+  addMesh(boardG, boxAt(2, 110, 70, ARM_X1 + 74, 380, 0), 'motor', 'board', { noEdges: true });
+
+  // Altitude group (turns with the tube), pivot on the altitude axis
+  var altG = G(LG, ALT_PX, ALT_Y, 0);
+  var altShaftG = G(altG); addMesh(altShaftG, cylX(10, 170, 86 - ALT_PX, 32), 'steel', 'altshaft');
+  var altInAG = G(altG), altInBG = G(altG);
+  var altA = flangeBearing('altbrg', altHAG, new THREE.Vector3(ARM_X0, ALT_Y, 0), altInAG, new THREE.Vector3(ARM_X0 - ALT_PX, 0, 0), basisQ(q30yz, [-1, 0, 0]));
+  var altB = flangeBearing('altbrg', altHBG, new THREE.Vector3(ARM_X1, ALT_Y, 0), altInBG, new THREE.Vector3(ARM_X1 - ALT_PX, 0, 0), basisQ(q30yz, [1, 0, 0]));
+  var altCplG = G(altG); coupling('altcpl', altCplG, new THREE.Vector3(74 - ALT_PX, 0, 0), basisQ([0, 1, 0], [1, 0, 0]));
+  var altPulG = G(altG); bigPulley('altpul', altPulG, new THREE.Vector3(ARM_X1 + 56 - ALT_PX, 0, 0), basisQ([0, 1, 0], [1, 0, 0]), -1, 18);
+  var saddleG = G(altG);
+  addMesh(saddleG, boxAt(20, 76, 100, 64 - ALT_PX, 0, 0), 'steel', 'saddle');
+  (function () { var st = cylY(3, 14, 38, 12); st.translate(64 - ALT_PX, 0, 0); addMesh(saddleG, st, 'steel', 'saddle', { noEdges: true }); var kn = cylY(11, 14, 52, 24); kn.translate(64 - ALT_PX, 0, 0); addMesh(saddleG, kn, 'motor', 'saddle'); })();
+  var tubeWG = G(altG);
+  var tubePackG = G(tubeWG);
+  var TUBE_X = -46 - ALT_PX;
+  var tubeG = G(tubePackG, TUBE_X, 0, 0);
+  (function () {
+    var tg = new THREE.CylinderGeometry(65, 65, 900, 72, 1, true); tg.rotateX(Math.PI / 2);
+    addMesh(tubeG, tg, 'yours', 'tube', { side: THREE.FrontSide });
+    addMesh(tubeG, tg.clone(), 'tubein', 'tube', { side: THREE.BackSide, noEdges: true });
+    var cap = new THREE.CircleGeometry(65, 72); cap.rotateY(Math.PI); cap.translate(0, 0, -450); addMesh(tubeG, cap, 'tubein', 'tube', { noEdges: true });
+    var band = new THREE.CylinderGeometry(66.5, 66.5, 24, 72, 1, true); band.rotateX(Math.PI / 2); band.translate(0, 0, 438); addMesh(tubeG, band, 'motor', 'tube', { noEdges: true, side: THREE.DoubleSide });
+    var foc = cylY(17, 46, 62, 32); foc.translate(0, 0, 330); addMesh(tubeG, foc, 'motor', 'tube');
+    var ann = new THREE.Shape(); ann.absarc(0, 0, 71, 0, Math.PI * 2, false); var hp = new THREE.Path(); hp.absarc(0, 0, 65, 0, Math.PI * 2, true); ann.holes.push(hp);
+    [-140, 120].forEach(function (z) {
+      var rg = new THREE.ExtrudeGeometry(ann, { depth: 20, bevelEnabled: false, curveSegments: 48 }); rg.translate(0, 0, z); addMesh(tubeG, rg, 'base', 'tube');
+      addMesh(tubeG, boxAt(14, 30, 24, 78, 0, z + 10), 'base', 'tube');
+    });
+    var dv = new THREE.Shape(); dv.moveTo(100, -22); dv.lineTo(100, 22); dv.lineTo(85, 15.5); dv.lineTo(85, -15.5); dv.lineTo(100, -22);
+    var dg = new THREE.ExtrudeGeometry(dv, { depth: 300, bevelEnabled: false }); dg.translate(0, 0, -150);
+    addMesh(tubeG, dg, 'base', 'tube');
+  })();
+
+  // ---------- labels ----------
+  var labelBox = document.getElementById('labels');
+  var labels = [];
+  function label(text, parent, x, y, z, detail) {
+    var o = new THREE.Object3D(); o.position.set(x, y, z); parent.add(o);
+    var el = document.createElement('div'); el.className = 'lbl'; el.textContent = text; labelBox.appendChild(el);
+    labels.push({ o: o, el: el, detail: detail || false });
+  }
+  label('2 × flange bearing', altB.housing, 0, 0, 52);
+  label('2 × flange bearing', azUp.housing, 75, 0, 20);
+  label('printed pulley', altPulG, ARM_X1 + 56 - ALT_PX, 96, 0);
+  label('pulley (fixed)', azPulG, 70, 117.5, 95, true);
+  label('motor', altMotG, ARM_X1 + 82, ALT_Y - 200, 0);
+  label('motor (on the L)', azMotG, -132, 100, 60);
+  label('shaft collar', azCollarG, -70, 132, 20, true);
+  label('flange coupling → base plate', azCplG, -120, 75, 40, true);
+  label('flange coupling', altCplG, 97 - ALT_PX, 60, 0, true);
+  label('existing L', legArmG, -150, 195, -62);
+  label('shaft (fixed)', azShaftG, 0, 272, 0, true);
+  label('shaft (turns)', altShaftG, 96, 26, 0, true);
+  label('T base', baseG, 110, 80, 150, 'far');
+  label('dovetail saddle', saddleG, 64 - ALT_PX, 72, 0, true);
+  label('thumb screws', azCplG, 60, 82, -45, true);
+  label('electronics case', boardG, ARM_X1 + 92, 375, 0);
+
+  // ---------- explode (pull apart) ----------
+  var ex = [];
+  function E(obj, x, y, z) { ex.push({ o: obj, v: new THREE.Vector3(x, y, z) }); }
+  E(azCplG, 0, 30, 0); E(azPulG, 0, 70, 0); E(azShaftG, 0, 110, 0); E(azCollarG, 0, 150, 0); E(azInLowG, 0, 200, 0); E(azInUpG, 0, 330, 0);
+  E(LG, 0, 260, 0); E(azHLowG, 0, -60, 0); E(azHUpG, 0, 70, 0); E(azMotG, 0, -100, 0);
+  E(altHAG, -60, 0, 0); E(altHBG, 60, 0, 0); E(altMotG, 115, 0, 0); E(boardG, 60, 0, 0);
+  E(altInAG, -60, 0, 0); E(altInBG, 60, 0, 0); E(altCplG, -125, 0, 0); E(saddleG, -165, 0, 0); E(tubeWG, -215, 0, 0); E(altPulG, 130, 0, 0);
+  var exT = 0, exTarget = 0;
+  function applyExplode() {
+    ex.forEach(function (e) { e.o.position.copy(e.v).multiplyScalar(exT); });
+    var show = exT < 0.01; azBeltG.visible = show; altBeltG.visible = show;
+  }
+
+  // ---------- theme ----------
+  function applyTheme() {
+    mats.forEach(function (m) { var c = tok(TOK[m.userData.key]); if (c) m.color.set(c).convertSRGBToLinear(); });
+    var ax = tok('--v-axis'); if (ax) axisMat.color.set(ax).convertSRGBToLinear();
+    var cr = tok('--v-crate'); if (cr) crateMat.color.set(cr).convertSRGBToLinear();
+    selColor.set(tok('--v-select') || '#00a7c7').convertSRGBToLinear();
+    highlight();
+  }
+  var selColor = new THREE.Color();
+  var crateMat = new THREE.LineDashedMaterial({ color: 0x2f639e, dashSize: 16, gapSize: 9 });
+  try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme); } catch (e) {}
+  new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // ---------- see-through ----------
+  function setXray(on) {
+    mats.forEach(function (m) { if (m.userData.key === 'alu') { m.transparent = on; m.opacity = on ? 0.22 : 1; m.depthWrite = !on; m.needsUpdate = true; } });
+    holes.forEach(function (h) { h.visible = on; });
+  }
+
+  // ---------- selection ----------
+  var selected = null;
+  var info = document.getElementById('info');
+  function highlight() {
+    Object.keys(parts).forEach(function (id) {
+      parts[id].meshes.forEach(function (m) { m.material.emissive.copy(id === selected ? selColor : new THREE.Color(0)); m.material.emissiveIntensity = id === selected ? 0.55 : 0; });
+    });
+  }
+  function select(id) {
+    selected = id; highlight();
+    info.innerHTML = '';
+    var name = document.createElement('div'); name.className = 'name';
+    var desc = document.createElement('div'); desc.className = 'desc';
+    if (!id) { name.textContent = 'Tap any part to see what it is'; desc.textContent = 'Blue parts are bought, orange parts are 3D printed, grey and white are existing parts. Move the sliders to see what turns and what stays still.'; }
+    else {
+      var p = parts[id]; var t = document.createElement('span'); t.textContent = p.name; name.appendChild(t);
+      var s = document.createElement('span'); s.className = 'src ' + p.src; s.textContent = p.srcLabel; name.appendChild(s);
+      desc.textContent = p.desc;
+    }
+    info.appendChild(name); info.appendChild(desc);
+  }
+  var ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), down = null;
+  canvas.addEventListener('pointerdown', function (e) { down = [e.clientX, e.clientY]; });
+  canvas.addEventListener('pointerup', function (e) {
+    if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return;
+    var r = canvas.getBoundingClientRect();
+    ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    var pick = [];
+    Object.keys(parts).forEach(function (id) { parts[id].meshes.forEach(function (m) { if (m.visible && !(m.userData.part === 'L' && m.material.transparent)) pick.push(m); }); });
+    var hit = ray.intersectObjects(pick, false).filter(function (h) { var o = h.object; while (o) { if (o.visible === false) return false; o = o.parent; } return true; })[0];
+    select(hit ? hit.object.userData.part : null);
+  });
+
+  // ---------- camera views ----------
+  var fly = null;
+  function flyTo(target, pos) {
+    if (reduceMotion) { controls.target.copy(target); camera.position.copy(pos); fly = null; return; }
+    fly = { t0: performance.now(), fromT: controls.target.clone(), fromP: camera.position.clone(), toT: target, toP: pos };
+  }
+  var anchors = { whole: new THREE.Object3D(), alt: new THREE.Object3D(), az: new THREE.Object3D() };
+  anchors.whole.position.set(20, 430, 0); LG.add(anchors.whole);
+  anchors.alt.position.set(ARM_X1, ALT_Y, 0); LG.add(anchors.alt);
+  anchors.az.position.set(0, 160, 0); LG.add(anchors.az);
+  function view(name, instant) {
+    document.querySelectorAll('[data-view]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.view === name)); });
+    var tgt = new THREE.Vector3(); anchors[name].getWorldPosition(tgt);
+    var off = name === 'whole' ? new THREE.Vector3(1350, 650, -1250) : name === 'alt' ? new THREE.Vector3(560, 140, -380) : new THREE.Vector3(440, 200, 460);
+    if (exT > 0.5) off.multiplyScalar(name === 'whole' ? 1.3 : 1.7);
+    off.applyQuaternion(LG.quaternion);
+    if (instant) { controls.target.copy(tgt); camera.position.copy(tgt).add(off); fly = null; return; }
+    flyTo(tgt, tgt.clone().add(off));
+  }
+  function focusPart(id) {
+    var box = new THREE.Box3(); parts[id].meshes.forEach(function (m) { if (m.visible) box.expandByObject(m); });
+    if (box.isEmpty()) return;
+    var c = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3()).length();
+    var dir = camera.position.clone().sub(controls.target).normalize();
+    flyTo(c, c.clone().add(dir.multiplyScalar(Math.max(size * 2.2, 320))));
+  }
+  document.querySelectorAll('[data-view]').forEach(function (b) { b.addEventListener('click', function () { view(b.dataset.view); }); });
+  document.querySelectorAll('tr[data-part]').forEach(function (tr) {
+    tr.addEventListener('click', function () { select(tr.dataset.part); focusPart(tr.dataset.part); stage.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' }); });
+  });
+
+  // ---------- controls ----------
+  var slAz = document.getElementById('sl-az'), slAlt = document.getElementById('sl-alt');
+  function setAngles() {
+    LG.rotation.y = -slAz.value * Math.PI / 180;
+    altG.rotation.x = -slAlt.value * Math.PI / 180;
+    document.getElementById('o-az').textContent = slAz.value + '°';
+    document.getElementById('o-alt').textContent = slAlt.value + '°';
+  }
+  slAz.addEventListener('input', setAngles); slAlt.addEventListener('input', setAngles);
+  document.getElementById('tg-explode').addEventListener('change', function (e) { exTarget = e.target.checked ? 1 : 0; if (reduceMotion) exT = exTarget; });
+  document.getElementById('tg-xray').addEventListener('change', function (e) { setXray(e.target.checked); });
+  document.getElementById('tg-labels').addEventListener('change', function (e) { labelBox.classList.toggle('off', !e.target.checked); });
+
+  // ---------- pack for transport ----------
+  var packT = 0, packTarget = 0, saved = null, sizesDone = false;
+  var HEAD_OFF = new THREE.Vector3(950, -69.5, 0);
+  var TUBE_OFF = new THREE.Vector3(-560, 72, 0).sub(HEAD_OFF).sub(new THREE.Vector3(ALT_PX + TUBE_X, ALT_Y, 0));
+  var crate = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1)), crateMat);
+  crate.visible = false; scene.add(crate);
+  var packLabels = ['base', 'head', 'tube'].map(function (k) {
+    var o = new THREE.Object3D(); scene.add(o);
+    var el = document.createElement('div'); el.className = 'lbl pack'; labelBox.appendChild(el);
+    var L = { o: o, el: el, pack: true }; labels.push(L); return L;
+  });
+  function clamp01(x) { return Math.max(0, Math.min(1, x)); }
+  function boxOf(root, skip) {
+    var b = new THREE.Box3(); root.updateWorldMatrix(true, true);
+    root.traverse(function (o) { if (!o.isMesh) return; for (var p = o; p; p = p.parent) if (p === skip) return; b.expandByObject(o); });
+    return b;
+  }
+  function sizeText(b) {
+    var s = b.getSize(new THREE.Vector3());
+    return [s.x, s.y, s.z].map(function (n) { return Math.round(n / 10); }).sort(function (a, c) { return c - a; }).join(' × ') + ' cm';
+  }
+  function computeSizes() {
+    var bb = boxOf(baseG), hb = boxOf(headG, tubePackG), tb = boxOf(tubePackG);
+    [[bb, 'Base ≈ '], [hb, 'Mount head ≈ '], [tb, 'Telescope ≈ ']].forEach(function (x, i) {
+      var c = x[0].getCenter(new THREE.Vector3()); c.y = x[0].max.y + 60;
+      packLabels[i].o.position.copy(c); packLabels[i].el.textContent = x[1] + sizeText(x[0]);
+    });
+    var hs = hb.getSize(new THREE.Vector3()).addScalar(40);
+    crate.geometry.dispose(); crate.geometry = new THREE.EdgesGeometry(new THREE.BoxGeometry(hs.x, hs.y, hs.z));
+    crate.position.copy(hb.getCenter(new THREE.Vector3())); crate.computeLineDistances(); sizesDone = true;
+  }
+  function applyPack() {
+    var e1 = ease(clamp01(packT / 0.35)), e2 = ease(clamp01((packT - 0.35) / 0.65));
+    if (saved) { LG.rotation.y = -saved.az * (1 - e1) * Math.PI / 180; altG.rotation.x = -saved.alt * (1 - e1) * Math.PI / 180; }
+    headG.position.copy(HEAD_OFF).multiplyScalar(e2);
+    tubePackG.position.copy(TUBE_OFF).multiplyScalar(e2);
+    if (packT >= 1 && !sizesDone) computeSizes();
+    crate.visible = packT >= 1;
+  }
+  function packView() {
+    var tgt = new THREE.Vector3(290, 140, 0), tanH = Math.tan(16 * Math.PI / 180) * camera.aspect;
+    var d = Math.max(2600, 1250 / tanH), dir = new THREE.Vector3(0, 0.55, -0.83).normalize();
+    flyTo(tgt, tgt.clone().add(dir.multiplyScalar(d)));
+  }
+  var tgPack = document.getElementById('tg-pack'), tgExplode = document.getElementById('tg-explode');
+  tgPack.addEventListener('change', function () {
+    if (tgPack.checked) {
+      saved = { az: +slAz.value, alt: +slAlt.value };
+      tgExplode.checked = false; exTarget = 0; exT = 0; applyExplode();
+      slAz.disabled = slAlt.disabled = tgExplode.disabled = true;
+      document.querySelectorAll('[data-view]').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+      packTarget = 1; packView();
+    } else { packTarget = 0; }
+    if (reduceMotion) { packT = packTarget; applyPack(); if (packT === 0) unpacked(); }
+  });
+  function unpacked() { slAz.disabled = slAlt.disabled = tgExplode.disabled = false; saved = null; setAngles(); view('whole'); }
+
+  // ---------- size + loop ----------
+  function resize() {
+    var w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;
+    renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(stage);
+  var v = new THREE.Vector3();
+  function updateLabels() {
+    if (labelBox.classList.contains('off')) return;
+    var w = stage.clientWidth, h = stage.clientHeight;
+    labels.forEach(function (L) {
+      L.o.getWorldPosition(v);
+      var dist = v.distanceTo(camera.position), far = (L.detail === true && dist > 1150) || (L.detail === 'far' && dist < 1150);
+      var hide = L.pack ? packT < 1 : packT > 0;
+      v.project(camera);
+      var vis = !hide && !far && v.z < 1 && v.x > -1.1 && v.x < 1.1 && v.y > -1.1 && v.y < 1.1;
+      L.el.style.display = vis ? '' : 'none';
+      if (vis) L.el.style.transform = 'translate(' + ((v.x + 1) / 2 * w) + 'px,' + ((1 - v.y) / 2 * h) + 'px) translate(-50%,-50%)';
+    });
+  }
+  function ease(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+  var lastNow = 0;
+  function loop(now) {
+    requestAnimationFrame(loop);
+    var dt = lastNow ? Math.min(0.05, (now - lastNow) / 1000) : 0; lastNow = now;
+    if (packT !== packTarget) {
+      var step = dt / 1.8;
+      packT = packTarget > packT ? Math.min(packTarget, packT + step) : Math.max(packTarget, packT - step);
+      applyPack(); if (packT === 0) unpacked();
+    }
+    if (Math.abs(exT - exTarget) > 0.001) { exT += (exTarget - exT) * 0.12; if (Math.abs(exT - exTarget) < 0.002) exT = exTarget; applyExplode(); }
+    if (fly) {
+      var t = Math.min(1, (now - fly.t0) / 700), e = ease(t);
+      controls.target.lerpVectors(fly.fromT, fly.toT, e); camera.position.lerpVectors(fly.fromP, fly.toP, e);
+      if (t >= 1) fly = null;
+    }
+    controls.update();
+    renderer.render(scene, camera);
+    updateLabels();
+  }
+
+  setAngles(); applyExplode(); applyTheme(); resize();
+  view('whole', true);
+  canvas.addEventListener('pointerdown', function () { document.getElementById('hint').style.opacity = '0'; }, { once: true });
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
