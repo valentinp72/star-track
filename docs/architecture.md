@@ -78,18 +78,25 @@ calculations, so tracking continues when the phone is locked or disconnected.
 - Safety:
   - jog commands expire after about 200 ms if not repeated (dead-man);
   - losing the phone connection stops manual motion, not tracking;
-  - software limits for altitude and azimuth cable wrap.
+  - software limits for altitude. Azimuth needs no cable-wrap limit, because no
+    cable crosses the azimuth joint (see [Power](#power)).
 
 ## Electrical
+
+Schematic: [`electronics/star-track.pdf`](../electronics/star-track.pdf) (KiCad 7
+project in [`electronics/`](../electronics/)). No touch screen: the phone is the
+display.
+
+![Schematic](../electronics/star-track.png)
 
 ### Emergency stop (works without firmware)
 
 For drivers with an active-low enable input (A4988, DRV8825, TMC2209):
 
 ```
-ESP32 EN_OUT (LOW = enable) ──[E-stop, NC contact]──┬── EN of both drivers
-                                                     ├── 10 kΩ pull-up to 3.3 V
-                                                     └── ESP32 EN_SENSE (input)
+GPIO10 EN_OUT (LOW = enable) ──[E-stop, NC contact]──┬── DRV_EN: EN of both drivers
+                                                      ├── 10 kΩ pull-up to 3.3 V
+                                                      └── GPIO9 (reads DRV_EN)
 ```
 
 - Pressed: the contact opens, EN is pulled high, the drivers switch off.
@@ -100,15 +107,86 @@ ESP32 EN_OUT (LOW = enable) ──[E-stop, NC contact]──┬── EN of both
 - With the drivers off the motors have no holding torque: the tube must be
   balanced, and the position should be treated as uncertain until re-synced.
 
-### Pins and power
+### Drivers
 
-- Joystick on ADC1 pins (GPIO1–10); ADC2 is shared with Wi-Fi.
-- Avoid strapping pins (0, 3, 45, 46) and flash/PSRAM pins (26–32, plus 33–37 on
-  modules with octal PSRAM).
-- Drivers: TMC2209 recommended (silent, 256× microstep interpolation, UART
-  configuration). A4988/DRV8825 also work.
-- Power: 12 V supply or battery, buck converter to 5 V, fuse, 100 µF capacitor on
-  each driver's motor supply.
+- TMC2209 modules (StepStick format): silent, 256× microstep interpolation,
+  configured over UART (motor current, microstepping). A4988/DRV8825 also work,
+  without the UART.
+- Logic supply (VIO) at 3.3 V, the ESP32's logic level.
+- Both drivers share one single-wire UART: GPIO17 (TX) through 1 kΩ and GPIO18
+  (RX) on the PDN_UART pins. MS1/MS2 set the address: azimuth 0 (both to GND),
+  altitude 1 (MS1 to 3.3 V).
+- The header pin order differs between module makers: wire by pin name.
+
+### Pins
+
+The schematic assumes an ESP32-S3-DevKitC-1.
+
+| GPIO | Use |
+| --- | --- |
+| 1, 2 | Joystick X, Y (ADC1) |
+| 4 | Battery voltage (ADC1) |
+| 5 | Joystick switch |
+| 6, 7, 8 | Buttons 1–3 |
+| 9 | Reads DRV_EN (E-stop detection) |
+| 10 | EN_OUT, through the E-stop to the drivers' EN |
+| 11, 12 | Azimuth STEP, DIR |
+| 13, 14 | Altitude STEP, DIR |
+| 17, 18 | Driver UART TX (through 1 kΩ), RX |
+
+- Analog inputs on ADC1 (GPIO1–10): ADC2 is shared with Wi-Fi.
+- Left free: strapping pins (0, 3, 45, 46), USB (19, 20), the USB serial console
+  (43, 44), and flash/PSRAM pins (26–32, plus 33–37 on modules with octal PSRAM).
+- Buttons and the joystick switch connect to GND and use the internal pull-ups.
+
+### Power
+
+The battery and all the electronics are on the L, which carries the motors too.
+No cable crosses the azimuth joint, so the head can turn round any number of
+times.
+
+| Item | Choice |
+| --- | --- |
+| Battery | LiFePO4 12.8 V (4 cells in series), 6 Ah (about 77 Wh), with a built-in BMS. XT60 plug. |
+| Charging | 14.6 V LiFePO4 charger on a second XT60 socket on the case, wired before the main switch: charging works with the switch off. |
+| Protection | 5 A fuse right after the battery socket, then the main switch. 470 µF on the switched rail, 100 µF at each driver's motor supply. |
+| Motor supply | The switched battery rail (12.0–14.6 V) goes straight to the drivers' VM pins. |
+| 5 V | L7805CV linear regulator into the ESP32 board's 5V pin, through a 1N5819 Schottky diode so that the board's USB 5 V cannot feed back into the regulator. 330 nF at its input, 100 nF and 47 µF at its output. |
+| 3.3 V | The regulator on the ESP32 board. It also supplies the drivers' logic and the joystick. |
+| Battery monitoring | 100 kΩ / 22 kΩ divider with 100 nF on GPIO4: 14.6 V gives 2.63 V, inside the ADC range at 11 dB attenuation. |
+
+L7805CV:
+
+- It drops 13.2 − 5 = 8.2 V. At the ESP32's average 0.10–0.15 A with the Wi-Fi
+  access point on, that is about 1 W.
+- A TO-220 without a heatsink runs about 50 °C above ambient at 1 W, so it needs a
+  small clip-on heatsink. The tab is connected to GND.
+- A buck converter would save about 1 W, roughly an hour of runtime. It can replace
+  the L7805 later without other changes.
+
+Budget (estimates, not measured):
+
+| Load | Current from the battery |
+| --- | --- |
+| ESP32-S3 with the access point on (a linear regulator draws its output current from the battery) | 0.10–0.15 A |
+| Two motors while tracking, with a reduced holding current set over UART | 0.2–0.3 A |
+| Total | about 0.3–0.45 A, about 4–6 W |
+
+At 0.45 A, using about 5 Ah of the 6 Ah, that gives about 11 h. A lower motor
+current gives more. Slews draw more, but only for a few seconds.
+
+### Placement
+
+- Battery: at the far end of the 380 bar, opposite the arm, in a printed cradle
+  (see [mechanics](mechanics.md#battery)).
+- Case (printed, about 130 × 90 × 50 in the model):
+  - low on the outer face of the arm;
+  - holds the ESP32 board, both drivers, the regulator, the fuse, the main switch,
+    the two XT60 sockets and the motor connectors;
+  - the E-stop, joystick and buttons go on its face, or on a hand unit with a short
+    cable.
+- The battery cable runs along the side of the bar and up the arm. The motor cables
+  stay on the L.
 
 ## Drive resolution
 
@@ -121,6 +199,9 @@ ESP32 EN_OUT (LOW = enable) ──[E-stop, NC contact]──┬── EN of both
 
 ## Open points
 
-- Exact stepper motors and drivers.
+- Exact stepper motors (rated current) and TMC2209 module make (header pin order).
 - Joystick type (analog or switches) and E-stop contact type (NC needed).
-- Exact ESP32-S3 board (flash and PSRAM size, free pins).
+- Exact ESP32-S3 board (flash and PSRAM size). The schematic uses the
+  ESP32-S3-DevKitC-1 pinout.
+- Exact battery (its size sets the cradle) and case.
+- Measured current draw, to confirm the runtime estimate.

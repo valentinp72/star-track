@@ -80,8 +80,8 @@ Thread-locker on the set screws keeps them from loosening.
   under the lower bearing carries the weight.
 - The existing 250-tooth pulley is clamped on the fixed shaft with a printed 20 mm
   hub. The azimuth motor moves from the base to under the far end of the 380 bar
-  (about 132 from the axis) and turns with the L. The electronics case is already
-  on the arm, so only the power cable crosses the turning joint.
+  (about 132 from the axis) and turns with the L. The battery and the electronics
+  are on the L too, so no cable crosses the turning joint.
 - The bearing stack is taller than the current case: in the model the 380 bar sits
   at height 173–218 instead of 89–134.
 
@@ -93,14 +93,30 @@ Thread-locker on the set screws keeps them from loosening.
 - On the inner face, a flange coupling on the shaft carries a Vixen-style dovetail
   saddle. The tube rings sit on a Vixen dovetail bar, which allows balancing and
   removing the tube.
-- The electronics case moves lower on the outer face (about 300–450 in the model),
-  because the outer bearing and pulley take its place.
+- A new, smaller electronics case without a screen sits lower on the outer face
+  (130 × 90 × 50 at height 310–440 in the model), because the outer bearing and
+  pulley take the current case's place.
 - In the model the tube still clears the 380 bar by about 50 when pointing at the
   zenith.
 
+### Battery
+
+- LiFePO4 12.8 V 6 Ah. Sizes vary. The model uses 151 × 65 × 95, the usual size of
+  a 12 V 7 Ah lead-acid case (about 0.8 kg for LiFePO4).
+- At the far end of the 380 bar, opposite the arm. It sits in a printed cradle that
+  hooks over the end of the bar, bolts into the bar's two top slots with T-nuts,
+  and holds the battery with straps.
+- It overhangs the end of the bar by about 4 cm, so it stays about 5 cm clear of the
+  tube rings when the tube points at the zenith.
+- It sits on the other side of the azimuth axis from the arm, so it partly balances
+  the arm's weight.
+- Its cable runs along the side of the bar and up the arm to the case. Wiring and
+  runtime: [architecture](architecture.md#power).
+
 ### Printed parts
 
-- Printed: pulleys and hubs, motor brackets, drilling templates, cable guides.
+- Printed: pulleys and hubs, motor brackets, battery cradle, electronics case,
+  drilling templates, cable guides.
 - Not printed: anything that carries the telescope's weight in bending (bearing
   housings, shaft supports, the link between tube and shaft). Plastic creeps under
   constant load and the play would come back.
@@ -123,13 +139,14 @@ Three pieces, separated without tools:
 | Piece | Joint | Size in the model |
 | --- | --- | --- |
 | Base (T with plate) | four thumb screws on the azimuth coupling | ≈ 38 × 35 × 7 cm |
-| Mount head (L with bearings, shafts, motors, belts, electronics case) | — | ≈ 77 × 46 × 17 cm |
+| Mount head (L with bearings, shafts, motors, belts, electronics case, battery) | — | ≈ 77 × 50 × 17 cm |
 | Telescope (tube, rings, dovetail bar) | one knob on the dovetail saddle | ≈ 90 × 18 × 17 cm |
 
 - The bearings stay assembled, so the preload is kept.
 - Re-assembly does not need to be precise: the star alignment at the start of each
   session absorbs small shifts.
-- One panel connector (GX16 or XT60) for power keeps the cabling to one plug.
+- The battery travels on the head, so nothing has to be plugged in between the
+  pieces.
 - If the head is too tall for the car, the arm can be made removable by replacing the
   corner bracket's bolts with knob bolts.
 
@@ -149,7 +166,9 @@ Prices are rough estimates and were not checked against current listings.
 | Vixen dovetail saddle | 1 | – | €15–25 | — |
 | Vixen dovetail bar, about 30 cm | 1 | – | €10–15 | — |
 | M6 knurled thumb screws (DIN 464) | – | 4 | €4 | — |
-| Panel power connector (GX16 or XT60) | – | 1 | €3 | — |
+
+Battery and electronics are listed in [architecture](architecture.md#power) and in
+the schematic.
 
 ## 3D model
 
@@ -158,6 +177,6 @@ see-through mode for the drilled holes, an exploded view, sliders for azimuth an
 altitude, and a "pack for transport" layout with the size of each piece. Clicking a
 part shows what it is and whether it is bought, printed or existing.
 
-Geometry is simplified (profiles, bearings, couplings, pulleys, motors, belts and
-tube as basic shapes). Fasteners other than the bearing bolts and thumb screws are
-not drawn.
+Geometry is simplified (profiles, bearings, couplings, pulleys, motors, belts,
+battery, case and tube as basic shapes). Fasteners other than the bearing bolts and
+thumb screws are not drawn, and neither are the motor cables.

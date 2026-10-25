@@ -3,16 +3,17 @@
 Motorised alt-azimuth mount for a 114/900 Newtonian reflector (Omegon 114/900),
 controlled from a phone, with a joystick, buttons and an emergency stop for manual use.
 
-This branch restarts the project. It currently holds design notes and an interactive
-3D model of the mount; no firmware yet.
+This branch restarts the project. It currently holds design notes, an interactive 3D
+model of the mount and the electronics schematic; no firmware yet.
 
 ## Contents
 
 | Path | What it is |
 | --- | --- |
-| [`docs/architecture.md`](docs/architecture.md) | Planned electronics and software: ESP32-S3 controller, phone web app, firmware structure, safety. |
-| [`docs/mechanics.md`](docs/mechanics.md) | Current mechanical build (dimensions from the CAD model), bearing redesign, base stability, transport. |
+| [`docs/architecture.md`](docs/architecture.md) | Planned electronics and software: ESP32-S3 controller, battery power, pins, phone web app, firmware structure, safety. |
+| [`docs/mechanics.md`](docs/mechanics.md) | Current mechanical build (dimensions from the CAD model), bearing redesign, battery placement, base stability, transport. |
 | [`docs/3d/index.html`](docs/3d/index.html) | Interactive 3D model of the redesigned mount. Open it in a browser (needs an internet connection to load three.js from a CDN). |
+| [`electronics/`](electronics/) | KiCad 7 schematic: battery and power, ESP32-S3 board, two TMC2209 drivers, E-stop, joystick and buttons. [PDF](electronics/star-track.pdf) and PNG exports alongside. |
 
 ## Earlier attempts
 

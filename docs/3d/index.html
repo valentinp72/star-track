@@ -35,6 +35,9 @@
   --v-select: #00a7c7;
   --v-ground: #d5dbe2;
   --v-crate: #2f639e;
+  --v-batt: #35618f;
+  --v-stop: #d6362b;
+  --v-stopbase: #f0c02f;
   --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
   --font-body: "Barlow", "Segoe UI", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -47,6 +50,7 @@
     --v-tubein: #15191e; --v-motor: #4a5058; --v-motorcap: #9aa3ad; --v-base: #67717c; --v-dark: #22272d;
     --v-belt: #0d1013; --v-hole: #05070a; --v-axis: #7f8b99; --v-select: #22d3ee;
     --v-ground: #1b232c; --v-crate: #82b2e8;
+    --v-batt: #5a8cc2; --v-stop: #e5533f; --v-stopbase: #e0b52a;
     color-scheme: dark;
   }
 }
@@ -57,6 +61,7 @@
   --v-tubein: #15191e; --v-motor: #4a5058; --v-motorcap: #9aa3ad; --v-base: #67717c; --v-dark: #22272d;
   --v-belt: #0d1013; --v-hole: #05070a; --v-axis: #7f8b99; --v-select: #22d3ee;
   --v-ground: #1b232c; --v-crate: #82b2e8;
+    --v-batt: #5a8cc2; --v-stop: #e5533f; --v-stopbase: #e0b52a;
   color-scheme: dark;
 }
 
@@ -166,7 +171,7 @@ tfoot td { font-weight: 600; border-bottom: 0; }
       <li><b>Both 95×70 cases come out,</b> with their thrust bearings. Each axis gets a 20 mm shaft through the bar, with a flange bearing on each wide face.</li>
       <li><b>Azimuth.</b> The shaft stands in a flange coupling bolted to the existing 95×70 plate. The plate and its two 32.5 mm blocks slide 8 cm along the stem toward the crossbar, for stability (see below). The motor moves from the base to under the far end of the bar, and the existing Ø159 mm pulley is now fixed on the shaft.</li>
       <li><b>Altitude.</b> The shaft goes through the arm 120 mm below its top, where the current case is. The pulley and motor move to the outer face of the arm. The tube still hangs over the bar, but on a dovetail saddle instead of being bolted to the pulley.</li>
-      <li><b>The electronics case</b> moves lower on the outer face, below the altitude motor, because the outer bearing and pulley take its place.</li>
+      <li><b>Electronics and battery.</b> A smaller case without the touch screen sits lower on the outer face of the arm, below the altitude motor, because the outer bearing and pulley take the current case's place. A 12.8 V LiFePO4 battery sits at the far end of the bar. Both turn with the L.</li>
       <li><b>The L sits about 8 cm higher,</b> because the azimuth bearing stack is taller than the current case. At zenith the tube still clears the bar by about 5 cm.</li>
     </ol>
   </section>
@@ -175,7 +180,7 @@ tfoot td { font-weight: 600; border-bottom: 0; }
     <h2>Why this removes the play</h2>
     <p>A thrust bearing only carries weight, so the axis can still rock on it. Two ordinary ball bearings about 75 mm apart on the same shaft hold the axis straight. Clamping them toward each other when the set screws are tightened removes the last bit of play. The thrust bearings and aluminium cases are no longer needed.</p>
     <p>The bars stay as built: the 380 mm bar lies flat, and the arm stands on its end with its wide faces along the bar. Both shafts cross the 45 mm thickness, so each pair of bearings sits about 75 mm apart. That's plenty once they're clamped toward each other.</p>
-    <p>On azimuth, the shaft is fixed to the base and the L turns around it. On altitude, the shaft turns with the tube. Both motors are mounted on the L, so the electronics can be too, and only the power cable has to cross the turning joint.</p>
+    <p>On azimuth, the shaft is fixed to the base and the L turns around it. On altitude, the shaft turns with the tube. Both motors are mounted on the L, and so are the electronics and the battery: no cable crosses the turning joint, so the head can turn round as many times as needed.</p>
   </section>
 
   <section>
@@ -215,10 +220,10 @@ tfoot td { font-weight: 600; border-bottom: 0; }
     <p>Split it into three pieces that come apart in about a minute, without tools. Turn on <b>Pack for transport</b> in the model to see them laid out, with their sizes.</p>
     <ol class="pieces">
       <li><b>Telescope.</b> Its rings sit on a standard Vixen dovetail bar, and a saddle on the altitude coupling clamps it with one knob. Undo the knob and the tube slides out. It travels in its bag or box.</li>
-      <li><b>Mount head</b> (the L with bearings, shafts, motors, belts and electronics case). Four thumb screws hold its azimuth coupling to the base: undo them and lift it off. Leave the bearings assembled so they keep their preload. A plastic crate with some foam protects the printed pulleys and belts.</li>
+      <li><b>Mount head</b> (the L with bearings, shafts, motors, belts, electronics case and battery). Four thumb screws hold its azimuth coupling to the base: undo them and lift it off. Leave the bearings assembled so they keep their preload. A plastic crate with some foam protects the printed pulleys and belts.</li>
       <li><b>Base.</b> The T stays in one piece with its plate, and lies flat in the trunk.</li>
     </ol>
-    <p>Putting it back doesn't need to be precise: the two-star alignment at the start of each night absorbs any small shift. One plug for power between the head and the battery keeps the cabling to a single connection.</p>
+    <p>Putting it back doesn't need to be precise: the two-star alignment at the start of each night absorbs any small shift. The battery travels on the head, so there is nothing to plug in between the pieces.</p>
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Transport extras</th><th scope="col">Qty</th><th scope="col">≈ Price</th><th scope="col">Source</th></tr></thead>
@@ -227,7 +232,6 @@ tfoot td { font-weight: 600; border-bottom: 0; }
           <tr data-part="tube"><td>Vixen dovetail bar, about 30 cm</td><td class="n">1</td><td class="n">€10–15</td><td><span class="src buy">Buy</span></td></tr>
           <tr data-part="azcpl"><td>M6 knurled thumb screws (DIN 464)</td><td class="n">4</td><td class="n">€4</td><td><span class="src buy">Buy</span></td></tr>
           <tr><td>Plastic crate and foam for the head</td><td class="n">1</td><td class="n">€10–20</td><td><span class="src buy">Buy</span></td></tr>
-          <tr><td>Panel power connector (GX16 or XT60)</td><td class="n">1</td><td class="n">€3</td><td><span class="src buy">Buy</span></td></tr>
         </tbody>
         <tfoot><tr><td colspan="2">Total</td><td class="n" colspan="2">≈ €40–65</td></tr></tfoot>
       </table>
@@ -267,7 +271,8 @@ tfoot td { font-weight: 600; border-bottom: 0; }
 
   // ---------- materials (registered so the theme can recolour them) ----------
   var TOK = { ground: '--v-ground', steel: '--v-steel', printed: '--v-printed', alu: '--v-alu', yours: '--v-yours', tubein: '--v-tubein',
-    motor: '--v-motor', motorcap: '--v-motorcap', base: '--v-base', dark: '--v-dark', belt: '--v-belt', hole: '--v-hole' };
+    motor: '--v-motor', motorcap: '--v-motorcap', base: '--v-base', dark: '--v-dark', belt: '--v-belt', hole: '--v-hole',
+    batt: '--v-batt', stop: '--v-stop', stopbase: '--v-stopbase' };
   var mats = [];
   function mat(key, extra) {
     var metal = (key === 'steel' || key === 'dark' || key === 'motorcap') ? 0.35 : 0.05;
@@ -285,7 +290,8 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   P('tube', 'Telescope (900 mm) and rings, on a Vixen dovetail bar', 'yours', 'Existing + buy', 'Over the bar, as in the current build. The rings bolt onto a standard Vixen dovetail bar: slide it in the saddle to balance the tube, or slide it out for transport.');
   P('saddle', 'Vixen-style dovetail saddle', 'buy', 'Buy', 'Bolted to the altitude flange coupling on the inner side of the arm. One knob clamps the dovetail bar.');
   P('base', 'T base (two 350 mm 30×60 bars, existing)', 'yours', 'Existing', 'Both bars stand on edge, as in the current build. The 95×70 plate and its two 32.5 mm blocks now sit 8 cm closer to the crossbar than in the current build (slide their T-nuts along the stem), and carry the azimuth flange coupling.');
-  P('board', 'Electronics case (existing)', 'yours', 'Existing', 'Moved lower on the outer face of the arm, because the outer altitude bearing and pulley now sit where it was.');
+  P('board', 'Electronics case (new, no screen)', 'print', 'Print', 'Smaller than the current case: the touch screen is gone and the phone is the display. Holds the ESP32-S3 board, the two TMC2209 drivers, the L7805 regulator, the fuse and the main switch, with the E-stop, joystick and buttons on its outer face. Low on the outer face of the arm, below the altitude motor. Schematic in electronics/ of the repository.');
+  P('battery', 'LiFePO4 battery 12.8 V 6 Ah, with BMS', 'buy', 'Buy', 'At the far end of the bar, opposite the arm, in a printed cradle hooked over the end of the bar and bolted into its top slots. It overhangs the end by about 4 cm to stay clear of the tube rings. It turns with the L, like the motors and the case, so no cable crosses the azimuth joint. One XT60 cable runs along the side of the bar to the case. Charge it in place through the charge socket on the case, or lift it out, with a 14.6 V LiFePO4 charger.');
   P('altbrg', '2 × flange bearing UCFL204GP (Gopart, Kramp), altitude', 'buy', 'Buy', 'Cast iron, 113 × 60 mm, 33.3 mm tall, with a grease nipple and two set screws. One on each wide face of the arm, 120 mm below its top like the current case. Each is turned 30° so its two M8 bolts (with large washers, as the holes are 12 mm) land in T-nuts in the two slots. Clamped toward each other, they leave no play.');
   P('azbrg', '2 × flange bearing UCFL204GP (Gopart, Kramp), azimuth', 'buy', 'Buy', 'Same bearing, above and below the middle of the 380 mm bar, turned 30° the same way. They turn with the L around the fixed shaft.');
   P('altshaft', '20 mm steel shaft, about 200 mm, altitude', 'buy', 'Buy', 'Turns with the tube. The set screws of both bearings lock it.');
@@ -296,7 +302,7 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   P('altpul', 'Large GT2 pulley, altitude', 'print', 'Print', 'On the outer side of the arm, clamped on the shaft. It no longer carries the tube: the saddle does.');
   P('azpul', 'Ø159 mm GT2 pulley, azimuth (existing)', 'print', 'Existing + print', 'The existing 250-tooth pulley, now clamped on the fixed shaft with a printed 20 mm hub. The motor on the L walks around it.');
   P('altmot', 'Altitude motor on a printed bracket', 'print', 'Existing + print', 'Moved to the outer face of the arm, 200 mm below the shaft. Slotted holes allow sliding it down to tighten the belt.');
-  P('azmot', 'Azimuth motor on a printed bracket', 'print', 'Existing + print', 'Moved from the base to under the far end of the bar, so it turns with the L. The electronics case is already on the arm, so only the power cable crosses the turning joint.');
+  P('azmot', 'Azimuth motor on a printed bracket', 'print', 'Existing + print', 'Moved from the base to under the far end of the bar, so it turns with the L. With the battery and the electronics case also on the L, no cable crosses the turning joint.');
   P('belts', 'Closed GT2 belts', 'buy', 'Buy', 'Choose the length once the pulleys are printed. The slotted brackets take up the difference.');
 
   function addMesh(parent, geom, key, partId, opts) {
@@ -509,9 +515,34 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   var altBeltG = G(LG);
   belt(altBeltG, [ALT_Y, 0], 80.8, [ALT_Y - 200, 0], 7.2, function (a, b) { return new THREE.Vector3(ARM_X1 + 56, a, b); }, new THREE.Vector3(1, 0, 0));
   axisLine(LG, new THREE.Vector3(-320, ALT_Y, 0), new THREE.Vector3(330, ALT_Y, 0));
-  var boardG = G(LG);
-  addMesh(boardG, boxAt(73, 150, 90, ARM_X1 + 36.5, 375, 0), 'base', 'board');
-  addMesh(boardG, boxAt(2, 110, 70, ARM_X1 + 74, 380, 0), 'motor', 'board', { noEdges: true });
+  // Electronics case (no screen) low on the outer face of the arm; E-stop, joystick and buttons on its face
+  var boardG = G(LG), CASE_X = ARM_X1 + 50;
+  addMesh(boardG, boxAt(50, 130, 90, ARM_X1 + 25, 375, 0), 'printed', 'board');
+  addMesh(boardG, cylX(22, 8, CASE_X, 40).translate(0, 410, 0), 'stopbase', 'board');
+  addMesh(boardG, cylX(19, 14, CASE_X + 8, 40).translate(0, 410, 0), 'stop', 'board');
+  addMesh(boardG, boxAt(4, 28, 28, CASE_X + 2, 345, -20), 'dark', 'board');
+  addMesh(boardG, cylX(2.5, 16, CASE_X + 4, 12).translate(0, 345, -20), 'dark', 'board', { noEdges: true });
+  addMesh(boardG, new THREE.SphereGeometry(6, 16, 12).translate(CASE_X + 22, 345, -20), 'motor', 'board', { noEdges: true });
+  [330, 345, 360].forEach(function (y) { addMesh(boardG, cylX(5, 5, CASE_X, 20).translate(0, y, 22), 'motor', 'board'); });
+
+  // Battery at the far end of the bar, opposite the arm, in a printed cradle hooked over the end of the bar
+  var batG = G(LG), BAT_X = -195, BAT_Y = BAR_Y1 + 4 + 47.5;
+  addMesh(batG, boxAt(75, 4, 159, BAT_X, BAR_Y1 + 2, 0), 'printed', 'battery');
+  addMesh(batG, boxAt(4, 49, 100, -192, (BAR_Y0 + BAR_Y1 + 4) / 2, 0), 'printed', 'battery');
+  [-1, 1].forEach(function (s) { addMesh(batG, boxAt(75, 20, 4, BAT_X, BAR_Y1 + 14, s * 77.5), 'printed', 'battery'); });
+  addMesh(batG, boxAt(65, 95, 151, BAT_X, BAT_Y, 0), 'batt', 'battery');
+  [-1, 1].forEach(function (s) { addMesh(batG, boxAt(68, 98, 16, BAT_X, BAT_Y, s * 42), 'dark', 'battery', { noEdges: true }); });
+  addMesh(batG, cylY(4.5, 7, BAT_Y + 47.5, 16).translate(BAT_X, 0, 58), 'stop', 'battery', { noEdges: true });
+  addMesh(batG, cylY(4.5, 7, BAT_Y + 47.5, 16).translate(BAT_X, 0, -58), 'dark', 'battery', { noEdges: true });
+  // Battery cable along the side of the bar and up the arm to the case
+  var cableG = G(LG);
+  (function () {
+    var BY = (BAR_Y0 + BAR_Y1) / 2;
+    var pts = [[BAT_X + 20, BAR_Y1 + 22, 76], [BAT_X + 34, BY + 6, 56], [-150, BY, 48], [120, BY, 48], [ALT_PX, BAR_Y1 + 25, 48],
+      [ALT_PX, 330, 48], [ARM_X1 + 12, 352, 48], [ARM_X1 + 25, 352, 46]];
+    var curve = new THREE.CatmullRomCurve3(pts.map(function (p) { return new THREE.Vector3(p[0], p[1], p[2]); }));
+    addMesh(cableG, new THREE.TubeGeometry(curve, 160, 3, 8, false), 'dark', 'battery', { noEdges: true });
+  })();
 
   // Altitude group (turns with the tube), pivot on the altitude axis
   var altG = G(LG, ALT_PX, ALT_Y, 0);
@@ -568,19 +599,21 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   label('T base', baseG, 110, 80, 150, 'far');
   label('dovetail saddle', saddleG, 64 - ALT_PX, 72, 0, true);
   label('thumb screws', azCplG, 60, 82, -45, true);
-  label('electronics case', boardG, ARM_X1 + 92, 375, 0);
+  label('electronics case', boardG, CASE_X + 42, 390, 0);
+  label('E-stop', boardG, CASE_X + 30, 438, 0, true);
+  label('battery', batG, BAT_X, BAT_Y + 75, 0, 'far');
 
   // ---------- explode (pull apart) ----------
   var ex = [];
   function E(obj, x, y, z) { ex.push({ o: obj, v: new THREE.Vector3(x, y, z) }); }
   E(azCplG, 0, 30, 0); E(azPulG, 0, 70, 0); E(azShaftG, 0, 110, 0); E(azCollarG, 0, 150, 0); E(azInLowG, 0, 200, 0); E(azInUpG, 0, 330, 0);
   E(LG, 0, 260, 0); E(azHLowG, 0, -60, 0); E(azHUpG, 0, 70, 0); E(azMotG, 0, -100, 0);
-  E(altHAG, -60, 0, 0); E(altHBG, 60, 0, 0); E(altMotG, 115, 0, 0); E(boardG, 60, 0, 0);
+  E(altHAG, -60, 0, 0); E(altHBG, 60, 0, 0); E(altMotG, 115, 0, 0); E(boardG, 60, 0, 0); E(batG, 0, 110, 0);
   E(altInAG, -60, 0, 0); E(altInBG, 60, 0, 0); E(altCplG, -125, 0, 0); E(saddleG, -165, 0, 0); E(tubeWG, -215, 0, 0); E(altPulG, 130, 0, 0);
   var exT = 0, exTarget = 0;
   function applyExplode() {
     ex.forEach(function (e) { e.o.position.copy(e.v).multiplyScalar(exT); });
-    var show = exT < 0.01; azBeltG.visible = show; altBeltG.visible = show;
+    var show = exT < 0.01; azBeltG.visible = show; altBeltG.visible = show; cableG.visible = show;
   }
 
   // ---------- theme ----------
