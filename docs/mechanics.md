@@ -95,7 +95,9 @@ Thread-locker on the set screws keeps them from loosening.
   removing the tube.
 - A new, smaller electronics case without a screen sits lower on the outer face
   (130 × 90 × 50 at height 310–440 in the model), because the outer bearing and
-  pulley take the current case's place.
+  pulley take the current case's place. The E-stop, two LEDs and a buzzer are on
+  its face. The XT60 power socket and the hand-unit socket are underneath.
+- The joystick and buttons are in a hand-held unit on a cable, not on the mount.
 - In the model the tube still clears the 380 bar by about 50 when pointing at the
   zenith.
 
@@ -139,14 +141,14 @@ Three pieces, separated without tools:
 | Piece | Joint | Size in the model |
 | --- | --- | --- |
 | Base (T with plate) | four thumb screws on the azimuth coupling | ≈ 38 × 35 × 7 cm |
-| Mount head (L with bearings, shafts, motors, belts, electronics case, battery) | — | ≈ 77 × 50 × 17 cm |
+| Mount head (L with bearings, shafts, motors, belts, electronics case, battery) | — | ≈ 77 × 49 × 17 cm |
 | Telescope (tube, rings, dovetail bar) | one knob on the dovetail saddle | ≈ 90 × 18 × 17 cm |
 
 - The bearings stay assembled, so the preload is kept.
 - Re-assembly does not need to be precise: the star alignment at the start of each
   session absorbs small shifts.
 - The battery travels on the head, so nothing has to be plugged in between the
-  pieces.
+  pieces except the hand unit.
 - If the head is too tall for the car, the arm can be made removable by replacing the
   corner bracket's bolts with knob bolts.
 

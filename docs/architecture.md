@@ -85,7 +85,7 @@ calculations, so tracking continues when the phone is locked or disconnected.
 
 Schematic: [`electronics/star-track.pdf`](../electronics/star-track.pdf) (KiCad 7
 project in [`electronics/`](../electronics/)). No touch screen: the phone is the
-display.
+display, and a buzzer and two LEDs on the case give feedback at the mount.
 
 ![Schematic](../electronics/star-track.png)
 
@@ -132,12 +132,39 @@ The schematic assumes an ESP32-S3-DevKitC-1.
 | 10 | EN_OUT, through the E-stop to the drivers' EN |
 | 11, 12 | Azimuth STEP, DIR |
 | 13, 14 | Altitude STEP, DIR |
+| 15, 16 | Red LED, blue LED |
 | 17, 18 | Driver UART TX (through 1 kΩ), RX |
+| 21 | Buzzer |
 
 - Analog inputs on ADC1 (GPIO1–10): ADC2 is shared with Wi-Fi.
 - Left free: strapping pins (0, 3, 45, 46), USB (19, 20), the USB serial console
   (43, 44), and flash/PSRAM pins (26–32, plus 33–37 on modules with octal PSRAM).
 - Buttons and the joystick switch connect to GND and use the internal pull-ups.
+
+### Hand unit
+
+- The joystick and the three buttons are in a hand-held unit, not on the mount.
+- It connects to an 8-pin socket on the case through an 8-wire cable: GND, 3.3 V,
+  joystick X, Y and switch, buttons 1–3. For example a GX16-8 aviation connector,
+  or RJ45 with a network cable.
+- 100 nF at the case end of the joystick X and Y lines filters noise picked up by
+  the cable.
+- The E-stop stays on the case.
+
+### Feedback: buzzer and LEDs
+
+- Buzzer: a small 5 V buzzer switched by an NPN transistor (BC547 or similar,
+  1 kΩ base resistor, 10 kΩ pull-down so it stays silent while the ESP32 boots).
+  - An active buzzer sounds when GPIO21 is high.
+  - A passive buzzer needs a PWM tone on GPIO21 (LEDC), which also allows different
+    pitches.
+  - A 1N4148 across the buzzer protects the transistor from a magnetic buzzer's coil.
+- LEDs: red on GPIO15 (1 kΩ), blue on GPIO16 (220 Ω), both to GND.
+  - About 1–3 mA each, and PWM sets the brightness.
+  - Blue light spoils dark adaptation more than red: keep the blue LED dim, or use
+    it only during setup.
+- Possible uses: a short beep when a command or alignment star is accepted, a long
+  beep at E-stop, LED patterns for Wi-Fi client connected, tracking, low battery.
 
 ### Power
 
@@ -147,13 +174,27 @@ times.
 
 | Item | Choice |
 | --- | --- |
-| Battery | LiFePO4 12.8 V (4 cells in series), 6 Ah (about 77 Wh), with a built-in BMS. XT60 plug. |
-| Charging | 14.6 V LiFePO4 charger on a second XT60 socket on the case, wired before the main switch: charging works with the switch off. |
-| Protection | 5 A fuse right after the battery socket, then the main switch. 470 µF on the switched rail, 100 µF at each driver's motor supply. |
+| Input | Female XT60 socket on the case. |
+| Battery | LiFePO4 12.8 V (4 cells in series), 6 Ah (about 77 Wh), with a built-in BMS, on a male XT60 lead. |
+| Before the battery | A lab supply plugs into the same socket with an XT60 cable: 12–14 V, current limit about 2 A. |
+| Charging | At home, off the mount, with a 12 V car battery charger (see below). No charging circuit on the mount. |
+| Protection | 5 A fuse right after the XT60 socket, then the main switch. 470 µF on the switched rail, 100 µF at each driver's motor supply. |
 | Motor supply | The switched battery rail (12.0–14.6 V) goes straight to the drivers' VM pins. |
 | 5 V | L7805CV linear regulator into the ESP32 board's 5V pin, through a 1N5819 Schottky diode so that the board's USB 5 V cannot feed back into the regulator. 330 nF at its input, 100 nF and 47 µF at its output. |
 | 3.3 V | The regulator on the ESP32 board. It also supplies the drivers' logic and the joystick. |
 | Battery monitoring | 100 kΩ / 22 kΩ divider with 100 nF on GPIO4: 14.6 V gives 2.63 V, inside the ADC range at 11 dB attenuation. |
+
+Charging LiFePO4 with a car (lead-acid) charger:
+
+- A LiFePO4 battery is full at 14.4–14.6 V. A normal 12 V lead-acid charge (about
+  14.4 V, then about 13.6 V float) suits it, and the BMS cuts off above its limit.
+- If the charger has a lithium or LiFePO4 mode, use it.
+- Do not use desulfation, recondition or repair modes: they raise the voltage above
+  15 V.
+- Some chargers do not start on a battery whose BMS has switched off after a deep
+  discharge.
+- Batteries sold with an XT60 often have the female side fitted. With a female
+  socket on the case, such a battery needs a male lead or an adapter.
 
 L7805CV:
 
@@ -170,6 +211,7 @@ Budget (estimates, not measured):
 | --- | --- |
 | ESP32-S3 with the access point on (a linear regulator draws its output current from the battery) | 0.10–0.15 A |
 | Two motors while tracking, with a reduced holding current set over UART | 0.2–0.3 A |
+| LEDs, buzzer while it sounds | a few mA, about 30 mA |
 | Total | about 0.3–0.45 A, about 4–6 W |
 
 At 0.45 A, using about 5 Ah of the 6 Ah, that gives about 11 h. A lower motor
@@ -178,13 +220,15 @@ current gives more. Slews draw more, but only for a few seconds.
 ### Placement
 
 - Battery: at the far end of the 380 bar, opposite the arm, in a printed cradle
-  (see [mechanics](mechanics.md#battery)).
+  (see [mechanics](mechanics.md#battery)). Until it is bought, a lab supply on the
+  bench.
 - Case (printed, about 130 × 90 × 50 in the model):
   - low on the outer face of the arm;
-  - holds the ESP32 board, both drivers, the regulator, the fuse, the main switch,
-    the two XT60 sockets and the motor connectors;
-  - the E-stop, joystick and buttons go on its face, or on a hand unit with a short
-    cable.
+  - holds the ESP32 board, both drivers, the regulator, the fuse, the main switch
+    and the motor connectors;
+  - on its face: the E-stop, the two LEDs and the buzzer;
+  - underneath: the XT60 socket and the hand-unit socket.
+- The joystick and buttons are in the hand unit, on its cable.
 - The battery cable runs along the side of the bar and up the arm. The motor cables
   stay on the L.
 
@@ -201,6 +245,7 @@ current gives more. Slews draw more, but only for a few seconds.
 
 - Exact stepper motors (rated current) and TMC2209 module make (header pin order).
 - Joystick type (analog or switches) and E-stop contact type (NC needed).
+- Buzzer type (active or passive) and hand-unit connector.
 - Exact ESP32-S3 board (flash and PSRAM size). The schematic uses the
   ESP32-S3-DevKitC-1 pinout.
 - Exact battery (its size sets the cradle) and case.
