@@ -183,12 +183,20 @@ times.
 | Charging | At home, off the mount, with a 12 V car battery charger (see below). No charging circuit on the mount. |
 | Switch and protection | A resettable breaker switch (3–5 A, rated for DC) right after the XT60 socket: it is both the main switch and the fuse. |
 | Motor supply | The switched rail (12.0–14.6 V) goes straight to the drivers' VM pins, with 100 µF at each. |
-| 5 V | L7805CV linear regulator into the ESP32 board's 5V pin, through a 1N5819 Schottky diode. The diode stops the regulator and the board's USB 5 V from feeding each other when both are connected, for example while flashing the firmware with the mount powered. |
+| 5 V | L7805CV linear regulator straight into the ESP32 board's 5V pin. |
 | 3.3 V | The regulator on the ESP32 board. It also supplies the drivers' logic and the joystick. |
 
 - Breaker switch: thermal breakers trip after a few seconds at 2–3 times their
   rating. That protects the wiring. Short circuits are cut faster by the battery's
   BMS or the lab supply's current limit.
+- USB and the 12 V supply: Espressif lists the board's USB ports, its 5V pin and
+  its 3V3 pin as mutually exclusive power inputs. With no diode between U1 and the
+  5V pin:
+  - breaker on: keep the ESP32 board's USB unplugged;
+  - USB plugged in (flashing, serial monitor): keep the breaker off. The motors
+    cannot move then;
+  - with the mount powered, use Wi-Fi for logs (WebSocket) and firmware updates
+    (OTA).
 - L7805 capacitors: the datasheet asks for an input capacitor when the regulator is
   far from the supply's filter capacitor. With U1 next to C6/C7 on the same board,
   those serve. The output capacitor is not needed for stability, and the ESP32
@@ -254,6 +262,7 @@ Left out to keep the circuit simple. Each can be added later without other chang
 | 1 kΩ from GPIO17 to the drivers' PDN_UART pins, GPIO18 direct | Driver configuration over UART: current and microsteps from the firmware, MS1/MS2 then set the addresses. |
 | 100 nF on joystick X and Y | Less noise picked up by the cable. Averaging readings in the firmware does the same. |
 | NPN transistor (BC547), 1 kΩ base resistor, 10 kΩ pull-down, 1N4148 across the buzzer | Drive for a magnetic or louder buzzer, from 5 V. |
+| Schottky diode (1N5817/1N5819, SS14) between U1 and the 5V pin, anode at U1 | USB and the 12 V supply connected at the same time, for example a serial monitor while the motors run. The board then gets about 4.6 V. |
 
 ## Drive resolution
 
