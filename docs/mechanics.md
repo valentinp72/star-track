@@ -169,8 +169,8 @@ Prices are rough estimates and were not checked against current listings.
 | Vixen dovetail bar, about 30 cm | 1 | – | €10–15 | — |
 | M6 knurled thumb screws (DIN 464) | – | 4 | €4 | — |
 
-Battery and electronics are listed in [architecture](architecture.md#power) and in
-the schematic.
+The battery is listed in [architecture](architecture.md#power), the electronics in
+its [parts list](architecture.md#parts-list).
 
 ## 3D model
 

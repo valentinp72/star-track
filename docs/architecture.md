@@ -83,20 +83,47 @@ calculations, so tracking continues when the phone is locked or disconnected.
 
 ## Electrical
 
-Schematic: [`electronics/star-track.pdf`](../electronics/star-track.pdf) (KiCad 7
+Schematic: [`electronics/star-track.pdf`](../electronics/star-track.pdf) (KiCad
 project in [`electronics/`](../electronics/)). No touch screen: the phone is the
 display, and a buzzer and two LEDs on the case give feedback at the mount.
 
 ![Schematic](../electronics/star-track.png)
+
+### Stripboard
+
+Board: [`electronics/star-track.kicad_pcb`](../electronics/star-track.kicad_pcb), a
+24 × 56 hole stripboard (2.54 mm pitch, strips along the 56-hole length). The strips
+are copper tracks in KiCad, cut where needed, and the wire links are board-only parts
+whose pads count as joined, so KiCad's DRC checks the board against the schematic.
+Columns 1–56 run from the left and rows A–X from the top, seen from the component side.
+
+![Stripboard, component side](../electronics/stripboard-front.svg)
+
+![Stripboard, copper side](../electronics/stripboard-back.svg)
+
+- 54 strip cuts and 11 wire links. W9–W11 are bus wires soldered at several holes
+  (GND, +12 V, +3.3 V).
+- The ESP32 board and the two TMC2209 modules sit on female headers. W1–W3 run under
+  the driver modules: fit them before the headers.
+- The ESP32 board's headers are taken as 25.4 mm apart. Some drawings give 22.86 mm:
+  measure the board first. Its antenna end overhangs the top edge by a few millimetres.
+- U1 stands at the left edge, with its tab and heatsink facing outwards.
+- Motor connectors J4, J5: 1×4 pin headers (2.54 mm). JST-XH (2.5 mm) also fits.
+- Wires to the case and the hand unit:
+  - P1: power in from CB1 and J1;
+  - P2: LEDs, buzzer and E-stop;
+  - P3: hand-unit socket J2, pins 1–8 in J2 order.
+- Check every cut with a multimeter before fitting the modules, and check the TMC2209
+  pin order against the module.
 
 ### Emergency stop (works without firmware)
 
 For drivers with an active-low enable input (A4988, DRV8825, TMC2209):
 
 ```
-GPIO10 EN_OUT (LOW = enable) ──[E-stop, NC contact]──┬── DRV_EN: EN of both drivers
+GPIO9 EN_OUT (LOW = enable) ───[E-stop, NC contact]──┬── DRV_EN: EN of both drivers
                                                       ├── 10 kΩ pull-up to 3.3 V
-                                                      └── GPIO9 (reads DRV_EN)
+                                                      └── GPIO18 (reads DRV_EN)
 ```
 
 - Pressed: the contact opens, EN is pulled high, the drivers switch off.
@@ -126,23 +153,27 @@ GPIO10 EN_OUT (LOW = enable) ──[E-stop, NC contact]──┬── DRV_EN: E
 
 ### Pins
 
-The schematic assumes an ESP32-S3-DevKitC-1.
+The schematic assumes an ESP32-S3-DevKitC-1. The pin choice follows the stripboard:
+each driver's STEP and DIR pins share strips with their ESP32 pins, and the
+hand-unit pins are next to each other on header J3.
 
 | GPIO | Use |
 | --- | --- |
 | 1, 2 | Joystick X, Y (ADC1) |
-| 5 | Joystick switch |
-| 6, 7, 8 | Buttons 1–3 |
-| 9 | Reads DRV_EN (E-stop detection) |
-| 10 | EN_OUT, through the E-stop to the drivers' EN |
-| 11, 12 | Azimuth STEP, DIR |
-| 13, 14 | Altitude STEP, DIR |
-| 15, 16 | Red LED, blue LED |
-| 21 | Buzzer |
+| 4, 5 | Azimuth DIR, STEP |
+| 9 | EN_OUT, through the E-stop to the drivers' EN |
+| 10, 11 | Altitude DIR, STEP |
+| 12, 13 | Red LED, blue LED |
+| 14 | Buzzer |
+| 18 | Reads DRV_EN (E-stop detection) |
+| 42 | Joystick switch |
+| 41, 40, 39 | Buttons 1–3 |
 
 - Analog inputs on ADC1 (GPIO1–10): ADC2 is shared with Wi-Fi.
 - Left free: strapping pins (0, 3, 45, 46), USB (19, 20), the USB serial console
-  (43, 44), and flash/PSRAM pins (26–32, plus 33–37 on modules with octal PSRAM).
+  (43, 44), the RGB LED (38), and flash/PSRAM pins (26–32, plus 33–37 on modules
+  with octal PSRAM).
+- Spare: GPIO6, 7, 8, 15, 16, 17, 21, 47, 48.
 - Buttons and the joystick switch connect to GND and use the internal pull-ups.
 
 ### Hand unit
@@ -155,14 +186,14 @@ The schematic assumes an ESP32-S3-DevKitC-1.
 
 ### Feedback: buzzer and LEDs
 
-- Buzzer: directly between GPIO21 and GND.
-  - An active buzzer sounds when GPIO21 is high. A passive buzzer needs a PWM tone
-    on GPIO21 (LEDC), which also allows different pitches.
+- Buzzer: directly between GPIO14 and GND.
+  - An active buzzer sounds when GPIO14 is high. A passive buzzer needs a PWM tone
+    on GPIO14 (LEDC), which also allows different pitches.
   - Direct drive suits a piezo buzzer, or an active buzzer that draws at most about
     20 mA at 3.3 V.
   - A passive magnetic buzzer (a bare coil of about 16–42 Ω on a multimeter), or a
     louder one, needs a transistor stage (see [Left out](#left-out)).
-- LEDs: red on GPIO15 (1 kΩ), blue on GPIO16 (220 Ω), both to GND.
+- LEDs: red on GPIO12 (1 kΩ), blue on GPIO13 (220 Ω), both to GND.
   - About 1–3 mA each, and PWM sets the brightness.
   - Blue light spoils dark adaptation more than red: keep the blue LED dim, or use
     it only during setup.
@@ -250,6 +281,48 @@ current gives more. Slews draw more, but only for a few seconds.
 - The battery cable runs along the side of the bar and up the arm. The motor cables
   stay on the L.
 
+### Parts list
+
+Electronics only. The battery, its XT60 lead and the motor cables are in
+[Power](#power) and [mechanics](mechanics.md).
+
+On the stripboard:
+
+| Ref | Part | Qty |
+| --- | --- | --- |
+| A1 | ESP32-S3-DevKitC-1 | 1 |
+| A2, A3 | TMC2209 driver module, StepStick format | 2 |
+| U1 | L7805CV (TO-220), with a small clip-on TO-220 heatsink | 1 |
+| C6, C7 | 100 µF 25 V electrolytic capacitor, Ø6.3 mm, 2.5 mm lead spacing | 2 |
+| R3 | 10 kΩ resistor, 0.25 W | 1 |
+| R7 | 1 kΩ resistor, 0.25 W | 1 |
+| R8 | 220 Ω resistor, 0.25 W | 1 |
+| J4, J5 | 1×4 pin header, 2.54 mm (or JST-XH 4-pin) | 2 |
+| – | 1×22 female header (ESP32 board) | 2 |
+| – | 1×8 female header (driver modules) | 4 |
+| – | Stripboard, 24 × 56 holes | 1 |
+| – | Tinned copper wire (bus links W9–W11), insulated hook-up wire (other links) | – |
+| P1, P2, P3 | Wire pads: wires soldered in, or 1×2, 1×6 and 1×9 pin headers (one pin of the 1×9 pulled) | optional |
+
+On the case:
+
+| Ref | Part | Qty |
+| --- | --- | --- |
+| J1 | XT60 female, panel mount | 1 |
+| CB1 | Resettable breaker switch, 3–5 A, rated for DC | 1 |
+| D3, D4 | LED, red and blue, with panel holders | 2 |
+| BZ1 | Piezo buzzer, or an active buzzer drawing at most 20 mA at 3.3 V | 1 |
+| SW2 | E-stop, NC contact | 1 |
+| J2 | 8-pin socket (GX16-8, or RJ45) | 1 |
+
+Hand unit:
+
+| Ref | Part | Qty |
+| --- | --- | --- |
+| J3 | Analog joystick module (GND, VCC, VRx, VRy, SW) | 1 |
+| SW3–SW5 | Push button | 3 |
+| – | 8-wire cable and the plug that matches J2 | 1 |
+
 ### Left out
 
 Left out to keep the circuit simple. Each can be added later without other changes.
@@ -258,8 +331,8 @@ Left out to keep the circuit simple. Each can be added later without other chang
 | --- | --- |
 | 470 µF on the 12 V rail | More buffering, if the supply wires are long. |
 | 330 nF at the L7805 input, 100 nF and 47 µF at its output | The datasheet values, if U1 sits far from C6/C7. |
-| 100 kΩ / 22 kΩ divider (and 100 nF) from 12 V to GPIO4 | Battery voltage, for a low-battery warning before the BMS cuts the power. |
-| 1 kΩ from GPIO17 to the drivers' PDN_UART pins, GPIO18 direct | Driver configuration over UART: current and microsteps from the firmware, MS1/MS2 then set the addresses. |
+| 100 kΩ / 22 kΩ divider (and 100 nF) from 12 V to GPIO6 | Battery voltage, for a low-battery warning before the BMS cuts the power. |
+| 1 kΩ from GPIO16 to the drivers' PDN_UART pins, GPIO17 direct | Driver configuration over UART: current and microsteps from the firmware, MS1/MS2 then set the addresses. |
 | 100 nF on joystick X and Y | Less noise picked up by the cable. Averaging readings in the firmware does the same. |
 | NPN transistor (BC547), 1 kΩ base resistor, 10 kΩ pull-down, 1N4148 across the buzzer | Drive for a magnetic or louder buzzer, from 5 V. |
 | Schottky diode (1N5817/1N5819, SS14) between U1 and the 5V pin, anode at U1 | USB and the 12 V supply connected at the same time, for example a serial monitor while the motors run. The board then gets about 4.6 V. |
@@ -285,4 +358,6 @@ Left out to keep the circuit simple. Each can be added later without other chang
 - Exact ESP32-S3 board (flash and PSRAM size). The schematic uses the
   ESP32-S3-DevKitC-1 pinout.
 - Exact battery (its size sets the cradle) and case.
+- Case size: the stripboard (about 145 × 62 mm) is larger than the 130 × 90 case in
+  the model.
 - Measured current draw, to confirm the runtime estimate.

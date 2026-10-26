@@ -21,3 +21,10 @@ dependencies.lock
 # SolidCraft lock and backup files
 .~*.lock
 *.solidcraft.bak
+
+# KiCad local settings, locks and backups
+*.kicad_prl
+~*.lck
+.history/
+fp-info-cache
+*-backups/
