@@ -95,8 +95,7 @@ Thread-locker on the set screws keeps them from loosening.
   removing the tube.
 - A new, smaller electronics case without a screen sits lower on the outer face
   (130 × 90 × 50 at height 310–440 in the model), because the outer bearing and
-  pulley take the current case's place. The E-stop, two LEDs and a buzzer are on
-  its face. The XT60 power socket and the hand-unit socket are underneath.
+  pulley take the current case's place. The E-stop and two LEDs are on its face. The XT60 power socket and the hand-unit socket are underneath.
 - The joystick and buttons are in a hand-held unit on a cable, not on the mount.
 - In the model the tube still clears the 380 bar by about 50 when pointing at the
   zenith.
