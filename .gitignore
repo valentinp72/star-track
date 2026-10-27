@@ -28,3 +28,6 @@ dependencies.lock
 .history/
 fp-info-cache
 *-backups/
+
+# Freerouting temporary files
+temp-freerouting.*

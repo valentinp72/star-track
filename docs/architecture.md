@@ -89,17 +89,52 @@ display, and two LEDs on the case give feedback at the mount.
 
 ![Schematic](../electronics/star-track.png)
 
+### Printed circuit board
+
+Board: [`electronics/star-track.kicad_pcb`](../electronics/star-track.kicad_pcb), to be
+made by a PCB service (for example JLCPCB).
+
+- 72 × 61 mm, two layers, through-hole parts only, rounded corners, four M3
+  mounting holes. All text on the top silkscreen.
+- Laid out by function:
+  - left edge: the motor wires (J4, J5), each level with its driver's outputs, and
+    between them the power input (P1, a 5.08 mm screw terminal, for example Dinkle
+    EK508V-02P) and the DC-DC converter (P5);
+  - middle: the two drivers, logic pins towards the ESP32, with C6 and C7 beside
+    their power pins;
+  - right: the ESP32 board (headers 25.4 mm apart, measured), antenna over the top
+    edge. R3, R7 and R8 lie flat under it, next to the pins they serve;
+  - right edge: the hand unit (P3, in J2 order) and the GPS module (P4, in its pin
+    order);
+  - bottom edge: one pair of pads per part on the case: red LED (P2) and blue LED
+    (P6), each with its own GND, and the E-stop (P7). The E-stop is a contact between
+    EN_OUT and DRV_EN, without GND.
+- Every pad is labelled on the silkscreen.
+- Track widths by net class: 1.0 mm for +12 V and GND, 0.8 mm for the motor coils,
+  0.5 mm for +5 V and +3.3 V, 0.3 mm for signals.
+- Routed with Freerouting, then a GND fill on both layers, except under the ESP32
+  board's antenna. KiCad's DRC passes with no errors and no unconnected pads (one
+  warning: the terminal's outline reaches the board edge).
+- Gerber and drill files for ordering:
+  [`electronics/star-track-gerbers.zip`](../electronics/star-track-gerbers.zip),
+  exported from the board. At JLCPCB: upload the zip, 2 layers, 1.6 mm.
+
+![PCB, top](../electronics/pcb-top.png)
+
+![PCB, bottom](../electronics/pcb-bottom.png)
+
 ### Stripboard
 
-Board: [`electronics/star-track.kicad_pcb`](../electronics/star-track.kicad_pcb), a
-24 × 56 hole stripboard (2.54 mm pitch, strips along the 56-hole length). The strips
+An alternative to the printed board:
+[`electronics/stripboard/stripboard.kicad_pcb`](../electronics/stripboard/stripboard.kicad_pcb),
+a 24 × 56 hole stripboard (2.54 mm pitch, strips along the 56-hole length). The strips
 are copper tracks in KiCad, cut where needed, and the wire links are board-only parts
 whose pads count as joined, so KiCad's DRC checks the board against the schematic.
 Columns 1–56 run from the left and rows A–X from the top, seen from the component side.
 
-![Stripboard, component side](../electronics/stripboard-front.svg)
+![Stripboard, component side](../electronics/stripboard/stripboard-front.svg)
 
-![Stripboard, copper side](../electronics/stripboard-back.svg)
+![Stripboard, copper side](../electronics/stripboard/stripboard-back.svg)
 
 - 54 strip cuts and 11 wire links. W9–W11 are bus wires soldered at several holes
   (GND, +12 V, +3.3 V).

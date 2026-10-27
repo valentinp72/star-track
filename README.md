@@ -13,7 +13,7 @@ model of the mount and the electronics schematic; no firmware yet.
 | [`docs/architecture.md`](docs/architecture.md) | Planned electronics and software: ESP32-S3 controller, battery power, pins, phone web app, firmware structure, safety. |
 | [`docs/mechanics.md`](docs/mechanics.md) | Current mechanical build (dimensions from the CAD model), bearing redesign, battery placement, base stability, transport. |
 | [`docs/3d/index.html`](docs/3d/index.html) | Interactive 3D model of the redesigned mount. Open it in a browser (needs an internet connection to load three.js from a CDN). |
-| [`electronics/`](electronics/) | KiCad schematic: power input and battery, ESP32-S3 board, two TMC2209 drivers, GPS, E-stop, LEDs, hand unit (joystick and buttons). [PDF](electronics/star-track.pdf) and PNG exports alongside. Stripboard layout (24 × 56 holes) for the board on the mount, with pictures of both sides. |
+| [`electronics/`](electronics/) | KiCad schematic: power input and battery, ESP32-S3 board, two TMC2209 drivers, GPS, E-stop, LEDs, hand unit (joystick and buttons). [PDF](electronics/star-track.pdf) and PNG exports alongside. Two-layer through-hole PCB for the board on the mount, and a stripboard alternative (24 × 56 holes) with pictures of both sides. |
 
 ## Earlier attempts
 
