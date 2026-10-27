@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1212" height="616" viewBox="0 0 1212 616" font-family="DejaVu Sans, Arial, sans-serif">
-<rect width="1212" height="616" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1212" height="702" viewBox="0 0 1212 702" font-family="DejaVu Sans, Arial, sans-serif">
+<rect width="1212" height="702" fill="#ffffff"/>
 <rect x="46" y="46" width="1120" height="480" rx="3" fill="#efe3c8" stroke="#8a7a5a"/>
 <text x="32" y="60.0" font-size="11" text-anchor="middle" fill="#555">A</text>
 <text x="1180" y="60.0" font-size="11" text-anchor="middle" fill="#555">A</text>
@@ -104,13 +104,13 @@
 <rect x="48.0" y="209.0" width="236.0" height="14" rx="2" fill="#7cb342"/>
 <rect x="828.0" y="229.0" width="336.0" height="14" rx="2" fill="#0d47a1"/>
 <rect x="728.0" y="229.0" width="76.0" height="14" rx="2" fill="#ff7f0e"/>
-<rect x="308.0" y="229.0" width="396.0" height="14" rx="2" fill="#d9b48c"/>
-<rect x="48.0" y="229.0" width="236.0" height="14" rx="2" fill="#827717"/>
+<rect x="308.0" y="229.0" width="396.0" height="14" rx="2" fill="#827717"/>
+<rect x="48.0" y="229.0" width="236.0" height="14" rx="2" fill="#4dd0e1"/>
 <rect x="728.0" y="249.0" width="436.0" height="14" rx="2" fill="#222222"/>
-<rect x="308.0" y="249.0" width="396.0" height="14" rx="2" fill="#d9b48c"/>
+<rect x="308.0" y="249.0" width="396.0" height="14" rx="2" fill="#f06292"/>
 <rect x="48.0" y="249.0" width="236.0" height="14" rx="2" fill="#d9b48c"/>
 <rect x="828.0" y="269.0" width="336.0" height="14" rx="2" fill="#d62728"/>
-<rect x="308.0" y="269.0" width="496.0" height="14" rx="2" fill="#4dd0e1"/>
+<rect x="308.0" y="269.0" width="496.0" height="14" rx="2" fill="#1f77b4"/>
 <rect x="48.0" y="269.0" width="236.0" height="14" rx="2" fill="#d9b48c"/>
 <rect x="348.0" y="289.0" width="816.0" height="14" rx="2" fill="#9467bd"/>
 <rect x="308.0" y="289.0" width="16.0" height="14" rx="2" fill="#d9b48c"/>
@@ -123,36 +123,36 @@
 <rect x="308.0" y="329.0" width="16.0" height="14" rx="2" fill="#d9b48c"/>
 <rect x="48.0" y="329.0" width="236.0" height="14" rx="2" fill="#d9b48c"/>
 <rect x="728.0" y="349.0" width="436.0" height="14" rx="2" fill="#d9b48c"/>
-<rect x="308.0" y="349.0" width="396.0" height="14" rx="2" fill="#f06292"/>
+<rect x="308.0" y="349.0" width="396.0" height="14" rx="2" fill="#2ca02c"/>
 <rect x="48.0" y="349.0" width="236.0" height="14" rx="2" fill="#d9b48c"/>
 <rect x="828.0" y="369.0" width="336.0" height="14" rx="2" fill="#222222"/>
-<rect x="308.0" y="369.0" width="496.0" height="14" rx="2" fill="#1f77b4"/>
+<rect x="308.0" y="369.0" width="496.0" height="14" rx="2" fill="#8c564b"/>
 <rect x="48.0" y="369.0" width="236.0" height="14" rx="2" fill="#d9b48c"/>
 <rect x="768.0" y="389.0" width="396.0" height="14" rx="2" fill="#ff7f0e"/>
-<rect x="308.0" y="389.0" width="436.0" height="14" rx="2" fill="#2ca02c"/>
+<rect x="308.0" y="389.0" width="436.0" height="14" rx="2" fill="#e377c2"/>
 <rect x="48.0" y="389.0" width="236.0" height="14" rx="2" fill="#d9b48c"/>
-<rect x="828.0" y="409.0" width="336.0" height="14" rx="2" fill="#8c564b"/>
+<rect x="828.0" y="409.0" width="336.0" height="14" rx="2" fill="#17becf"/>
 <rect x="728.0" y="409.0" width="76.0" height="14" rx="2" fill="#d9b48c"/>
-<rect x="588.0" y="409.0" width="116.0" height="14" rx="2" fill="#e377c2"/>
-<rect x="308.0" y="409.0" width="256.0" height="14" rx="2" fill="#17becf"/>
+<rect x="588.0" y="409.0" width="116.0" height="14" rx="2" fill="#bcbd22"/>
+<rect x="308.0" y="409.0" width="256.0" height="14" rx="2" fill="#3949ab"/>
 <rect x="48.0" y="409.0" width="236.0" height="14" rx="2" fill="#d9b48c"/>
-<rect x="828.0" y="429.0" width="336.0" height="14" rx="2" fill="#bcbd22"/>
+<rect x="828.0" y="429.0" width="336.0" height="14" rx="2" fill="#00897b"/>
 <rect x="728.0" y="429.0" width="76.0" height="14" rx="2" fill="#d9b48c"/>
-<rect x="488.0" y="429.0" width="216.0" height="14" rx="2" fill="#3949ab"/>
-<rect x="308.0" y="429.0" width="156.0" height="14" rx="2" fill="#00897b"/>
+<rect x="488.0" y="429.0" width="216.0" height="14" rx="2" fill="#ad1457"/>
+<rect x="308.0" y="429.0" width="156.0" height="14" rx="2" fill="#7cb342"/>
 <rect x="48.0" y="429.0" width="236.0" height="14" rx="2" fill="#d9b48c"/>
-<rect x="828.0" y="449.0" width="336.0" height="14" rx="2" fill="#ad1457"/>
+<rect x="828.0" y="449.0" width="336.0" height="14" rx="2" fill="#0d47a1"/>
 <rect x="728.0" y="449.0" width="76.0" height="14" rx="2" fill="#d9b48c"/>
 <rect x="308.0" y="449.0" width="396.0" height="14" rx="2" fill="#d9b48c"/>
 <rect x="48.0" y="449.0" width="236.0" height="14" rx="2" fill="#d9b48c"/>
-<rect x="828.0" y="469.0" width="336.0" height="14" rx="2" fill="#7cb342"/>
+<rect x="828.0" y="469.0" width="336.0" height="14" rx="2" fill="#827717"/>
 <rect x="728.0" y="469.0" width="76.0" height="14" rx="2" fill="#ff7f0e"/>
-<rect x="588.0" y="469.0" width="116.0" height="14" rx="2" fill="#f06292"/>
+<rect x="588.0" y="469.0" width="116.0" height="14" rx="2" fill="#2ca02c"/>
 <rect x="308.0" y="469.0" width="256.0" height="14" rx="2" fill="#9467bd"/>
 <rect x="48.0" y="469.0" width="236.0" height="14" rx="2" fill="#222222"/>
 <rect x="48.0" y="489.0" width="1116.0" height="14" rx="2" fill="#222222"/>
 <rect x="828.0" y="509.0" width="336.0" height="14" rx="2" fill="#d62728"/>
-<rect x="48.0" y="509.0" width="756.0" height="14" rx="2" fill="#4dd0e1"/>
+<rect x="48.0" y="509.0" width="756.0" height="14" rx="2" fill="#1f77b4"/>
 <circle cx="1156.0" cy="56.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="1136.0" cy="56.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="1116.0" cy="56.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
@@ -693,7 +693,7 @@
 <circle cx="496.0" cy="236.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="476.0" cy="236.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="456.0" cy="236.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
-<circle cx="436.0" cy="236.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
+<circle cx="436.0" cy="236.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
 <circle cx="416.0" cy="236.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="396.0" cy="236.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="376.0" cy="236.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
@@ -749,7 +749,7 @@
 <circle cx="496.0" cy="256.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="476.0" cy="256.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="456.0" cy="256.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
-<circle cx="436.0" cy="256.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
+<circle cx="436.0" cy="256.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
 <circle cx="416.0" cy="256.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="396.0" cy="256.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="376.0" cy="256.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
@@ -793,8 +793,8 @@
 <circle cx="736.0" cy="276.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
 <circle cx="716.0" cy="276.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="696.0" cy="276.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
-<circle cx="676.0" cy="276.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
-<circle cx="656.0" cy="276.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
+<circle cx="676.0" cy="276.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
+<circle cx="656.0" cy="276.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="636.0" cy="276.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="616.0" cy="276.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="596.0" cy="276.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
@@ -861,7 +861,7 @@
 <circle cx="496.0" cy="296.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="476.0" cy="296.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="456.0" cy="296.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
-<circle cx="436.0" cy="296.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
+<circle cx="436.0" cy="296.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
 <circle cx="416.0" cy="296.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="396.0" cy="296.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="376.0" cy="296.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
@@ -917,7 +917,7 @@
 <circle cx="496.0" cy="316.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="476.0" cy="316.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="456.0" cy="316.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
-<circle cx="436.0" cy="316.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
+<circle cx="436.0" cy="316.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
 <circle cx="416.0" cy="316.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="396.0" cy="316.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="376.0" cy="316.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
@@ -1017,8 +1017,8 @@
 <circle cx="736.0" cy="356.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="716.0" cy="356.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="696.0" cy="356.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
-<circle cx="676.0" cy="356.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
-<circle cx="656.0" cy="356.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
+<circle cx="676.0" cy="356.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
+<circle cx="656.0" cy="356.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
 <circle cx="636.0" cy="356.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="616.0" cy="356.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="596.0" cy="356.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
@@ -1353,8 +1353,8 @@
 <circle cx="736.0" cy="476.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
 <circle cx="716.0" cy="476.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="696.0" cy="476.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
-<circle cx="676.0" cy="476.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
-<circle cx="656.0" cy="476.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
+<circle cx="676.0" cy="476.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
+<circle cx="656.0" cy="476.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
 <circle cx="636.0" cy="476.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
 <circle cx="616.0" cy="476.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="596.0" cy="476.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
@@ -1465,8 +1465,8 @@
 <circle cx="736.0" cy="516.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
 <circle cx="716.0" cy="516.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="696.0" cy="516.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
-<circle cx="676.0" cy="516.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
-<circle cx="656.0" cy="516.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
+<circle cx="676.0" cy="516.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
+<circle cx="656.0" cy="516.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="636.0" cy="516.0" r="4.3" fill="#9a9a9a" stroke="#555"/>
 <circle cx="616.0" cy="516.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
 <circle cx="596.0" cy="516.0" r="2.6" fill="#ffffff" stroke="#7a4a1a" stroke-width="0.8"/>
@@ -1531,10 +1531,14 @@
 <text x="54.0" y="219.5" font-size="8.5" text-anchor="start" fill="#4a2a0a" font-weight="normal">BTN2</text>
 <rect x="831.0" y="230.0" width="37.0" height="12" rx="2" fill="#f6e7d2"/>
 <text x="834.0" y="239.5" font-size="8.5" text-anchor="start" fill="#4a2a0a" font-weight="normal">AZ 2B</text>
+<rect x="311.0" y="230.0" width="43.2" height="12" rx="2" fill="#f6e7d2"/>
+<text x="314.0" y="239.5" font-size="8.5" text-anchor="start" fill="#4a2a0a" font-weight="normal">GPS_RX</text>
 <rect x="51.0" y="230.0" width="30.8" height="12" rx="2" fill="#f6e7d2"/>
 <text x="54.0" y="239.5" font-size="8.5" text-anchor="start" fill="#4a2a0a" font-weight="normal">BTN3</text>
 <rect x="731.0" y="250.0" width="24.6" height="12" rx="2" fill="#f6e7d2"/>
 <text x="734.0" y="259.5" font-size="8.5" text-anchor="start" fill="#4a2a0a" font-weight="normal">GND</text>
+<rect x="311.0" y="250.0" width="43.2" height="12" rx="2" fill="#f6e7d2"/>
+<text x="314.0" y="259.5" font-size="8.5" text-anchor="start" fill="#4a2a0a" font-weight="normal">GPS_TX</text>
 <rect x="831.0" y="270.0" width="30.8" height="12" rx="2" fill="#f6e7d2"/>
 <text x="834.0" y="279.5" font-size="8.5" text-anchor="start" fill="#4a2a0a" font-weight="normal">+12V</text>
 <rect x="311.0" y="270.0" width="43.2" height="12" rx="2" fill="#f6e7d2"/>
@@ -1693,6 +1697,24 @@
 <path d="M290.0 470.0 l12 12 m0 -12 l-12 12" stroke="#c0392b" stroke-width="2.4"/>
 <circle cx="96.0" cy="96.0" r="7" fill="#efe3c8"/>
 <path d="M90.0 90.0 l12 12 m0 -12 l-12 12" stroke="#c0392b" stroke-width="2.4"/>
-<text x="46" y="576" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">Copper side (board turned over left to right): column 1 is now on the right. 54 cuts (red X), grey: solder joints. Labels: what each strip carries.</text>
-<text x="46" y="590" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">One colour per net, as on the component side (black GND, red +12V, orange +3V3, purple +5V); tan: strips that carry nothing. Check every cut with a multimeter: no continuity across it.</text>
+<text x="46.0" y="570" font-size="11.5" text-anchor="start" fill="#111" font-weight="bold">Reading this side</text>
+<text x="46.0" y="585" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">Board turned over left to right:</text>
+<text x="46.0" y="600" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">column 1 is now on the right.</text>
+<text x="46.0" y="615" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">Each strip is labelled with what it carries.</text>
+<text x="46.0" y="630" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">Tan strips carry nothing.</text>
+<text x="419.3333333333333" y="570" font-size="11.5" text-anchor="start" fill="#111" font-weight="bold">Cuts</text>
+<text x="419.3333333333333" y="585" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">Red X: cut the strip at this hole (54 cuts).</text>
+<text x="419.3333333333333" y="600" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">Check each cut with a multimeter:</text>
+<text x="419.3333333333333" y="615" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">no continuity across it.</text>
+<text x="419.3333333333333" y="630" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">Grey holes: solder joints.</text>
+<text x="792.6666666666666" y="570" font-size="11.5" text-anchor="start" fill="#111" font-weight="bold">Colours</text>
+<rect x="792.6666666666666" y="576" width="22" height="10" rx="2" fill="#222222"/>
+<text x="820.6666666666666" y="585" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">GND</text>
+<rect x="792.6666666666666" y="591" width="22" height="10" rx="2" fill="#d62728"/>
+<text x="820.6666666666666" y="600" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">+12 V</text>
+<rect x="792.6666666666666" y="606" width="22" height="10" rx="2" fill="#ff7f0e"/>
+<text x="820.6666666666666" y="615" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">+3.3 V</text>
+<rect x="792.6666666666666" y="621" width="22" height="10" rx="2" fill="#9467bd"/>
+<text x="820.6666666666666" y="630" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">+5 V</text>
+<text x="792.6666666666666" y="645" font-size="10.5" text-anchor="start" fill="#333" font-weight="normal">Other signals: one colour each.</text>
 </svg>

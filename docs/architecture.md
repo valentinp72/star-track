@@ -103,17 +103,19 @@ Columns 1–56 run from the left and rows A–X from the top, seen from the comp
 
 - 54 strip cuts and 11 wire links. W9–W11 are bus wires soldered at several holes
   (GND, +12 V, +3.3 V).
-- The ESP32 board and the two TMC2209 modules sit on female headers. W1–W3 run under
+- The ESP32 board and the two driver modules sit on female headers. W1–W3 run under
   the driver modules: fit them before the headers.
 - The ESP32 board's headers are taken as 25.4 mm apart. Some drawings give 22.86 mm:
   measure the board first. Its antenna end overhangs the top edge by a few millimetres.
-- U1 stands at the left edge, with its tab and heatsink facing outwards.
-- Motor connectors J4, J5: 1×4 pin headers (2.54 mm). JST-XH (2.5 mm) also fits.
-- Wires to the case and the hand unit:
+- Motors: the cables are soldered into J4, J5 (1B, 1A, 2A, 2B from the top), on the
+  same strips as the driver outputs. A 1×4 pin header also fits there.
+- Wires to the case, the hand unit and the modules off the board:
   - P1: power in from CB1 and J1;
   - P2: LEDs and E-stop;
-  - P3: hand-unit socket J2, pins 1–8 in J2 order.
-- Check every cut with a multimeter before fitting the modules, and check the TMC2209
+  - P3: hand-unit socket J2, pins 1–8 in J2 order;
+  - P4: GPS module, numbered as its pins (1 VCC, 2 RX, 3 TX, 4 GND);
+  - P5: DC-DC converter, numbered as U1's pins (1 VIN, 2 GND, 3 VOUT).
+- Check every cut with a multimeter before fitting the modules, and check the driver
   pin order against the module.
 
 ### Emergency stop (works without firmware)
@@ -139,7 +141,7 @@ GPIO9 EN_OUT (LOW = enable) ───[E-stop, NC contact]──┬── DRV_EN:
 ### Drivers
 
 - TMC2209 modules (StepStick format) in standalone mode: only STEP, DIR and EN
-  from the ESP32, no UART. A4988/DRV8825 also work.
+  from the ESP32, no UART.
 - MS1 to GND and MS2 to 3.3 V select 1/64 microsteps (interpolated to 1/256 for
   smooth motion). The table differs from the TMC2208's: check it in the TMC2209
   datasheet.
@@ -162,6 +164,7 @@ hand-unit pins are next to each other on header J3.
 | 1, 2 | Joystick X, Y (ADC1) |
 | 4, 5 | Azimuth DIR, STEP |
 | 9 | EN_OUT, through the E-stop to the drivers' EN |
+| 16, 17 | GPS: UART TX to the module's RX, UART RX from its TX |
 | 10, 11 | Altitude DIR, STEP |
 | 12, 13 | Red LED, blue LED |
 | 18 | Reads DRV_EN (E-stop detection) |
@@ -172,7 +175,7 @@ hand-unit pins are next to each other on header J3.
 - Left free: strapping pins (0, 3, 45, 46), USB (19, 20), the USB serial console
   (43, 44), the RGB LED (38), and flash/PSRAM pins (26–32, plus 33–37 on modules
   with octal PSRAM).
-- Spare: GPIO6, 7, 8, 14, 15, 16, 17, 21, 47, 48.
+- Spare: GPIO6, 7, 8, 14, 15, 21, 47, 48.
 - Buttons and the joystick switch connect to GND and use the internal pull-ups.
 
 ### Hand unit
@@ -182,6 +185,17 @@ hand-unit pins are next to each other on header J3.
   joystick X, Y and switch, buttons 1–3. For example a GX16-8 aviation connector,
   or RJ45 with a network cable.
 - The E-stop stays on the case.
+
+### GPS
+
+- A GY-GPS6MV2 module (u-blox NEO-6M) gives the time and the site, so the mount
+  needs neither from the phone. The phone's `set_time` and `set_site` stay as a
+  fallback, for example indoors.
+- Off the board, with its antenna towards the sky: on top of the case. Four wires
+  to P4.
+- Powered from 5 V (the module has its own 3.3 V regulator, and accepts 3.3–5 V),
+  3.3 V logic on the UART: it connects to the ESP32 directly. NMEA at 9600 baud by
+  default. About 45 mA.
 
 ### Feedback: LEDs
 
@@ -205,7 +219,7 @@ times.
 | Charging | At home, off the mount, with a 12 V car battery charger (see below). No charging circuit on the mount. |
 | Switch and protection | A resettable breaker switch (3–5 A, rated for DC) right after the XT60 socket: it is both the main switch and the fuse. |
 | Motor supply | The switched rail (12.0–14.6 V) goes straight to the drivers' VM pins, with 100 µF at each. |
-| 5 V | L7805CV linear regulator straight into the ESP32 board's 5V pin. |
+| 5 V | DC-DC step-down module set to 5 V, straight into the ESP32 board's 5V pin. It also supplies the GPS. |
 | 3.3 V | The regulator on the ESP32 board. It also supplies the drivers' logic and the joystick. |
 
 - Breaker switch: thermal breakers trip after a few seconds at 2–3 times their
@@ -219,10 +233,6 @@ times.
     cannot move then;
   - with the mount powered, use Wi-Fi for logs (WebSocket) and firmware updates
     (OTA).
-- L7805 capacitors: the datasheet asks for an input capacitor when the regulator is
-  far from the supply's filter capacitor. With U1 next to C6/C7 on the same board,
-  those serve. The output capacitor is not needed for stability, and the ESP32
-  board has its own capacitors.
 
 Charging LiFePO4 with a car (lead-acid) charger:
 
@@ -236,25 +246,25 @@ Charging LiFePO4 with a car (lead-acid) charger:
 - Batteries sold with an XT60 often have the female side fitted. With a female
   socket on the case, such a battery needs a male lead or an adapter.
 
-L7805CV:
+DC-DC converter (U1):
 
-- It drops 13.2 − 5 = 8.2 V. At the ESP32's average 0.10–0.15 A with the Wi-Fi
-  access point on, that is about 1 W.
-- A TO-220 without a heatsink runs about 50 °C above ambient at 1 W, so it needs a
-  small clip-on heatsink. The tab is connected to GND.
-- A buck converter would save about 1 W, roughly an hour of runtime. It can replace
-  the L7805 later without other changes.
+- A small step-down module set to 5 V. It sits off the board, on three wires to P5
+  (VIN, GND, VOUT).
+- Its input range must cover 12.0–14.6 V. Check the output with a multimeter before
+  connecting the ESP32 board.
+- Compared with a linear L7805, it saves about 1 W, roughly an hour of runtime.
 
 Budget (estimates, not measured):
 
 | Load | Current from the battery |
 | --- | --- |
-| ESP32-S3 with the access point on (a linear regulator draws its output current from the battery) | 0.10–0.15 A |
+| ESP32-S3 with the access point on (0.10–0.15 A at 5 V, through the DC-DC converter) | 0.04–0.07 A |
+| GPS (about 45 mA at 5 V) | about 0.02 A |
 | Two motors while tracking (current set with the potentiometers) | 0.2–0.3 A |
 | LEDs | a few mA |
-| Total | about 0.3–0.45 A, about 4–6 W |
+| Total | about 0.3–0.4 A, about 3.5–5 W |
 
-At 0.45 A, using about 5 Ah of the 6 Ah, that gives about 11 h. A lower motor
+At 0.4 A, using about 5 Ah of the 6 Ah, that gives about 12 h. A lower motor
 current gives more. Slews draw more, but only for a few seconds.
 
 ### Placement
@@ -264,9 +274,9 @@ current gives more. Slews draw more, but only for a few seconds.
   bench.
 - Case (printed, about 130 × 90 × 50 in the model):
   - low on the outer face of the arm;
-  - holds the ESP32 board, both drivers, the regulator, the breaker switch and the
-    motor connectors;
-  - on its face: the E-stop and the two LEDs;
+  - holds the stripboard (ESP32 board, both drivers), the DC-DC
+    converter and the breaker switch;
+  - on its face: the E-stop and the two LEDs; on top: the GPS module;
   - underneath: the XT60 socket and the hand-unit socket.
 - The joystick and buttons are in the hand unit, on its cable.
 - The battery cable runs along the side of the bar and up the arm. The motor cables
@@ -283,17 +293,15 @@ On the stripboard:
 | --- | --- | --- |
 | A1 | ESP32-S3-DevKitC-1 | 1 |
 | A2, A3 | TMC2209 driver module, StepStick format | 2 |
-| U1 | L7805CV (TO-220), with a small clip-on TO-220 heatsink | 1 |
 | C6, C7 | 100 µF 25 V electrolytic capacitor, Ø6.3 mm, 2.5 mm lead spacing | 2 |
 | R3 | 10 kΩ resistor, 0.25 W | 1 |
 | R7 | 1 kΩ resistor, 0.25 W | 1 |
 | R8 | 220 Ω resistor, 0.25 W | 1 |
-| J4, J5 | 1×4 pin header, 2.54 mm (or JST-XH 4-pin) | 2 |
 | – | 1×22 female header (ESP32 board) | 2 |
 | – | 1×8 female header (driver modules) | 4 |
 | – | Stripboard, 24 × 56 holes | 1 |
 | – | Tinned copper wire (bus links W9–W11), insulated hook-up wire (other links) | – |
-| P1, P2, P3 | Wire pads: wires soldered in, or 1×2, 1×6 and 1×9 pin headers (one pin of the 1×6 and of the 1×9 pulled) | optional |
+| P1–P5, J4, J5 | Wire pads: wires soldered in, or pin headers (P2, P3 and P4 have a gap, for a pulled pin) | optional |
 
 On the case:
 
@@ -301,6 +309,8 @@ On the case:
 | --- | --- | --- |
 | J1 | XT60 female, panel mount | 1 |
 | CB1 | Resettable breaker switch, 3–5 A, rated for DC | 1 |
+| U1 | DC-DC step-down module, set to 5 V, input range up to at least 14.6 V | 1 |
+| U2 | GPS module GY-GPS6MV2 (u-blox NEO-6M), with its antenna | 1 |
 | D3, D4 | LED, red and blue, with panel holders | 2 |
 | SW2 | E-stop, NC contact | 1 |
 | J2 | 8-pin socket (GX16-8, or RJ45) | 1 |
@@ -320,9 +330,8 @@ Left out to keep the circuit simple. Each can be added later without other chang
 | Part | What it adds |
 | --- | --- |
 | 470 µF on the 12 V rail | More buffering, if the supply wires are long. |
-| 330 nF at the L7805 input, 100 nF and 47 µF at its output | The datasheet values, if U1 sits far from C6/C7. |
 | 100 kΩ / 22 kΩ divider (and 100 nF) from 12 V to GPIO6 | Battery voltage, for a low-battery warning before the BMS cuts the power. |
-| 1 kΩ from GPIO15 to the drivers' PDN_UART pins, GPIO16 direct | Driver configuration over UART: current and microsteps from the firmware, MS1/MS2 then set the addresses. |
+| 1 kΩ from GPIO15 to the drivers' PDN_UART pins, GPIO7 direct | Driver configuration over UART: current and microsteps from the firmware, MS1/MS2 then set the addresses. |
 | 100 nF on joystick X and Y | Less noise picked up by the cable. Averaging readings in the firmware does the same. |
 | Schottky diode (1N5817/1N5819, SS14) between U1 and the 5V pin, anode at U1 | USB and the 12 V supply connected at the same time, for example a serial monitor while the motors run. The board then gets about 4.6 V. |
 
@@ -340,7 +349,8 @@ Left out to keep the circuit simple. Each can be added later without other chang
 
 ## Open points
 
-- Exact stepper motors (rated current) and TMC2209 module make (header pin order).
+- Exact stepper motors (rated current) and driver module make (header pin order).
+- Exact DC-DC converter (input range, output ripple).
 - Joystick type (analog or switches) and E-stop contact type (NC needed).
 - Hand-unit connector.
 - Exact ESP32-S3 board (flash and PSRAM size). The schematic uses the
