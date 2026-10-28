@@ -94,27 +94,34 @@ display, and two LEDs on the case give feedback at the mount.
 Board: [`electronics/star-track.kicad_pcb`](../electronics/star-track.kicad_pcb), to be
 made by a PCB service (for example JLCPCB).
 
-- 72 × 61 mm, two layers, through-hole parts only, rounded corners, four M3
-  mounting holes. All text on the top silkscreen.
+- 72 × 61 mm, two layers, rounded corners, four M3 mounting holes. All text on the
+  top silkscreen, at least 0.15 mm strokes.
+- Through-hole parts, except R3, R7, R8 (0603, hand-soldering pads) and D5
+  (SOD-523), on the top side.
 - Laid out by function:
-  - left edge: the motor wires (J4, J5), each level with its driver's outputs, and
-    between them the power input (P1, a 5.08 mm screw terminal, for example Dinkle
-    EK508V-02P) and the DC-DC converter (P5);
+  - left edge, from the top: the power input (P1, a 5.08 mm screw terminal, for
+    example Dinkle EK508V-02P), the azimuth motor wires (J4), the DC-DC converter
+    (P5) and the altitude motor wires (J5);
   - middle: the two drivers, logic pins towards the ESP32, with C6 and C7 beside
-    their power pins;
+    their VM and GND pins (about 8 mm of track to VM);
   - right: the ESP32 board (headers 25.4 mm apart, measured), antenna over the top
-    edge. R3, R7 and R8 lie flat under it, next to the pins they serve;
+    edge. R3, R7 and R8 sit under it, next to the pins they serve. Solder them
+    before the ESP32 board's headers;
   - right edge: the hand unit (P3, in J2 order) and the GPS module (P4, in its pin
     order);
   - bottom edge: one pair of pads per part on the case: red LED (P2) and blue LED
-    (P6), each with its own GND, and the E-stop (P7). The E-stop is a contact between
+    (P6), each with its own GND, and the E-stop (P7), then D5. The E-stop is a contact between
     EN_OUT and DRV_EN, without GND.
-- Every pad is labelled on the silkscreen.
+- Every pad is labelled on the silkscreen. EN, DIR, VM and GND mark the corner pins
+  of each driver socket, and "USB end" the ESP32 board's USB end, so the modules go
+  in the right way round.
 - Track widths by net class: 1.0 mm for +12 V and GND, 0.8 mm for the motor coils,
-  0.5 mm for +5 V and +3.3 V, 0.3 mm for signals.
-- Routed with Freerouting, then a GND fill on both layers, except under the ESP32
-  board's antenna. KiCad's DRC passes with no errors and no unconnected pads (one
-  warning: the terminal's outline reaches the board edge).
+  0.5 mm for +5 V and +3.3 V, 0.3 mm for signals and the DC-DC output. Narrower
+  where a track passes between two header pins.
+- Routed with Freerouting, then a GND fill on both layers. A keep-out under the
+  ESP32 board's antenna has no copper on either layer: no tracks, vias or fill.
+- KiCad's DRC passes with no errors and no unconnected pads (one warning: the
+  terminal's outline reaches the board edge).
 - Gerber and drill files for ordering:
   [`electronics/star-track-gerbers.zip`](../electronics/star-track-gerbers.zip),
   exported from the board. At JLCPCB: upload the zip, 2 layers, 1.6 mm.
@@ -142,6 +149,7 @@ Columns 1–56 run from the left and rows A–X from the top, seen from the comp
   the driver modules: fit them before the headers.
 - The ESP32 board's headers are taken as 25.4 mm apart. Some drawings give 22.86 mm:
   measure the board first. Its antenna end overhangs the top edge by a few millimetres.
+- No D5: the USB rules in [Power](#power) apply.
 - Motors: the cables are soldered into J4, J5 (1B, 1A, 2A, 2B from the top), on the
   same strips as the driver outputs. A 1×4 pin header also fits there.
 - Wires to the case, the hand unit and the modules off the board:
@@ -234,7 +242,7 @@ hand-unit pins are next to each other on header J3.
 
 ### Feedback: LEDs
 
-- LEDs: red on GPIO12 (1 kΩ), blue on GPIO13 (220 Ω), both to GND.
+- LEDs: red on GPIO12 (1 kΩ), blue on GPIO13 (330 Ω), both to GND.
   - About 1–3 mA each, and PWM sets the brightness.
   - Blue light spoils dark adaptation more than red: keep the blue LED dim, or use
     it only during setup.
@@ -254,20 +262,23 @@ times.
 | Charging | At home, off the mount, with a 12 V car battery charger (see below). No charging circuit on the mount. |
 | Switch and protection | A resettable breaker switch (3–5 A, rated for DC) right after the XT60 socket: it is both the main switch and the fuse. |
 | Motor supply | The switched rail (12.0–14.6 V) goes straight to the drivers' VM pins, with 100 µF at each. |
-| 5 V | DC-DC step-down module set to 5 V, straight into the ESP32 board's 5V pin. It also supplies the GPS. |
+| 5 V | DC-DC step-down module set to 5 V, through the Schottky diode D5 into the ESP32 board's 5V pin. The GPS is on the 5V pin side of D5. |
 | 3.3 V | The regulator on the ESP32 board. It also supplies the drivers' logic and the joystick. |
 
 - Breaker switch: thermal breakers trip after a few seconds at 2–3 times their
   rating. That protects the wiring. Short circuits are cut faster by the battery's
   BMS or the lab supply's current limit.
 - USB and the 12 V supply: Espressif lists the board's USB ports, its 5V pin and
-  its 3V3 pin as mutually exclusive power inputs. With no diode between U1 and the
-  5V pin:
-  - breaker on: keep the ESP32 board's USB unplugged;
-  - USB plugged in (flashing, serial monitor): keep the breaker off. The motors
-    cannot move then;
-  - with the mount powered, use Wi-Fi for logs (WebSocket) and firmware updates
-    (OTA).
+  its 3V3 pin as mutually exclusive power inputs. D5 (PMEG3005EB, 30 V 0.5 A,
+  anode at U1) stops USB power from flowing back into U1:
+  - on the PCB, USB and the 12 V supply may be connected at the same time, for
+    example a serial monitor while the motors run. The ESP32 board then gets about
+    4.6 V from U1, and the GPS runs from USB alone too;
+  - the ESP32 board and the GPS draw about 0.2 A, with peaks near 0.35 A when Wi-Fi
+    transmits: within D5's rating;
+  - on the stripboard (no D5): breaker on, keep the ESP32 board's USB unplugged; USB
+    plugged in, keep the breaker off. With the mount powered, use Wi-Fi for logs
+    (WebSocket) and firmware updates (OTA).
 
 Charging LiFePO4 with a car (lead-acid) charger:
 
@@ -322,19 +333,20 @@ current gives more. Slews draw more, but only for a few seconds.
 Electronics only. The battery, its XT60 lead and the motor cables are in
 [Power](#power) and [mechanics](mechanics.md).
 
-On the stripboard:
+On the board (PCB or stripboard):
 
 | Ref | Part | Qty |
 | --- | --- | --- |
 | A1 | ESP32-S3-DevKitC-1 | 1 |
 | A2, A3 | TMC2209 driver module, StepStick format | 2 |
 | C6, C7 | 100 µF 25 V electrolytic capacitor, Ø6.3 mm, 2.5 mm lead spacing | 2 |
-| R3 | 10 kΩ resistor, 0.25 W | 1 |
-| R7 | 1 kΩ resistor, 0.25 W | 1 |
-| R8 | 220 Ω resistor, 0.25 W | 1 |
+| R3 | 10 kΩ resistor: 0603 on the PCB, 0.25 W through-hole on the stripboard | 1 |
+| R7 | 1 kΩ resistor: 0603 on the PCB, 0.25 W through-hole on the stripboard | 1 |
+| R8 | 330 Ω resistor: 0603 on the PCB, 0.25 W through-hole on the stripboard | 1 |
+| D5 | Schottky diode PMEG3005EB, SOD-523 (PCB only) | 1 |
 | – | 1×22 female header (ESP32 board) | 2 |
 | – | 1×8 female header (driver modules) | 4 |
-| – | Stripboard, 24 × 56 holes | 1 |
+| – | The PCB, or a stripboard of 24 × 56 holes | 1 |
 | – | Tinned copper wire (bus links W9–W11), insulated hook-up wire (other links) | – |
 | P1–P5, J4, J5 | Wire pads: wires soldered in, or pin headers (P2, P3 and P4 have a gap, for a pulled pin) | optional |
 
@@ -368,7 +380,6 @@ Left out to keep the circuit simple. Each can be added later without other chang
 | 100 kΩ / 22 kΩ divider (and 100 nF) from 12 V to GPIO6 | Battery voltage, for a low-battery warning before the BMS cuts the power. |
 | 1 kΩ from GPIO15 to the drivers' PDN_UART pins, GPIO7 direct | Driver configuration over UART: current and microsteps from the firmware, MS1/MS2 then set the addresses. |
 | 100 nF on joystick X and Y | Less noise picked up by the cable. Averaging readings in the firmware does the same. |
-| Schottky diode (1N5817/1N5819, SS14) between U1 and the 5V pin, anode at U1 | USB and the 12 V supply connected at the same time, for example a serial monitor while the motors run. The board then gets about 4.6 V. |
 
 ## Drive resolution
 
