@@ -76,25 +76,37 @@ Thread-locker on the set screws keeps them from loosening.
 
 ### Azimuth
 
-- The shaft stands in a 20 mm rigid flange coupling bolted to the existing
-  95 × 70 plate with four M6 knurled thumb screws (DIN 464), so the mount head
-  lifts off without tools.
+- The shaft stands in a 20 mm rigid flange coupling on the existing 95 × 70 plate.
+  Four M6 × 25 knurled thumb screws (DIN 464) go through the pulley web and the
+  coupling flange into M6 holes tapped in the plate, so the mount head lifts off
+  without tools.
 - A 20 × 32 × 14 shaft collar (Kramp "stelring", listed by a reseller as 705A20)
   under the lower bearing carries the weight.
-- A printed 250-tooth pulley (the old one is broken) is clamped on the fixed shaft
-  with a printed 20 mm hub. The azimuth motor moves from the base to under the far
-  end of the 380 bar and turns with the L. It sits 152.4 from the axis: with a
-  20-tooth motor pulley, that is the centre distance of a 610 closed GT2 belt. The battery and the electronics
+- The printed 250-tooth pulley (the old one is broken) lies on the coupling's
+  flange, its bore over the coupling's hub; the thumb screws hold it, so the motor
+  torque goes through steel screws, not through plastic gripping the hardened
+  shaft. It lifts off with the head, so the belt keeps its tension.
+- The azimuth motor moves from the base to under the far end of the 380 bar and
+  turns with the L. It sits 152.4 from the axis: with a 20-tooth motor pulley, that
+  is the centre distance of a 610 closed GT2 belt. The battery and the electronics
   are on the L too, so no cable crosses the turning joint.
+- The motor's face is bolted to a Motedis NEMA 17 motor plate (82 × 39.5 × 3
+  aluminium), which hangs from the bar's bottom slots on a printed spacer (76 tall,
+  four M8 bolts and T-nuts). Sliding the spacer along the bar tensions the belt.
+- Turning the head, the lowest part (the motor pulley) clears the T by about 14.
 - The bearing stack is taller than the current case: in the model, standing on its
   feet, the 380 bar sits at height 223–268.
 
 ### Altitude
 
 - The shaft crosses the arm 70 below its top (height ≈ 818 in the model).
-- Pulley and motor move to the outer face of the arm. The motor sits 152.4 below the
-  shaft (610 closed GT2 belt, as on azimuth) on a printed bracket with slotted holes
-  for belt tension.
+- Pulley and motor move to the outer face of the arm. The pulley (the same part as
+  on azimuth) is bolted with four M6 screws and nuts to a second 20 mm flange
+  coupling, which clamps the outer end of the shaft just clear of the outer
+  bearing.
+- The motor sits 152.4 below the shaft (610 closed GT2 belt, as on azimuth), on a
+  Motedis motor plate held 63 from the arm by a printed spacer bolted into the
+  arm's slots. Sliding the spacer down tensions the belt.
 - On the inner face, a flange coupling on the shaft carries a 100 × 121 × 8
   aluminium plate with the original Omegon tube clasp. The coupling is turned 45°
   and two of its holes are drilled out to 10.5 so the clasp bolts (60 apart) pass
@@ -122,8 +134,20 @@ Thread-locker on the set screws keeps them from loosening.
 
 ### Printed parts
 
-- Printed: pulleys and hubs, motor brackets, battery cradle, electronics case,
-  drilling templates, cable guides.
+- Printed: pulleys, motor spacers, battery cradle, electronics case, drilling
+  templates, cable guides.
+- The motors are not carried by printed parts in bending: each one is bolted to an
+  aluminium plate, and the printed spacer between the plate and the L is clamped by
+  bolts, so it mostly works in compression. Belt pull is about 10–60 N; a printed
+  bracket flexing 0.05 at the motor would turn the axis by about 2′ each time the
+  torque reverses.
+- Files: [`cad/pulley-gt2-250t.solidcraft`](../cad/pulley-gt2-250t.solidcraft)
+  and its STL (three bodies that overlap by 0.1, fused by the slicer; about 160 g
+  of PETG, no supports), [`cad/azimuth-motor-spacer.stl`](../cad/azimuth-motor-spacer.stl),
+  [`cad/altitude-motor-spacer.stl`](../cad/altitude-motor-spacer.stl). The spacers
+  take M5 heat-set inserts for the plate.
+- The pulley's bore (Ø40.5) and bolt circle (4 × Ø6.6 on Ø56) come from the
+  coupling in the model; check them against the real coupling before printing.
 - Not printed: anything that carries the telescope's weight in bending (bearing
   housings, shaft supports, the link between tube and shaft). Plastic creeps under
   constant load and the play would come back.
@@ -172,15 +196,18 @@ Prices are rough estimates and were not checked against current listings.
 | --- | --- | --- | --- | --- |
 | Flange bearing UCFL204GP | 2 | 2 | not checked | Kramp |
 | Hardened 20 mm steel shaft, cut to 200 | 1 | 1 | €8 each | AliExpress (`20mm linear shaft`) |
-| Rigid flange coupling, 20 mm | 1 | 1 | €5 each | AliExpress |
+| Rigid flange coupling, 20 mm | 2 | 1 | €5 each | AliExpress |
 | Shaft collar 20 × 32 × 14 | – | 1 | €2.50 | Kramp |
-| M8 bolts, DIN 9021 washers, 45-series T-nuts | 4 | 4 | €5 per bag | — |
+| M8 bolts, DIN 9021 washers, 45-series T-nuts | 8 | 8 | €5 per bag | — |
 | Closed GT2 belt 610, 6 wide | 1 | 1 | — | existing |
 | GT2 pulley 20 teeth, 5 bore | 1 | 1 | — | existing |
 | NEMA 17 17HS4401S | 1 | 1 | — | existing |
-| GT2 pulley 250 teeth and hub, motor bracket (PETG) | 1 | 1 | filament | printed |
+| GT2 pulley 250 teeth, motor spacer (PETG) | 1 | 1 | filament | printed |
+| NEMA 17 motor plate, 3 mm aluminium | 1 | 1 | — | existing (Motedis) |
+| M5 heat-set inserts and M5 × 10 screws, M3 × 8 screws for the motor | 3 + 4 | 3 + 4 | €5 | — |
+| M6 × 25 screws and nuts, pulley to coupling | 4 | – | €2 | — |
 | Aluminium plate 100 × 121 × 8 for the tube clasp | 1 | – | not checked | — |
-| M6 knurled thumb screws (DIN 464) | – | 4 | €4 | — |
+| M6 × 25 knurled thumb screws (DIN 464) | – | 4 | €4 | — |
 
 The battery is listed in [architecture](architecture.md#power), the electronics in
 its [parts list](architecture.md#parts-list).
