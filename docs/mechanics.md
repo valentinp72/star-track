@@ -76,24 +76,30 @@ Thread-locker on the set screws keeps them from loosening.
 
 ### Azimuth
 
-- The shaft stands in a 20 mm rigid flange coupling on the existing 95 × 70 plate.
-  Four M6 × 25 knurled thumb screws (DIN 464) go through the pulley web and the
-  coupling flange into M6 holes tapped in the plate, so the mount head lifts off
-  without tools.
+- The shaft stands in a round-flange shaft holder STHRB20 (aluminium, 32 long,
+  Ø28 hub, Ø50 × 8 flange with 4 × Ø5.5 holes on Ø39, two M5 set screws) on the
+  existing 95 × 70 plate.
+- A printed ring (8 thick, Ø51 inside, Ø88 outside) lies around the holder's
+  flange. Four M5 × 20 knurled thumb screws (DIN 464) go through the pulley web
+  (on Ø68, at 45°) and the ring into M5 holes tapped in the plate: the pulley
+  clamps the holder's flange onto the plate, so the mount head lifts off without
+  tools. The thumb screws sit outside the holder because a Ø16 knurled head does
+  not fit next to its Ø28 hub.
 - A 20 × 32 × 14 shaft collar (Kramp "stelring", listed by a reseller as 705A20)
   under the lower bearing carries the weight.
-- The printed 250-tooth pulley (the old one is broken) lies on the coupling's
-  flange, its bore over the coupling's hub; the thumb screws hold it, so the motor
-  torque goes through steel screws, not through plastic gripping the hardened
-  shaft. It lifts off with the head, so the belt keeps its tension.
+- The printed 250-tooth pulley (the old one is broken) lies on the holder's
+  flange, its Ø28.5 bore over the hub. The motor torque goes through the thumb
+  screws into the plate, not through the holder's set screws. The pulley lifts off
+  with the head (it rests on the holder's flange), so the belt keeps its tension;
+  the ring stays on the plate.
 - The azimuth motor moves from the base to under the far end of the 380 bar and
   turns with the L. It sits 152.4 from the axis: with a 20-tooth motor pulley, that
   is the centre distance of a 610 closed GT2 belt. The battery and the electronics
   are on the L too, so no cable crosses the turning joint.
 - The motor's face is bolted to a Motedis NEMA 17 motor plate (82 × 39.5 × 3
-  aluminium), which hangs from the bar's bottom slots on a printed spacer (76 tall,
+  aluminium), which hangs from the bar's bottom slots on a printed spacer (80 tall,
   four M8 bolts and T-nuts). Sliding the spacer along the bar tensions the belt.
-- Turning the head, the lowest part (the motor pulley) clears the T by about 14.
+- Turning the head, the lowest part (the motor pulley) clears the T by about 10.
 - The bearing stack is taller than the current case: in the model, standing on its
   feet, the 380 bar sits at height 223–268.
 
@@ -101,22 +107,31 @@ Thread-locker on the set screws keeps them from loosening.
 
 - The shaft crosses the arm 70 below its top (height ≈ 818 in the model).
 - Pulley and motor move to the outer face of the arm. The pulley (the same part as
-  on azimuth) is bolted with four M6 screws and nuts to a second 20 mm flange
-  coupling, which clamps the outer end of the shaft just clear of the outer
-  bearing.
+  on azimuth) is bolted with four M5 × 25 screws and nuts, through its Ø39 holes, to
+  a second STHRB20 holder on the outer end of the shaft, hub toward the bearing
+  (about 3 clear of the outer bearing's insert).
 - The motor sits 152.4 below the shaft (610 closed GT2 belt, as on azimuth), on a
   Motedis motor plate held 63 from the arm by a printed spacer bolted into the
   arm's slots. Sliding the spacer down tensions the belt.
-- On the inner face, a flange coupling on the shaft carries a 100 × 121 × 8
-  aluminium plate with the original Omegon tube clasp. The coupling is turned 45°
-  and two of its holes are drilled out to 10.5 so the clasp bolts (60 apart) pass
-  through it. The tube can slide −60 / +40 in the clasp for balancing, and comes out
-  when the clasp is opened.
+- On the inner face, a third STHRB20 holder carries a 100 × 121 × 8 aluminium
+  plate with the original Omegon tube clasp. The plate has 4 M5 tapped holes on
+  Ø39 for the holder (at 45°) and the clasp's two Ø6.6 holes 60 apart. The tube can
+  slide −60 / +40 in the clasp for balancing, and comes out when the clasp is
+  opened.
+- The motor torque reaches the tube through the two altitude holders' set screws.
+  Set screws barely bite a hardened shaft, so the shafts are plain bright steel
+  (C45 or S235, Ø20 h9): drill a shallow seat for each set screw, add
+  thread-locker, and fix the two altitude holders with retaining compound (for
+  example Loctite 638 or 648). The altitude shaft never has to come apart.
 - A new, smaller electronics case without a screen sits lower on the outer face
   (130 × 90 × 50 at height 360–490 in the model), because the outer bearing and
   pulley take the current case's place. The E-stop and two LEDs are on its face. The XT60 power socket and the hand-unit socket are underneath.
 - The joystick and buttons are in a hand-held unit on a cable, not on the mount.
-- Near the zenith the back of the tube clears the top of the azimuth shaft.
+- Near the zenith the back of the tube clears the top of the azimuth shaft by
+  about 97 (worst balancing position).
+- Shafts: two Ø20 × 200 rods, not cut. Azimuth: from the base plate to about 18
+  above the upper bearing. Altitude: flush with the tube-side holder, sticking out
+  about 16 on the pulley side, through the pulley's bore.
 
 ### Battery
 
@@ -134,8 +149,8 @@ Thread-locker on the set screws keeps them from loosening.
 
 ### Printed parts
 
-- Printed: pulleys, motor spacers, battery cradle, electronics case, drilling
-  templates, cable guides.
+- Printed: pulleys, motor spacers, azimuth pulley ring, battery cradle,
+  electronics case, drilling templates, cable guides.
 - The motors are not carried by printed parts in bending: each one is bolted to an
   aluminium plate, and the printed spacer between the plate and the L is clamped by
   bolts, so it mostly works in compression. Belt pull is about 10–60 N; a printed
@@ -144,10 +159,11 @@ Thread-locker on the set screws keeps them from loosening.
 - Files: [`cad/pulley-gt2-250t.solidcraft`](../cad/pulley-gt2-250t.solidcraft)
   and its STL (three bodies that overlap by 0.1, fused by the slicer; about 160 g
   of PETG, no supports), [`cad/azimuth-motor-spacer.stl`](../cad/azimuth-motor-spacer.stl),
-  [`cad/altitude-motor-spacer.stl`](../cad/altitude-motor-spacer.stl). The spacers
+  [`cad/altitude-motor-spacer.stl`](../cad/altitude-motor-spacer.stl),
+  [`cad/azimuth-pulley-ring.stl`](../cad/azimuth-pulley-ring.stl). The spacers
   take M5 heat-set inserts for the plate.
-- The pulley's bore (Ø40.5) and bolt circle (4 × Ø6.6 on Ø56) come from the
-  coupling in the model; check them against the real coupling before printing.
+- The pulley's centre (Ø28.5 bore, 4 × Ø5.5 on Ø39) follows the STHRB20 table
+  from the seller; check it against the real holder before printing.
 - Not printed: anything that carries the telescope's weight in bending (bearing
   housings, shaft supports, the link between tube and shaft). Plastic creeps under
   constant load and the play would come back.
@@ -173,14 +189,14 @@ Three pieces, separated without tools:
 
 | Piece | Joint | Size in the model |
 | --- | --- | --- |
-| Base (T with feet and plate) | four thumb screws on the azimuth coupling | ≈ 65 × 38 × 12 cm |
+| Base (T with feet, plate and ring) | four thumb screws through the azimuth pulley | ≈ 65 × 38 × 12 cm |
 | Mount head (L with bearings, shafts, motors, belts, electronics case, battery, clasp) | — | ≈ 77 × 49 × 17 cm |
 | Telescope (tube) | the knob of the tube clasp | ≈ 90 × 15 × 17 cm |
 
 - The bearings stay assembled, so the preload is kept. The azimuth shaft, its
-  coupling and the 250-tooth pulley come off with the head; the belts keep their
+  holder and the 250-tooth pulley come off with the head; the belts keep their
   tension.
-- The thumb screws go into four M6 holes tapped in the 95 × 70 plate.
+- The thumb screws go into four M5 holes tapped in the 95 × 70 plate.
 - Re-assembly does not need to be precise: the star alignment at the start of each
   session absorbs small shifts.
 - The battery travels on the head, so nothing has to be plugged in between the
@@ -195,19 +211,22 @@ Prices are rough estimates and were not checked against current listings.
 | Part | Altitude | Azimuth | ≈ Price | Source |
 | --- | --- | --- | --- | --- |
 | Flange bearing UCFL204GP | 2 | 2 | not checked | Kramp |
-| Hardened 20 mm steel shaft, cut to 200 | 1 | 1 | €8 each | AliExpress (`20mm linear shaft`) |
-| Rigid flange coupling, 20 mm | 2 | 1 | €5 each | AliExpress |
+| Bright steel rod Ø20 h9 (C45 or S235), 200 long, not hardened | 1 | 1 | — | — |
+| Round-flange shaft holder STHRB20 (20 mm bore, set screws) | 2 | 1 | — | AliExpress |
 | Shaft collar 20 × 32 × 14 | – | 1 | €2.50 | Kramp |
 | M8 bolts, DIN 9021 washers, 45-series T-nuts | 8 | 8 | €5 per bag | — |
 | Closed GT2 belt 610, 6 wide | 1 | 1 | — | existing |
 | GT2 pulley 20 teeth, 5 bore | 1 | 1 | — | existing |
 | NEMA 17 17HS4401S | 1 | 1 | — | existing |
 | GT2 pulley 250 teeth, motor spacer (PETG) | 1 | 1 | filament | printed |
+| Pulley ring (PETG) | – | 1 | filament | printed |
 | NEMA 17 motor plate, 3 mm aluminium | 1 | 1 | — | existing (Motedis) |
 | M5 heat-set inserts and M5 × 10 screws, M3 × 8 screws for the motor | 3 + 4 | 3 + 4 | €5 | — |
-| M6 × 25 screws and nuts, pulley to coupling | 4 | – | €2 | — |
+| M5 × 25 screws and nuts, pulley to holder | 4 | – | €2 | — |
+| M5 × 12 screws, holder to clasp plate | 4 | – | €1 | — |
+| Retaining compound (Loctite 638 or 648), thread-locker | 1 | – | €10 | — |
 | Aluminium plate 100 × 121 × 8 for the tube clasp | 1 | – | not checked | — |
-| M6 × 25 knurled thumb screws (DIN 464) | – | 4 | €4 | — |
+| M5 × 20 knurled thumb screws (DIN 464) | – | 4 | €4 | — |
 
 The battery is listed in [architecture](architecture.md#power), the electronics in
 its [parts list](architecture.md#parts-list).
@@ -219,6 +238,6 @@ see-through mode for the drilled holes, an exploded view, sliders for azimuth an
 altitude, and a "pack for transport" layout with the size of each piece. Clicking a
 part shows what it is and whether it is bought, printed or existing.
 
-Geometry is simplified (profiles, bearings, couplings, pulleys, motors, belts,
+Geometry is simplified (profiles, bearings, shaft holders, pulleys, motors, belts,
 battery, case and tube as basic shapes). Fasteners other than the bearing bolts and
 thumb screws are not drawn, and neither are the motor cables.
