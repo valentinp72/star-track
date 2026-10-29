@@ -166,13 +166,14 @@ tfoot td { font-weight: 600; border-bottom: 0; }
 
   <section>
     <h2>Changes from the current build</h2>
-    <p>The model follows the CAD export (STEP) of the current build: same T base, same L, same bearing heights. Differences:</p>
+    <p>The model follows the CAD model of the current build, checked against the real parts: a T of 30×60 bars (650 mm crossbar, 350 mm stem) on three levelling feet, and the same L. Differences:</p>
     <ol class="steps">
       <li><b>Both 95×70 cases come out,</b> with their thrust bearings. Each axis gets a 20 mm shaft through the bar, with a flange bearing on each wide face.</li>
-      <li><b>Azimuth.</b> The shaft stands in a flange coupling bolted to the existing 95×70 plate. The plate and its two 32.5 mm blocks slide 8 cm along the stem toward the crossbar, for stability (see below). The motor moves from the base to under the far end of the bar, and the existing Ø159 mm pulley is now fixed on the shaft.</li>
-      <li><b>Altitude.</b> The shaft goes through the arm 120 mm below its top, where the current case is. The pulley and motor move to the outer face of the arm. The tube still hangs over the bar, but on a dovetail saddle instead of being bolted to the pulley.</li>
+      <li><b>Azimuth.</b> The shaft stands in a flange coupling bolted to the existing 95×70 plate, which still rests on the four 30×30 blocks. The motor moves from the base to under the far end of the bar, 152 mm from the axis, and a reprinted Ø159 mm pulley is fixed on the shaft.</li>
+      <li><b>Altitude.</b> The shaft goes through the arm 70 mm below its top. The pulley and motor move to the outer face of the arm, the motor 152 mm below the shaft. The tube still hangs over the bar, held by its original clasp on an aluminium plate bolted to the shaft's flange coupling.</li>
       <li><b>Electronics and battery.</b> A smaller case without the touch screen sits lower on the outer face of the arm, below the altitude motor, because the outer bearing and pulley take the current case's place. A 12.8 V LiFePO4 battery sits at the far end of the bar. Both turn with the L. The joystick and buttons move to a hand unit on a cable.</li>
-      <li><b>The L sits about 8 cm higher,</b> because the azimuth bearing stack is taller than the current case. At zenith the tube still clears the bar by about 5 cm.</li>
+      <li><b>The L sits about 8 cm higher,</b> because the azimuth bearing stack is taller than the current case. Near the zenith the back of the tube still clears the top of the azimuth shaft.</li>
+      <li><b>Belts.</b> Both drives use a 610 mm closed GT2 belt with a 20-tooth motor pulley and a 250-tooth pulley. That fixes the motor 152 mm from its axis; slotted holes in the motor brackets take up the tension.</li>
     </ol>
   </section>
 
@@ -194,8 +195,8 @@ tfoot td { font-weight: 600; border-bottom: 0; }
           <tr data-part="altcpl"><td>Rigid flange coupling, 20 mm</td><td class="n">1</td><td class="n">1</td><td class="n">€5 each</td><td><span class="src buy">Buy</span></td></tr>
           <tr data-part="azcollar"><td>Shaft collar 20 × 32 × 14 mm (Kramp "stelring", listed as 705A20)</td><td class="n">–</td><td class="n">1</td><td class="n">€2.50</td><td><span class="src buy">Buy</span></td></tr>
           <tr data-part="azbrg"><td>M8 bolts, large washers (DIN 9021) and T-nuts for 45-series slots</td><td class="n">4</td><td class="n">4</td><td class="n">€5 per bag</td><td><span class="src buy">Buy</span></td></tr>
-          <tr data-part="belts"><td>Closed GT2 belt + 20-tooth motor pulley</td><td class="n">1</td><td class="n">1</td><td class="n">€4 each</td><td><span class="src buy">Buy</span></td></tr>
-          <tr data-part="altpul"><td>Large GT2 pulley + motor bracket (PETG)</td><td class="n">1</td><td class="n">1</td><td class="n">filament</td><td><span class="src print">Print</span></td></tr>
+          <tr data-part="belts"><td>Closed GT2 belt 610 mm + 20-tooth motor pulley</td><td class="n">1</td><td class="n">1</td><td class="n">already have</td><td><span class="src yours">Existing</span></td></tr>
+          <tr data-part="altpul"><td>250-tooth GT2 pulley + motor bracket (PETG, fits an A1 mini bed)</td><td class="n">1</td><td class="n">1</td><td class="n">filament</td><td><span class="src print">Print</span></td></tr>
           <tr data-part="L"><td>Ø24 mm hole through the extrusion</td><td class="n">1</td><td class="n">1</td><td class="n">step drill</td><td><span class="src drill">Drill</span></td></tr>
         </tbody>
         <tfoot><tr><td colspan="3">Both axes together</td><td class="n" colspan="2">≈ €40–50 + the 4 bearings</td></tr></tfoot>
@@ -219,25 +220,23 @@ tfoot td { font-weight: 600; border-bottom: 0; }
     <h2>Taking it in the car</h2>
     <p>Split it into three pieces that come apart in about a minute, without tools. Turn on <b>Pack for transport</b> in the model to see them laid out, with their sizes.</p>
     <ol class="pieces">
-      <li><b>Telescope.</b> Its rings sit on a standard Vixen dovetail bar, and a saddle on the altitude coupling clamps it with one knob. Undo the knob and the tube slides out. It travels in its bag or box.</li>
-      <li><b>Mount head</b> (the L with bearings, shafts, motors, belts, electronics case and battery). Four thumb screws hold its azimuth coupling to the base: undo them and lift it off. Leave the bearings assembled so they keep their preload. A plastic crate with some foam protects the printed pulleys and belts.</li>
-      <li><b>Base.</b> The T stays in one piece with its plate, and lies flat in the trunk.</li>
+      <li><b>Telescope.</b> Open the knob of its original clasp and lift the tube out. The clasp and its plate stay on the head. The tube travels in its bag or box.</li>
+      <li><b>Mount head</b> (the L with bearings, shafts, pulleys, motors, belts, electronics case, battery and clasp). Four thumb screws hold its azimuth coupling to the base: undo them and lift it off. The bearings stay assembled, so they keep their preload, and the belts keep their tension. A plastic crate with some foam protects the printed pulleys and belts.</li>
+      <li><b>Base.</b> The T stays in one piece with its feet and plate, and lies flat in the trunk.</li>
     </ol>
     <p>Putting it back doesn't need to be precise: the two-star alignment at the start of each night absorbs any small shift. The battery travels on the head, so there is nothing to plug in between the pieces.</p>
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Transport extras</th><th scope="col">Qty</th><th scope="col">≈ Price</th><th scope="col">Source</th></tr></thead>
         <tbody>
-          <tr data-part="saddle"><td>Vixen-style dovetail saddle</td><td class="n">1</td><td class="n">€15–25</td><td><span class="src buy">Buy</span></td></tr>
-          <tr data-part="tube"><td>Vixen dovetail bar, about 30 cm</td><td class="n">1</td><td class="n">€10–15</td><td><span class="src buy">Buy</span></td></tr>
-          <tr data-part="azcpl"><td>M6 knurled thumb screws (DIN 464)</td><td class="n">4</td><td class="n">€4</td><td><span class="src buy">Buy</span></td></tr>
+                    <tr data-part="azcpl"><td>M6 knurled thumb screws (DIN 464)</td><td class="n">4</td><td class="n">€4</td><td><span class="src buy">Buy</span></td></tr>
           <tr><td>Plastic crate and foam for the head</td><td class="n">1</td><td class="n">€10–20</td><td><span class="src buy">Buy</span></td></tr>
         </tbody>
-        <tfoot><tr><td colspan="2">Total</td><td class="n" colspan="2">≈ €40–65</td></tr></tfoot>
+        <tfoot><tr><td colspan="2">Total</td><td class="n" colspan="2">≈ €15–25</td></tr></tfoot>
       </table>
     </div>
     <p class="note">If the head is too tall for the car, the arm can be made removable too: replace the corner bracket's bolts with knob bolts. The alignment again absorbs the small differences each time.</p>
-    <p class="note warn"><b>Bearing plate moved toward the crossbar.</b> In the current build the azimuth axis is in the middle of the stem, with only about 7.5 cm to spare toward the two long sides of the triangle of feet. With the plate 8 cm closer to the crossbar, the axis sits near the middle of that triangle, with about 11 cm of margin in every direction. Since the plate and blocks are held by T-nuts in the stem, this only means sliding them along it.</p>
+    <p class="note"><b>Stable base.</b> With the 650 mm crossbar, the azimuth axis sits near the middle of the triangle of feet: about 11 cm of margin toward the crossbar and 15.5 cm toward each long side. The plate and blocks are held by T-nuts in the stem, so the axis can still be slid along it.</p>
   </section>
 </main>
 
@@ -286,24 +285,25 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   // ---------- parts registry ----------
   var parts = {};
   function P(id, name, src, srcLabel, desc) { parts[id] = { id: id, name: name, src: src, srcLabel: srcLabel, desc: desc, meshes: [] }; }
-  P('L', 'L (45×90 bars, existing)', 'yours', 'Existing', 'As in the current build: the 380 mm bar lies flat, centred on the azimuth axis, and the 620 mm arm stands on its end with the corner bracket. The only change is one Ø24 mm hole through the 45 mm thickness of each bar. Turn on "See through aluminium" to see them.');
-  P('tube', 'Telescope (900 mm) and rings, on a Vixen dovetail bar', 'yours', 'Existing + buy', 'Over the bar, as in the current build. The rings bolt onto a standard Vixen dovetail bar: slide it in the saddle to balance the tube, or slide it out for transport.');
-  P('saddle', 'Vixen-style dovetail saddle', 'buy', 'Buy', 'Bolted to the altitude flange coupling on the inner side of the arm. One knob clamps the dovetail bar.');
-  P('base', 'T base (two 350 mm 30×60 bars, existing)', 'yours', 'Existing', 'Both bars stand on edge, as in the current build. The 95×70 plate and its two 32.5 mm blocks now sit 8 cm closer to the crossbar than in the current build (slide their T-nuts along the stem), and carry the azimuth flange coupling.');
+  P('L', 'L (45×90 bars, existing)', 'yours', 'Existing', 'As in the current build: the 380 mm bar lies flat, centred on the azimuth axis, and the 620 mm arm stands on its end with an 85 mm corner bracket, 90 mm wide. The only change is one Ø24 mm hole through the 45 mm thickness of each bar. Turn on "See through aluminium" to see them.');
+  P('tube', 'Telescope (900 mm)', 'yours', 'Existing', 'Over the bar, as in the current build, held by its original clasp. Slide it in the clasp to balance it, or open the clasp to lift it out for transport.');
+  P('clasp', 'Original tube clasp on a 100 × 121 × 8 mm aluminium plate', 'yours', 'Existing + make', 'The Omegon clasp bolts onto the plate, and the plate onto the altitude flange coupling. The coupling is turned 45° and two of its holes are drilled out to 10.5 mm so the clasp bolts (60 mm apart) pass through. The tube can slide about −60 / +40 mm in it for balancing.');
+  P('base', 'T base (30×60 bars, existing)', 'yours', 'Existing', 'A 650 mm crossbar and a 350 mm stem standing on edge, joined by two 60 mm angle brackets. Three levelling feet (Ø40 mm, M8 × 80 mm rod) raise it about 50 mm. The 95×70 plate rests on the stem and four 30×30 blocks, about 30 mm long, held by hammer T-nuts; it carries the azimuth flange coupling.');
   P('board', 'Electronics case (new, no screen)', 'print', 'Print', 'Smaller than the current case: the touch screen is gone and the phone is the display. Holds the ESP32-S3 board, the two TMC2209 drivers, the DC-DC converter and the breaker switch (main switch and resettable fuse in one). On its face: the E-stop and a red and a blue LED for feedback. Underneath: a female XT60 socket for the battery (or a lab supply) and an 8-pin socket for the hand unit with the joystick and buttons. Low on the outer face of the arm, below the altitude motor. Schematic in electronics/ of the repository.');
   P('battery', 'LiFePO4 battery 12.8 V 6 Ah, with BMS', 'buy', 'Buy', 'At the far end of the bar, opposite the arm, in a printed cradle hooked over the end of the bar and bolted into its top slots. It overhangs the end by about 4 cm to stay clear of the tube rings. It turns with the L, like the motors and the case, so no cable crosses the azimuth joint. One XT60 cable runs along the side of the bar to the case. Lift it out to charge it at home. Until it is bought, a lab supply plugs into the same XT60 socket.');
-  P('altbrg', '2 × flange bearing UCFL204GP (Gopart, Kramp), altitude', 'buy', 'Buy', 'Cast iron, 113 × 60 mm, 33.3 mm tall, with a grease nipple and two set screws. One on each wide face of the arm, 120 mm below its top like the current case. Each is turned 30° so its two M8 bolts (with large washers, as the holes are 12 mm) land in T-nuts in the two slots. Clamped toward each other, they leave no play.');
+  P('altbrg', '2 × flange bearing UCFL204GP (Gopart, Kramp), altitude', 'buy', 'Buy', 'Cast iron, 113 × 60 mm, 33.3 mm tall, with a grease nipple and two set screws. One on each wide face of the arm, 70 mm below its top. Each is turned 30° so its two M8 bolts (with large washers, as the holes are 12 mm) land in T-nuts in the two slots. Clamped toward each other, they leave no play.');
   P('azbrg', '2 × flange bearing UCFL204GP (Gopart, Kramp), azimuth', 'buy', 'Buy', 'Same bearing, above and below the middle of the 380 mm bar, turned 30° the same way. They turn with the L around the fixed shaft.');
   P('altshaft', '20 mm steel shaft, about 200 mm, altitude', 'buy', 'Buy', 'Turns with the tube. The set screws of both bearings lock it.');
   P('azshaft', '20 mm steel shaft, about 200 mm, azimuth', 'buy', 'Buy', 'Stands in the flange coupling on the base plate and never turns. The L turns around it.');
-  P('altcpl', 'Rigid flange coupling 20 mm, altitude', 'buy', 'Buy', 'Clamps the inner end of the shaft. The dovetail saddle bolts to its flange.');
+  P('altcpl', 'Rigid flange coupling 20 mm, altitude', 'buy', 'Buy', 'Clamps the inner end of the shaft. The clasp plate bolts to its flange.');
   P('azcpl', 'Rigid flange coupling 20 mm, azimuth', 'buy', 'Buy', 'Holds the shaft upright on the existing 95×70 plate. Four M6 thumb screws hold it down, so the whole mount head lifts off without tools.');
   P('azcollar', 'Shaft collar 20 × 32 × 14 mm (Kramp "stelring")', 'buy', 'Buy', 'The lower bearing rests on it, so it carries the weight of everything above.');
-  P('altpul', 'Large GT2 pulley, altitude', 'print', 'Print', 'On the outer side of the arm, clamped on the shaft. It no longer carries the tube: the saddle does.');
-  P('azpul', 'Ø159 mm GT2 pulley, azimuth (existing)', 'print', 'Existing + print', 'The existing 250-tooth pulley, now clamped on the fixed shaft with a printed 20 mm hub. The motor on the L walks around it.');
-  P('altmot', 'Altitude motor on a printed bracket', 'print', 'Existing + print', 'Moved to the outer face of the arm, 200 mm below the shaft. Slotted holes allow sliding it down to tighten the belt.');
-  P('azmot', 'Azimuth motor on a printed bracket', 'print', 'Existing + print', 'Moved from the base to under the far end of the bar, so it turns with the L. With the battery and the electronics case also on the L, no cable crosses the turning joint.');
-  P('belts', 'Closed GT2 belts', 'buy', 'Buy', 'Choose the length once the pulleys are printed. The slotted brackets take up the difference.');
+  P('altpul', '250-tooth GT2 pulley, altitude', 'print', 'Print', 'On the outer side of the arm, clamped on the shaft. Ø168 mm over the flanges, so it fits the 180 mm bed of an A1 mini.');
+  P('azpul', '250-tooth GT2 pulley, azimuth', 'print', 'Print', 'Reprinted (the old one broke), clamped on the fixed shaft with a printed 20 mm hub. The motor on the L walks around it.');
+  P('altmot', 'Altitude motor (17HS4401S) on a printed bracket', 'print', 'Existing + print', 'On the outer face of the arm, 152 mm below the shaft, set by the 610 mm belt. Slotted holes allow sliding it down to tighten the belt.');
+  P('azmot', 'Azimuth motor (17HS4401S) on a printed bracket', 'print', 'Existing + print', 'Moved from the base to under the far end of the bar, 152 mm from the axis, so it turns with the L. With the battery and the electronics case also on the L, no cable crosses the turning joint.');
+  P('belts', 'Closed GT2 belts, 610 mm', 'yours', 'Existing', 'With a 20-tooth motor pulley and a 250-tooth pulley, a 610 mm belt puts the motor 152 mm from the axis. The slotted brackets take up the tension.');
+  P('feet', '3 × levelling foot (existing)', 'yours', 'Existing', 'Ball-joint feet with a Ø40 mm pad and an M8 × 80 mm rod, one at each end of the T. Screwed in fully they raise the base about 50 mm; unscrew them to level it.');
 
   function addMesh(parent, geom, key, partId, opts) {
     opts = opts || {};
@@ -332,11 +332,12 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   // T-slot profile, W × 2W (45×90 or 30×60), W along u, H along v
   function profileShape(W, H) {
     var k = W / 45, hw = W / 2, hh = H / 2, o = 5 * k, d1 = 3 * k, cw = 10 * k, d2 = 12 * k, q = H / 4, pts = [];
+    var cells = H > W * 1.5 ? [-q, q] : [0];  // a square profile has one slot per face and one core hole
     var faces = [
       { c: [0, -hh], t: [1, 0], n: [0, -1], half: hw, slots: [0] },
-      { c: [hw, 0], t: [0, 1], n: [1, 0], half: hh, slots: [-q, q] },
+      { c: [hw, 0], t: [0, 1], n: [1, 0], half: hh, slots: cells },
       { c: [0, hh], t: [-1, 0], n: [0, 1], half: hw, slots: [0] },
-      { c: [-hw, 0], t: [0, -1], n: [-1, 0], half: hh, slots: [-q, q] }
+      { c: [-hw, 0], t: [0, -1], n: [-1, 0], half: hh, slots: cells }
     ];
     faces.forEach(function (f) {
       function p(a, b) { pts.push([f.c[0] + f.t[0] * a - f.n[0] * b, f.c[1] + f.t[1] * a - f.n[1] * b]); }
@@ -347,7 +348,7 @@ tfoot td { font-weight: 600; border-bottom: 0; }
     });
     var sh = new THREE.Shape();
     pts.forEach(function (q, i) { if (i) sh.lineTo(q[0], q[1]); else sh.moveTo(q[0], q[1]); });
-    [-q, q].forEach(function (v) { var h = new THREE.Path(); h.absarc(0, v, 4.2 * k, 0, Math.PI * 2, true); sh.holes.push(h); });
+    cells.forEach(function (v) { var h = new THREE.Path(); h.absarc(0, v, 4.2 * k, 0, Math.PI * 2, true); sh.holes.push(h); });
     return sh;
   }
   function extrusion(len, W, H) { return new THREE.ExtrudeGeometry(profileShape(W || 45, H || 90), { depth: len, bevelEnabled: false, curveSegments: 12 }); }
@@ -454,21 +455,29 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   // Ground
   (function () { var gg = new THREE.CircleGeometry(3200, 72); gg.rotateX(-Math.PI / 2); gg.translate(0, -0.6, 0); var gmat = new THREE.MeshBasicMaterial(); gmat.userData.key = 'ground'; mats.push(gmat); scene.add(new THREE.Mesh(gg, gmat)); })();
 
-  // T base, from the STEP export: two 350 mm 30×60 bars on edge; the azimuth axis is at the middle of the stem
-  var baseG = G(scene);
+  // Everything stands on three levelling feet, which raise the bars FEET mm off the ground
+  var FEET = 50, rootG = G(scene, 0, FEET, 0);
+  // T base: 650 mm crossbar and 350 mm stem, 30×60 on edge; the azimuth axis is 95 mm from the crossbar
+  var baseG = G(rootG);
   (function () {
-    var cross = extrusion(350, 30, 60); cross.translate(110, 30, -175); addMesh(baseG, cross, 'alu', 'base');
+    var cross = extrusion(650, 30, 60); cross.translate(110, 30, -325); addMesh(baseG, cross, 'alu', 'base');
     var stem = extrusion(350, 30, 60); stem.rotateY(Math.PI / 2); stem.translate(-255, 30, 0); addMesh(baseG, stem, 'alu', 'base');
     [1, -1].forEach(function (sg) {
-      addMesh(baseG, boxAt(60, 30, 32.5, 0, 45, sg * 31.25), 'alu', 'base');
-      addMesh(baseG, boxAt(4, 57, 57, 93, 28.5, sg * 43.5), 'dark', 'base');
-      addMesh(baseG, boxAt(57, 57, 4, 66.5, 28.5, sg * 17), 'dark', 'base');
+      [-17.5, 17.5].forEach(function (x) { var blk = extrusion(30, 30, 30); blk.translate(x, 45, sg > 0 ? 15 : -45); addMesh(baseG, blk, 'alu', 'base'); });
+      addMesh(baseG, boxAt(4, 60, 60, 93, 30, sg * 45), 'dark', 'base');
+      addMesh(baseG, boxAt(60, 60, 4, 65, 30, sg * 17), 'dark', 'base');
     });
     addMesh(baseG, boxAt(70, 9.5, 95, 0, 64.75, 0), 'base', 'base');
+    [[110, 305], [110, -305], [-235, 0]].forEach(function (f) {
+      addMesh(baseG, cylY(20, 8, -FEET, 40).translate(f[0], 0, f[1]), 'dark', 'feet');
+      addMesh(baseG, cylY(9, 12, 8 - FEET, 24).translate(f[0], 0, f[1]), 'dark', 'feet');
+      addMesh(baseG, cylY(4, 40, 20 - FEET, 16).translate(f[0], 0, f[1]), 'steel', 'feet', { noEdges: true });
+      addMesh(baseG, cylY(7.5, 6.5, -6.5, 6).translate(f[0], 0, f[1]), 'steel', 'feet');
+    });
   })();
 
   // Mount head (lifts off the base): fixed azimuth parts + the turning L
-  var headG = G(scene);
+  var headG = G(rootG);
   var fixedG = G(headG);
   var qUp = basisQ([1, 0, 0], [0, 1, 0]), qDown = basisQ([1, 0, 0], [0, -1, 0]);
   var azCplG = G(fixedG); coupling('azcpl', azCplG, new THREE.Vector3(0, 69.5, 0), qUp, true);
@@ -481,14 +490,14 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   axisLine(fixedG, new THREE.Vector3(0, -10, 0), new THREE.Vector3(0, 300, 0));
 
   // The L (turns in azimuth): 380 mm bar lying flat and centred on the axis, 620 mm arm standing on its end
-  var BAR_Y0 = 172.8, BAR_Y1 = 217.8, ARM_X0 = 145, ARM_X1 = 190, ALT_Y = 717.8, ALT_PX = (ARM_X0 + ARM_X1) / 2;
+  var BAR_Y0 = 172.8, BAR_Y1 = 217.8, ARM_X0 = 145, ARM_X1 = 190, ALT_Y = 767.8, ALT_PX = (ARM_X0 + ARM_X1) / 2;
   var LG = G(headG);
   var legArmG = G(LG);
   var leg = extrusion(380); leg.applyMatrix4(new THREE.Matrix4().set(0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1)); leg.translate(-190, (BAR_Y0 + BAR_Y1) / 2, 0); addMesh(legArmG, leg, 'alu', 'L');
   var arm = extrusion(620); arm.rotateX(-Math.PI / 2); arm.translate(ALT_PX, BAR_Y1, 0); addMesh(legArmG, arm, 'alu', 'L');
   (function () {
-    var b = new THREE.Shape(); b.moveTo(ARM_X0 - 90, BAR_Y1); b.lineTo(ARM_X0, BAR_Y1); b.lineTo(ARM_X0, BAR_Y1 + 90); b.lineTo(ARM_X0 - 5, BAR_Y1 + 90); b.lineTo(ARM_X0 - 85, BAR_Y1 + 5); b.lineTo(ARM_X0 - 90, BAR_Y1 + 5); b.lineTo(ARM_X0 - 90, BAR_Y1);
-    var bg = new THREE.ExtrudeGeometry(b, { depth: 88, bevelEnabled: false }); bg.translate(0, 0, -44); addMesh(legArmG, bg, 'dark', 'L');
+    var b = new THREE.Shape(); b.moveTo(ARM_X0 - 85, BAR_Y1); b.lineTo(ARM_X0, BAR_Y1); b.lineTo(ARM_X0, BAR_Y1 + 85); b.lineTo(ARM_X0 - 5, BAR_Y1 + 85); b.lineTo(ARM_X0 - 80, BAR_Y1 + 5); b.lineTo(ARM_X0 - 85, BAR_Y1 + 5); b.lineTo(ARM_X0 - 85, BAR_Y1);
+    var bg = new THREE.ExtrudeGeometry(b, { depth: 90, bevelEnabled: false }); bg.translate(0, 0, -45); addMesh(legArmG, bg, 'dark', 'L');
   })();
   var holes = [];
   (function () {
@@ -500,20 +509,22 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   var q30x = [Math.cos(Math.PI / 6), 0, Math.sin(Math.PI / 6)];
   var azLow = flangeBearing('azbrg', azHLowG, new THREE.Vector3(0, BAR_Y0, 0), azInLowG, new THREE.Vector3(0, BAR_Y0, 0), basisQ(q30x, [0, -1, 0]));
   var azUp = flangeBearing('azbrg', azHUpG, new THREE.Vector3(0, BAR_Y1, 0), azInUpG, new THREE.Vector3(0, BAR_Y1, 0), basisQ(q30x, [0, 1, 0]));
+  // A 610 mm closed GT2 belt on a 250-tooth and a 20-tooth pulley sets the motor MOT_D mm from its axis
+  var MOT_D = 152.4;
   var azMotG = G(LG);
-  addMesh(azMotG, boxAt(60, 5.3, 60, -132, BAR_Y0 - 2.65, 0), 'printed', 'azmot');
-  stepper('azmot', azMotG, new THREE.Vector3(-132, 127.5, 0), qUp);
+  addMesh(azMotG, boxAt(60, 5.3, 60, -MOT_D, BAR_Y0 - 2.65, 0), 'printed', 'azmot');
+  stepper('azmot', azMotG, new THREE.Vector3(-MOT_D, 127.5, 0), qUp);
   var azBeltG = G(LG);
-  belt(azBeltG, [0, 0], 80.8, [-132, 0], 7.2, function (a, b) { return new THREE.Vector3(a, 117.5, b); }, new THREE.Vector3(0, 1, 0));
+  belt(azBeltG, [0, 0], 80.8, [-MOT_D, 0], 7.2, function (a, b) { return new THREE.Vector3(a, 117.5, b); }, new THREE.Vector3(0, 1, 0));
 
-  // Altitude: shaft through the arm's 45 mm thickness, 120 mm below its top; pulley and motor outside, tube inside over the bar
+  // Altitude: shaft through the arm's 45 mm thickness, 70 mm below its top; pulley and motor outside, tube inside over the bar
   var q30yz = [0, Math.cos(Math.PI / 6), Math.sin(Math.PI / 6)];
   var altHAG = G(LG), altHBG = G(LG);
   var altMotG = G(LG);
-  addMesh(altMotG, boxAt(6, 84, 70, ARM_X1 + 3, ALT_Y - 200, 0), 'printed', 'altmot');
-  stepper('altmot', altMotG, new THREE.Vector3(ARM_X1 + 46, ALT_Y - 200, 0), basisQ([0, 1, 0], [-1, 0, 0]));
+  addMesh(altMotG, boxAt(6, 84, 70, ARM_X1 + 3, ALT_Y - MOT_D, 0), 'printed', 'altmot');
+  stepper('altmot', altMotG, new THREE.Vector3(ARM_X1 + 46, ALT_Y - MOT_D, 0), basisQ([0, 1, 0], [-1, 0, 0]));
   var altBeltG = G(LG);
-  belt(altBeltG, [ALT_Y, 0], 80.8, [ALT_Y - 200, 0], 7.2, function (a, b) { return new THREE.Vector3(ARM_X1 + 56, a, b); }, new THREE.Vector3(1, 0, 0));
+  belt(altBeltG, [ALT_Y, 0], 80.8, [ALT_Y - MOT_D, 0], 7.2, function (a, b) { return new THREE.Vector3(ARM_X1 + 56, a, b); }, new THREE.Vector3(1, 0, 0));
   axisLine(LG, new THREE.Vector3(-320, ALT_Y, 0), new THREE.Vector3(330, ALT_Y, 0));
   // Electronics case (no screen) low on the outer face of the arm: E-stop, LEDs and main switch on its face,
   // XT60 power socket and hand-unit socket underneath
@@ -555,12 +566,19 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   var altB = flangeBearing('altbrg', altHBG, new THREE.Vector3(ARM_X1, ALT_Y, 0), altInBG, new THREE.Vector3(ARM_X1 - ALT_PX, 0, 0), basisQ(q30yz, [1, 0, 0]));
   var altCplG = G(altG); coupling('altcpl', altCplG, new THREE.Vector3(74 - ALT_PX, 0, 0), basisQ([0, 1, 0], [1, 0, 0]));
   var altPulG = G(altG); bigPulley('altpul', altPulG, new THREE.Vector3(ARM_X1 + 56 - ALT_PX, 0, 0), basisQ([0, 1, 0], [1, 0, 0]), -1, 18);
-  var saddleG = G(altG);
-  addMesh(saddleG, boxAt(20, 76, 100, 64 - ALT_PX, 0, 0), 'steel', 'saddle');
-  (function () { var st = cylY(3, 14, 38, 12); st.translate(64 - ALT_PX, 0, 0); addMesh(saddleG, st, 'steel', 'saddle', { noEdges: true }); var kn = cylY(11, 14, 52, 24); kn.translate(64 - ALT_PX, 0, 0); addMesh(saddleG, kn, 'motor', 'saddle'); })();
+  // Original tube clasp: a ring round the tube, on a 100 × 121 × 8 mm plate bolted to the coupling flange
+  var TUBE_X = -20 - ALT_PX;
+  var claspG = G(altG);
+  addMesh(claspG, boxAt(8, 100, 121, 70 - ALT_PX, 0, 0), 'base', 'clasp');
+  (function () {
+    var ann = new THREE.Shape(); ann.absarc(0, 0, 73, 0, Math.PI * 2, false); var hp = new THREE.Path(); hp.absarc(0, 0, 66, 0, Math.PI * 2, true); ann.holes.push(hp);
+    var rg = new THREE.ExtrudeGeometry(ann, { depth: 96, bevelEnabled: false, curveSegments: 48 }); rg.translate(TUBE_X, 0, -48);
+    addMesh(claspG, rg, 'dark', 'clasp');
+    addMesh(claspG, boxAt(14, 50, 60, 59 - ALT_PX, 0, 0), 'dark', 'clasp');
+    var kn = cylX(9, 16, TUBE_X - 89, 24); addMesh(claspG, kn, 'motor', 'clasp');
+  })();
   var tubeWG = G(altG);
   var tubePackG = G(tubeWG);
-  var TUBE_X = -46 - ALT_PX;
   var tubeG = G(tubePackG, TUBE_X, 0, 0);
   (function () {
     var tg = new THREE.CylinderGeometry(65, 65, 900, 72, 1, true); tg.rotateX(Math.PI / 2);
@@ -569,14 +587,6 @@ tfoot td { font-weight: 600; border-bottom: 0; }
     var cap = new THREE.CircleGeometry(65, 72); cap.rotateY(Math.PI); cap.translate(0, 0, -450); addMesh(tubeG, cap, 'tubein', 'tube', { noEdges: true });
     var band = new THREE.CylinderGeometry(66.5, 66.5, 24, 72, 1, true); band.rotateX(Math.PI / 2); band.translate(0, 0, 438); addMesh(tubeG, band, 'motor', 'tube', { noEdges: true, side: THREE.DoubleSide });
     var foc = cylY(17, 46, 62, 32); foc.translate(0, 0, 330); addMesh(tubeG, foc, 'motor', 'tube');
-    var ann = new THREE.Shape(); ann.absarc(0, 0, 71, 0, Math.PI * 2, false); var hp = new THREE.Path(); hp.absarc(0, 0, 65, 0, Math.PI * 2, true); ann.holes.push(hp);
-    [-140, 120].forEach(function (z) {
-      var rg = new THREE.ExtrudeGeometry(ann, { depth: 20, bevelEnabled: false, curveSegments: 48 }); rg.translate(0, 0, z); addMesh(tubeG, rg, 'base', 'tube');
-      addMesh(tubeG, boxAt(14, 30, 24, 78, 0, z + 10), 'base', 'tube');
-    });
-    var dv = new THREE.Shape(); dv.moveTo(100, -22); dv.lineTo(100, 22); dv.lineTo(85, 15.5); dv.lineTo(85, -15.5); dv.lineTo(100, -22);
-    var dg = new THREE.ExtrudeGeometry(dv, { depth: 300, bevelEnabled: false }); dg.translate(0, 0, -150);
-    addMesh(tubeG, dg, 'base', 'tube');
   })();
 
   // ---------- labels ----------
@@ -591,16 +601,17 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   label('2 × flange bearing', azUp.housing, 75, 0, 20);
   label('printed pulley', altPulG, ARM_X1 + 56 - ALT_PX, 96, 0);
   label('pulley (fixed)', azPulG, 70, 117.5, 95, true);
-  label('motor', altMotG, ARM_X1 + 82, ALT_Y - 200, 0);
-  label('motor (on the L)', azMotG, -132, 100, 60);
+  label('motor', altMotG, ARM_X1 + 82, ALT_Y - MOT_D, 0);
+  label('motor (on the L)', azMotG, -MOT_D, 100, 60);
   label('shaft collar', azCollarG, -70, 132, 20, true);
   label('flange coupling → base plate', azCplG, -120, 75, 40, true);
   label('flange coupling', altCplG, 97 - ALT_PX, 60, 0, true);
   label('existing L', legArmG, -150, 195, -62);
   label('shaft (fixed)', azShaftG, 0, 272, 0, true);
   label('shaft (turns)', altShaftG, 96, 26, 0, true);
-  label('T base', baseG, 110, 80, 150, 'far');
-  label('dovetail saddle', saddleG, 64 - ALT_PX, 72, 0, true);
+  label('T base', baseG, 110, 80, 250, 'far');
+  label('levelling foot', baseG, -235, -30, 0, true);
+  label('tube clasp', claspG, TUBE_X, 92, 0, true);
   label('thumb screws', azCplG, 60, 82, -45, true);
   label('electronics case', boardG, CASE_X + 42, 390, 0);
   label('E-stop', boardG, CASE_X + 30, 438, 0, true);
@@ -613,7 +624,7 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   E(azCplG, 0, 30, 0); E(azPulG, 0, 70, 0); E(azShaftG, 0, 110, 0); E(azCollarG, 0, 150, 0); E(azInLowG, 0, 200, 0); E(azInUpG, 0, 330, 0);
   E(LG, 0, 260, 0); E(azHLowG, 0, -60, 0); E(azHUpG, 0, 70, 0); E(azMotG, 0, -100, 0);
   E(altHAG, -60, 0, 0); E(altHBG, 60, 0, 0); E(altMotG, 115, 0, 0); E(boardG, 60, 0, 0); E(batG, 0, 110, 0);
-  E(altInAG, -60, 0, 0); E(altInBG, 60, 0, 0); E(altCplG, -125, 0, 0); E(saddleG, -165, 0, 0); E(tubeWG, -215, 0, 0); E(altPulG, 130, 0, 0);
+  E(altInAG, -60, 0, 0); E(altInBG, 60, 0, 0); E(altCplG, -125, 0, 0); E(claspG, -165, 0, 0); E(tubeWG, -215, 0, 0); E(altPulG, 130, 0, 0);
   var exT = 0, exTarget = 0;
   function applyExplode() {
     ex.forEach(function (e) { e.o.position.copy(e.v).multiplyScalar(exT); });
@@ -680,13 +691,13 @@ tfoot td { font-weight: 600; border-bottom: 0; }
     fly = { t0: performance.now(), fromT: controls.target.clone(), fromP: camera.position.clone(), toT: target, toP: pos };
   }
   var anchors = { whole: new THREE.Object3D(), alt: new THREE.Object3D(), az: new THREE.Object3D() };
-  anchors.whole.position.set(20, 430, 0); LG.add(anchors.whole);
+  anchors.whole.position.set(20, 480, 0); LG.add(anchors.whole);
   anchors.alt.position.set(ARM_X1, ALT_Y, 0); LG.add(anchors.alt);
   anchors.az.position.set(0, 160, 0); LG.add(anchors.az);
   function view(name, instant) {
     document.querySelectorAll('[data-view]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.view === name)); });
     var tgt = new THREE.Vector3(); anchors[name].getWorldPosition(tgt);
-    var off = name === 'whole' ? new THREE.Vector3(1350, 650, -1250) : name === 'alt' ? new THREE.Vector3(560, 140, -380) : new THREE.Vector3(440, 200, 460);
+    var off = name === 'whole' ? new THREE.Vector3(1500, 720, -1390) : name === 'alt' ? new THREE.Vector3(560, 140, -380) : new THREE.Vector3(440, 200, 460);
     if (exT > 0.5) off.multiplyScalar(name === 'whole' ? 1.3 : 1.7);
     off.applyQuaternion(LG.quaternion);
     if (instant) { controls.target.copy(tgt); camera.position.copy(tgt).add(off); fly = null; return; }
@@ -719,8 +730,8 @@ tfoot td { font-weight: 600; border-bottom: 0; }
 
   // ---------- pack for transport ----------
   var packT = 0, packTarget = 0, saved = null, sizesDone = false;
-  var HEAD_OFF = new THREE.Vector3(950, -69.5, 0);
-  var TUBE_OFF = new THREE.Vector3(-560, 72, 0).sub(HEAD_OFF).sub(new THREE.Vector3(ALT_PX + TUBE_X, ALT_Y, 0));
+  var HEAD_OFF = new THREE.Vector3(950, -69.5 - FEET, 0);
+  var TUBE_OFF = new THREE.Vector3(-560, 72 - FEET, 0).sub(HEAD_OFF).sub(new THREE.Vector3(ALT_PX + TUBE_X, ALT_Y, 0));
   var crate = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1)), crateMat);
   crate.visible = false; scene.add(crate);
   var packLabels = ['base', 'head', 'tube'].map(function (k) {

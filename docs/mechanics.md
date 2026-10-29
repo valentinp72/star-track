@@ -5,16 +5,19 @@ All dimensions in mm. Heights are measured from the ground.
 ## Current build
 
 Dimensions taken from the STEP export of the Fusion 360 design
-("Aluminium telescope mount"). The telescope tube is not in that export; its size
-comes from the earlier Fusion 360 design.
+("Aluminium telescope mount"), corrected with measurements of the real parts. The
+telescope tube is not in that export; its size comes from the earlier Fusion 360
+design. Heights in this table are from the bottom of the extrusions; the feet add
+about 50.
 
 | Part | Description |
 | --- | --- |
-| T base | Two 30×60 aluminium extrusions, 350 long each, standing on edge (60 tall): a crossbar and a stem butting against the middle of it. Two 60×60 angle brackets at the junction. The three bar ends are the feet. |
-| Azimuth support | 95 × 70 × 9.5 plate on top of the stem, at the middle of the stem (175 from the crossbar). Two 30×60 blocks, 32.5 long, either side of the stem under the plate, held with four 30-series connection angles. |
+| T base | Two 30×60 aluminium extrusions (Motedis type B, slot 8) standing on edge (60 tall): a 650 crossbar and a 350 stem butting against the middle of it. Two 60×60 angle brackets at the junction. |
+| Feet | Three ball-joint levelling feet ("Pied 40", M8 × 80 threaded rod, Motedis series 15 PA), one at each end of the T, in the bottom slot. Screwed in fully they raise the extrusions about 50; adjustable. |
+| Azimuth support | 95 × 70 × 9.5 plate on top of the stem, at the middle of the stem (175 from the crossbar). Four 30×30 blocks (type B, slot 8), about 30 long, two on each side of the stem under the plate, held with 90° brackets and hammer T-nuts, so they can be moved. |
 | Azimuth bearing | "95x70 turntable" case: two 95 × 70 × 9.5 plates with an axial thrust ball bearing between them (heights 60–79). |
 | Azimuth drive | NEMA 17 on an 82 × 39.5 × 3 plate, fixed to the base about 132 from the axis. GT2 pulley with 250 teeth (Ø158.6, Ø161 over the flanges, 10 thick) on the turning part, at height 79–89. |
-| L | 45×90 extrusion, cut from one 1000 bar: a 380 bar lying flat (90 horizontal, height 89–134), centred on the azimuth axis, and a 620 arm standing on one end of it (height 134–754), its wide faces along the bar. 90 corner bracket in the inner corner. |
+| L | 45×90 extrusion, cut from one 1000 bar: a 380 bar lying flat (90 horizontal, height 89–134), centred on the azimuth axis, and a 620 arm standing on one end of it (height 134–754), its wide faces along the bar. Motedis 45×90 type B, slot 10, two core holes that take M12. One 85 × 85 corner bracket, 90 wide, in the inner corner. |
 | Altitude bearing | Second "95x70 turntable" case on the inner wide face of the arm, centred 120 below the top of the arm (height ≈ 634). |
 | Altitude drive | NEMA 17 on a motor plate beside the arm, about 150 below the altitude axis. GT2 pulley with 250 teeth and holes to attach the tube. |
 | Telescope | Tube 900 long, about Ø145, hanging over the 380 bar, fixed to the altitude pulley with "tube attach" blocks. |
@@ -78,27 +81,30 @@ Thread-locker on the set screws keeps them from loosening.
   lifts off without tools.
 - A 20 × 32 × 14 shaft collar (Kramp "stelring", listed by a reseller as 705A20)
   under the lower bearing carries the weight.
-- The existing 250-tooth pulley is clamped on the fixed shaft with a printed 20 mm
-  hub. The azimuth motor moves from the base to under the far end of the 380 bar
-  (about 132 from the axis) and turns with the L. The battery and the electronics
+- A printed 250-tooth pulley (the old one is broken) is clamped on the fixed shaft
+  with a printed 20 mm hub. The azimuth motor moves from the base to under the far
+  end of the 380 bar and turns with the L. It sits 152.4 from the axis: with a
+  20-tooth motor pulley, that is the centre distance of a 610 closed GT2 belt. The battery and the electronics
   are on the L too, so no cable crosses the turning joint.
-- The bearing stack is taller than the current case: in the model the 380 bar sits
-  at height 173–218 instead of 89–134.
+- The bearing stack is taller than the current case: in the model, standing on its
+  feet, the 380 bar sits at height 223–268.
 
 ### Altitude
 
-- The shaft crosses the arm 120 below its top, at the height of the current case.
-- Pulley and motor move to the outer face of the arm. The motor sits 200 below the
-  shaft on a printed bracket with slotted holes for belt tension.
-- On the inner face, a flange coupling on the shaft carries a Vixen-style dovetail
-  saddle. The tube rings sit on a Vixen dovetail bar, which allows balancing and
-  removing the tube.
+- The shaft crosses the arm 70 below its top (height ≈ 818 in the model).
+- Pulley and motor move to the outer face of the arm. The motor sits 152.4 below the
+  shaft (610 closed GT2 belt, as on azimuth) on a printed bracket with slotted holes
+  for belt tension.
+- On the inner face, a flange coupling on the shaft carries a 100 × 121 × 8
+  aluminium plate with the original Omegon tube clasp. The coupling is turned 45°
+  and two of its holes are drilled out to 10.5 so the clasp bolts (60 apart) pass
+  through it. The tube can slide −60 / +40 in the clasp for balancing, and comes out
+  when the clasp is opened.
 - A new, smaller electronics case without a screen sits lower on the outer face
-  (130 × 90 × 50 at height 310–440 in the model), because the outer bearing and
+  (130 × 90 × 50 at height 360–490 in the model), because the outer bearing and
   pulley take the current case's place. The E-stop and two LEDs are on its face. The XT60 power socket and the hand-unit socket are underneath.
 - The joystick and buttons are in a hand-held unit on a cable, not on the mount.
-- In the model the tube still clears the 380 bar by about 50 when pointing at the
-  zenith.
+- Near the zenith the back of the tube clears the top of the azimuth shaft.
 
 ### Battery
 
@@ -122,16 +128,20 @@ Thread-locker on the set screws keeps them from loosening.
   housings, shaft supports, the link between tube and shaft). Plastic creeps under
   constant load and the play would come back.
 - Material: PETG or ASA. PLA softens in the sun and creeps.
+- Every printed part must fit the 180 × 180 × 180 bed of a Bambu Lab A1 mini. The
+  largest is the 250-tooth pulley: Ø159.2 pitch, Ø168 over the flanges, which
+  leaves about 6 on each side (no room for a wide brim). The battery cradle
+  (159 long) and the electronics case (130 tall) also fit.
 
 ## Base stability
 
-- Feet: the three ends of the T.
-- Azimuth axis at the middle of the stem (current build): about 19 cm of margin
-  toward the crossbar, but only about 7.6 cm toward each of the two long sides of the
-  support triangle.
-- Azimuth axis 80 closer to the crossbar (as in the model): about 11 cm of margin in
-  every direction. The plate and its blocks are held by T-nuts in the stem's slot, so
-  this only means sliding them along the stem.
+- Feet: three levelling feet, 20 from each end of the T (in the model: 305 either
+  side of the stem on the 650 crossbar, and 345 from the crossbar along the stem).
+- Azimuth axis 95 from the crossbar's inner face (as in the model): about 11 cm of
+  margin toward the crossbar and about 15.5 cm toward each of the two long sides of
+  the support triangle. The axis is close to the triangle's centre (5 from it).
+- The plate and its blocks are held by T-nuts in the stem's slot, so the axis can be
+  moved by sliding them along the stem.
 
 ## Transport
 
@@ -139,11 +149,14 @@ Three pieces, separated without tools:
 
 | Piece | Joint | Size in the model |
 | --- | --- | --- |
-| Base (T with plate) | four thumb screws on the azimuth coupling | ≈ 38 × 35 × 7 cm |
-| Mount head (L with bearings, shafts, motors, belts, electronics case, battery) | — | ≈ 77 × 49 × 17 cm |
-| Telescope (tube, rings, dovetail bar) | one knob on the dovetail saddle | ≈ 90 × 18 × 17 cm |
+| Base (T with feet and plate) | four thumb screws on the azimuth coupling | ≈ 65 × 38 × 12 cm |
+| Mount head (L with bearings, shafts, motors, belts, electronics case, battery, clasp) | — | ≈ 77 × 49 × 17 cm |
+| Telescope (tube) | the knob of the tube clasp | ≈ 90 × 15 × 17 cm |
 
-- The bearings stay assembled, so the preload is kept.
+- The bearings stay assembled, so the preload is kept. The azimuth shaft, its
+  coupling and the 250-tooth pulley come off with the head; the belts keep their
+  tension.
+- The thumb screws go into four M6 holes tapped in the 95 × 70 plate.
 - Re-assembly does not need to be precise: the star alignment at the start of each
   session absorbs small shifts.
 - The battery travels on the head, so nothing has to be plugged in between the
@@ -162,10 +175,11 @@ Prices are rough estimates and were not checked against current listings.
 | Rigid flange coupling, 20 mm | 1 | 1 | €5 each | AliExpress |
 | Shaft collar 20 × 32 × 14 | – | 1 | €2.50 | Kramp |
 | M8 bolts, DIN 9021 washers, 45-series T-nuts | 4 | 4 | €5 per bag | — |
-| Closed GT2 belt + 20-tooth motor pulley | 1 | 1 | €4 each | — |
-| Large GT2 pulley or hub, motor bracket (PETG) | 1 | 1 | filament | printed |
-| Vixen dovetail saddle | 1 | – | €15–25 | — |
-| Vixen dovetail bar, about 30 cm | 1 | – | €10–15 | — |
+| Closed GT2 belt 610, 6 wide | 1 | 1 | — | existing |
+| GT2 pulley 20 teeth, 5 bore | 1 | 1 | — | existing |
+| NEMA 17 17HS4401S | 1 | 1 | — | existing |
+| GT2 pulley 250 teeth and hub, motor bracket (PETG) | 1 | 1 | filament | printed |
+| Aluminium plate 100 × 121 × 8 for the tube clasp | 1 | – | not checked | — |
 | M6 knurled thumb screws (DIN 464) | – | 4 | €4 | — |
 
 The battery is listed in [architecture](architecture.md#power), the electronics in
