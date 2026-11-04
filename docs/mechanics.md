@@ -80,15 +80,20 @@ Thread-locker on the set screws keeps them from loosening.
   Ø28 hub, Ø50 × 8 flange with 4 × Ø5.5 holes on Ø39, two M5 set screws) on the
   existing 95 × 70 plate.
 - A printed ring (8 thick, Ø51 inside, Ø88 outside) lies around the holder's
-  flange. Four M5 × 20 knurled thumb screws (DIN 464) go through the pulley web
-  (on Ø68, at 45°) and the ring into M5 holes tapped in the plate: the pulley
-  clamps the holder's flange onto the plate, so the mount head lifts off without
-  tools. The thumb screws sit outside the holder because a Ø16 knurled head does
-  not fit next to its Ø28 hub.
+  flange. Four M5 × 20 socket head screws (DIN 912) with printed knobs go through
+  the pulley web (on Ø68, at 45°) and the ring into M5 holes tapped in the plate:
+  the pulley clamps the holder's flange onto the plate, so the mount head lifts off
+  without tools. The screws sit outside the holder because a Ø24 knob does not fit
+  next to its Ø28 hub. Each screw goes about 6 into the 9.5 plate.
+- Knob ([`cad/knob-m5.solidcraft`](../cad/knob-m5.solidcraft), STL next to it):
+  Ø24 × 10, six finger scallops, a Ø8.4 × 4.8 pocket for the screw head and a
+  3.8 hex key that goes into the head's 4 socket. Press the head in with a vice
+  (or warm it first); the head stands 0.2 proud, so the screw, not the knob,
+  clamps the pulley. Printed top down, no supports.
 - A 20 × 32 × 14 shaft collar (Kramp "stelring", listed by a reseller as 705A20)
   under the lower bearing carries the weight.
 - The printed 250-tooth pulley (the old one is broken) lies on the holder's
-  flange, its Ø28.5 bore over the hub. The motor torque goes through the thumb
+  flange, its Ø28.5 bore over the hub. The motor torque goes through the four
   screws into the plate, not through the holder's set screws. The pulley lifts off
   with the head (it rests on the holder's flange), so the belt keeps its tension;
   the ring stays on the plate.
@@ -98,7 +103,7 @@ Thread-locker on the set screws keeps them from loosening.
   are on the L too, so no cable crosses the turning joint.
 - The motor's face is bolted to a Motedis NEMA 17 motor plate (82 × 39.5 × 3
   aluminium), which hangs from the bar's bottom slots on a printed spacer (80 tall,
-  four M8 bolts and T-nuts). Sliding the spacer along the bar tensions the belt.
+  four M6 × 20 screws and T-nuts). Sliding the spacer along the bar tensions the belt.
 - Turning the head, the lowest part (the motor pulley) clears the T by about 10.
 - The bearing stack is taller than the current case: in the model, standing on its
   feet, the 380 bar sits at height 223–268.
@@ -107,7 +112,7 @@ Thread-locker on the set screws keeps them from loosening.
 
 - The shaft crosses the arm 70 below its top (height ≈ 818 in the model).
 - Pulley and motor move to the outer face of the arm. The pulley (the same part as
-  on azimuth) is bolted with four M5 × 25 screws and nuts, through its Ø39 holes, to
+  on azimuth) is bolted with four M5 × 20 screws and nuts, through its Ø39 holes, to
   a second STHRB20 holder on the outer end of the shaft, hub toward the bearing
   (about 3 clear of the outer bearing's insert).
 - The motor sits 152.4 below the shaft (610 closed GT2 belt, as on azimuth), on a
@@ -115,7 +120,8 @@ Thread-locker on the set screws keeps them from loosening.
   arm's slots. Sliding the spacer down tensions the belt.
 - On the inner face, a third STHRB20 holder carries a 100 × 121 × 8 aluminium
   plate with the original Omegon tube clasp. The plate has 4 M5 tapped holes on
-  Ø39 for the holder (at 45°) and the clasp's two Ø6.6 holes 60 apart. The tube can
+  Ø39 for the holder (at 45°, M5 × 20 screws cut to 16 so they stay flush with the
+  clasp side) and the clasp's two Ø6.6 holes 60 apart. The tube can
   slide −60 / +40 in the clasp for balancing, and comes out when the clasp is
   opened.
 - The motor torque reaches the tube through the two altitude holders' set screws.
@@ -160,8 +166,11 @@ Thread-locker on the set screws keeps them from loosening.
   and its STL (three bodies that overlap by 0.1, fused by the slicer; about 160 g
   of PETG, no supports), [`cad/azimuth-motor-spacer.stl`](../cad/azimuth-motor-spacer.stl),
   [`cad/altitude-motor-spacer.stl`](../cad/altitude-motor-spacer.stl),
-  [`cad/azimuth-pulley-ring.stl`](../cad/azimuth-pulley-ring.stl). The spacers
-  take M5 heat-set inserts for the plate.
+  [`cad/azimuth-pulley-ring.stl`](../cad/azimuth-pulley-ring.stl),
+  [`cad/knob-m5.stl`](../cad/knob-m5.stl). The spacers take M5 heat-set inserts
+  for the plate. Their four Ø6.6 holes to the extrusion have Ø13 × 2.5
+  counterbores for an M6 head and a DIN 125 washer, which leaves 7.5 of
+  plastic, so an M6 × 20 screw reaches about 6 into a slot-10 T-nut.
 - The pulley's centre (Ø28.5 bore, 4 × Ø5.5 on Ø39) follows the STHRB20 table
   from the seller; check it against the real holder before printing.
 - Not printed: anything that carries the telescope's weight in bending (bearing
@@ -189,14 +198,14 @@ Three pieces, separated without tools:
 
 | Piece | Joint | Size in the model |
 | --- | --- | --- |
-| Base (T with feet, plate and ring) | four thumb screws through the azimuth pulley | ≈ 65 × 38 × 12 cm |
+| Base (T with feet, plate and ring) | four knob screws through the azimuth pulley | ≈ 65 × 38 × 12 cm |
 | Mount head (L with bearings, shafts, motors, belts, electronics case, battery, clasp) | — | ≈ 77 × 49 × 17 cm |
 | Telescope (tube) | the knob of the tube clasp | ≈ 90 × 15 × 17 cm |
 
 - The bearings stay assembled, so the preload is kept. The azimuth shaft, its
   holder and the 250-tooth pulley come off with the head; the belts keep their
   tension.
-- The thumb screws go into four M5 holes tapped in the 95 × 70 plate.
+- The knob screws go into four M5 holes tapped in the 95 × 70 plate.
 - Re-assembly does not need to be precise: the star alignment at the start of each
   session absorbs small shifts.
 - The battery travels on the head, so nothing has to be plugged in between the
@@ -214,19 +223,20 @@ Prices are rough estimates and were not checked against current listings.
 | Bright steel rod Ø20 h9 (C45 or S235), 200 long, not hardened | 1 | 1 | — | — |
 | Round-flange shaft holder STHRB20 (20 mm bore, set screws) | 2 | 1 | — | AliExpress |
 | Shaft collar 20 × 32 × 14 | – | 1 | €2.50 | Kramp |
-| M8 bolts, DIN 9021 washers, 45-series T-nuts | 8 | 8 | €5 per bag | — |
+| M8 bolts, DIN 9021 washers, 45-series T-nuts (bearings) | 4 | 4 | €5 per bag | — |
 | Closed GT2 belt 610, 6 wide | 1 | 1 | — | existing |
 | GT2 pulley 20 teeth, 5 bore | 1 | 1 | — | existing |
 | NEMA 17 17HS4401S | 1 | 1 | — | existing |
 | GT2 pulley 250 teeth, motor spacer (PETG) | 1 | 1 | filament | printed |
 | Pulley ring (PETG) | – | 1 | filament | printed |
 | NEMA 17 motor plate, 3 mm aluminium | 1 | 1 | — | existing (Motedis) |
-| M5 heat-set inserts and M5 × 10 screws, M3 × 8 screws for the motor | 3 + 4 | 3 + 4 | €5 | — |
-| M5 × 25 screws and nuts, pulley to holder | 4 | – | €2 | — |
-| M5 × 12 screws, holder to clasp plate | 4 | – | €1 | — |
+| M5 heat-set inserts and M5 × 10 screws (plate to spacer), M3 × 8 screws (motor to plate) | 3 + 4 | 3 + 4 | €5 | — |
+| M6 × 20 screws (DIN 912), DIN 125 washers, slot-10 M6 T-nuts (spacer to L) | 4 | 4 | €4 | — |
+| M5 × 20 screws and nuts, pulley to holder | 4 | – | €1 | — |
+| M5 × 20 screws cut to 16, holder to clasp plate | 4 | – | — | — |
 | Retaining compound (Loctite 638 or 648), thread-locker | 1 | – | €10 | — |
 | Aluminium plate 100 × 121 × 8 for the tube clasp | 1 | – | not checked | — |
-| M5 × 20 knurled thumb screws (DIN 464) | – | 4 | €4 | — |
+| M5 × 20 screws (DIN 912) with printed knobs (PETG) | – | 4 | filament | printed |
 
 The battery is listed in [architecture](architecture.md#power), the electronics in
 its [parts list](architecture.md#parts-list).
@@ -240,4 +250,4 @@ part shows what it is and whether it is bought, printed or existing.
 
 Geometry is simplified (profiles, bearings, shaft holders, pulleys, motors, belts,
 battery, case and tube as basic shapes). Fasteners other than the bearing bolts and
-thumb screws are not drawn, and neither are the motor cables.
+knobs are not drawn, and neither are the motor cables.
