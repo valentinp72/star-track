@@ -1986,7 +1986,7 @@
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 9a2437be-839e-5658-a47b-2b35ea82934f)
     (property "Reference" "R3" (at 55.88 167.64 0) (effects (font (size 1.27 1.27)) (justify left)))
-    (property "Value" "10k" (at 55.88 170.18 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "220" (at 55.88 170.18 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" (at 53.34 168.91 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 53.34 168.91 0) (effects (font (size 1.27 1.27)) hide))
     (pin "1" (uuid d4399e46-5167-52a2-952f-b26f0744a56f))

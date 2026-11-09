@@ -58,8 +58,9 @@ calculations, so tracking continues when the phone is locked or disconnected.
 
 ## Firmware
 
-- Framework: PlatformIO with the Arduino core 3.x (built on ESP-IDF 5), for
-  FastAccelStepper and an async web server. Note: `server/main/main.c`
+- Framework: the Arduino core 3.x (built on ESP-IDF 5), for FastAccelStepper and
+  an async web server, built with arduino-cli. A board test sketch is in
+  [`firmware/board-test/`](../firmware/board-test/). Note: `server/main/main.c`
   in `v3` declares an Arduino `WiFiServer` inside an ESP-IDF project and does not
   compile as is.
 - Modes: E-STOP → IDLE → MANUAL / GOTO / TRACKING / PARKED.
@@ -167,7 +168,7 @@ For drivers with an active-low enable input (A4988, DRV8825, TMC2209):
 
 ```
 GPIO9 EN_OUT (LOW = enable) ───[E-stop, NC contact]──┬── DRV_EN: EN of both drivers
-                                                      ├── 10 kΩ pull-up to 3.3 V
+                                                      ├── 220 Ω pull-up to 3.3 V (R3)
                                                       └── GPIO18 (reads DRV_EN)
 ```
 
@@ -178,8 +179,16 @@ GPIO9 EN_OUT (LOW = enable) ───[E-stop, NC contact]──┬── DRV_EN:
 - Cutting the motor supply instead can damage the drivers.
 - With the drivers off the motors have no holding torque: the tube must be
   balanced, and the position should be treated as uncertain until re-synced.
-- The 10 kΩ pull-up is needed: without it, an open E-stop leaves EN floating and
+- The pull-up is needed: without it, an open E-stop leaves EN floating and
   the drivers may stay on.
+- It must be strong: TMC2209 modules can pull EN to GND (on the board, the two
+  modules measured about 8 kΩ together). With 10 kΩ, a pressed E-stop gave
+  1.6 V, below the high level of both the drivers and the ESP32. With 220 Ω:
+  2.8 V pressed, 0.6–0.7 V released (measured).
+- GPIO9 sinks about 15 mA through R3 while the E-stop is released: the firmware
+  sets it to the strongest drive (`GPIO_DRIVE_CAP_3`).
+- The first PCBs have a 10 kΩ R3, with a 220 Ω through-hole resistor added on
+  the underside between pins 1 (EN) and 3 (MS2, 3.3 V) of a driver socket.
 
 ### Drivers
 
@@ -273,7 +282,10 @@ times.
   anode at U1) stops USB power from flowing back into U1:
   - on the PCB, USB and the 12 V supply may be connected at the same time, for
     example a serial monitor while the motors run. The ESP32 board then gets about
-    4.6 V from U1, and the GPS runs from USB alone too;
+    4.6 V from U1;
+  - on USB alone, the ESP32 board used here puts no voltage on its 5V pin
+    (measured), so the GPS, on the 5V pin side of D5, is off. Testing the GPS
+    needs the 12 V supply;
   - the ESP32 board and the GPS draw about 0.2 A, with peaks near 0.35 A when Wi-Fi
     transmits: within D5's rating;
   - on the stripboard (no D5): breaker on, keep the ESP32 board's USB unplugged; USB
@@ -340,7 +352,7 @@ On the board (PCB or stripboard):
 | A1 | ESP32-S3-DevKitC-1 | 1 |
 | A2, A3 | TMC2209 driver module, StepStick format | 2 |
 | C6, C7 | 100 µF 25 V electrolytic capacitor, Ø6.3 mm, 2.5 mm lead spacing | 2 |
-| R3 | 10 kΩ resistor: 0603 on the PCB, 0.25 W through-hole on the stripboard | 1 |
+| R3 | 220 Ω resistor: 0603 on the PCB, 0.25 W through-hole on the stripboard | 1 |
 | R7 | 1 kΩ resistor: 0603 on the PCB, 0.25 W through-hole on the stripboard | 1 |
 | R8 | 330 Ω resistor: 0603 on the PCB, 0.25 W through-hole on the stripboard | 1 |
 | D5 | Schottky diode PMEG3005EB, SOD-523 (PCB only) | 1 |
