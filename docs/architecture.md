@@ -243,8 +243,8 @@ hand-unit pins are next to each other on header J3.
 - A GY-GPS6MV2 module (u-blox NEO-6M) gives the time and the site, so the mount
   needs neither from the phone. The phone's `set_time` and `set_site` stay as a
   fallback, for example indoors.
-- Off the board, with its antenna towards the sky: on top of the case. Four wires
-  to P4.
+- Off the board, inside the case at its top, with its antenna under the top wall.
+  Four wires to P4.
 - Powered from 5 V (the module has its own 3.3 V regulator, and accepts 3.3–5 V),
   3.3 V logic on the UART: it connects to the ESP32 directly. NMEA at 9600 baud by
   default. About 45 mA.
@@ -330,12 +330,12 @@ current gives more. Slews draw more, but only for a few seconds.
 - Battery: at the far end of the 380 bar, opposite the arm, in a printed cradle
   (see [mechanics](mechanics.md#battery)). Until it is bought, a lab supply on the
   bench.
-- Case (printed, about 130 × 90 × 50 in the model):
+- Case (printed, 90 × 173 × 62, see [mechanics](mechanics.md#electronics-box)):
   - low on the outer face of the arm;
-  - holds the stripboard (ESP32 board, both drivers), the DC-DC
-    converter and the breaker switch;
-  - on its face: the E-stop and the two LEDs; on top: the GPS module;
-  - underneath: the XT60 socket and the hand-unit socket.
+  - holds the PCB (ESP32 board, both drivers, DC-DC converter) and the GPS module;
+  - on top: the E-stop; on one side: the two LEDs and the USB port;
+  - underneath: the XT60 socket and the hand-unit socket;
+  - the breaker switch is outside the case.
 - The joystick and buttons are in the hand unit, on its cable.
 - The battery cable runs along the side of the bar and up the arm. The motor cables
   stay on the L.

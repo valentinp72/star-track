@@ -129,9 +129,9 @@ Thread-locker on the set screws keeps them from loosening.
   (C45 or S235, Ø20 h9): drill a shallow seat for each set screw, add
   thread-locker, and fix the two altitude holders with retaining compound (for
   example Loctite 638 or 648). The altitude shaft never has to come apart.
-- A new, smaller electronics case without a screen sits lower on the outer face
-  (130 × 90 × 50 at height 360–490 in the model), because the outer bearing and
-  pulley take the current case's place. The E-stop and two LEDs are on its face. The XT60 power socket and the hand-unit socket are underneath.
+- A new, smaller electronics box without a screen sits lower on the outer face
+  (90 × 173 × 62, see [Electronics box](#electronics-box)), because the outer
+  bearing and pulley take the current case's place.
 - The joystick and buttons are in a hand-held unit on a cable, not on the mount.
 - Near the zenith the back of the tube clears the top of the azimuth shaft by
   about 97 (worst balancing position).
@@ -152,6 +152,46 @@ Thread-locker on the set screws keeps them from loosening.
   the arm's weight.
 - Its cable runs along the side of the bar and up the arm to the case. Wiring and
   runtime: [architecture](architecture.md#power).
+
+### Electronics box
+
+[`cad/electronics-box.solidcraft`](../cad/electronics-box.solidcraft), STLs next
+to it (`electronics-box.stl`, `electronics-box-lid.stl`).
+
+- 90 wide, like the arm, 173 tall, 59 deep plus a 3 lid. Walls 3, back 4.1. It
+  stands on the outer 90 face of the arm, its long side vertical, the lid facing
+  away from the arm.
+- Four Ø5.5 holes in the back, on the arm's two slots (45 apart), 84 apart
+  vertically: M5 screws into slot-10 T-nuts, put in from inside with the lid off.
+- Main PCB on four M3 heat-set inserts in standoffs 6 tall (back of the PCB 10 from the
+  back face, room for 27 of parts on top). Its USB edge faces a side wall, the
+  screw terminals face down.
+- That side wall has two Ø3.2 holes for the 3 mm LEDs, which lie on the PCB and
+  stick out 6.7 past its edge (hole centres 1.5 above the PCB surface), and an opening for the ESP32 board's USB
+  port nearest the GPS and hand-unit pins (the end of the ESP32 board is about
+  0.85 past the PCB edge). There the wall is thickened inwards to 0.15 from the
+  port: a 13.5 × 9 pocket from outside takes the plug's moulding, and a 10 × 4.8
+  hole through the remaining 0.6 skin takes its metal shell. Port centre as
+  measured: about 5.5 above the PCB surface, and 17.6 from the PCB edge on the
+  GPS side (its side 13.1 from that edge).
+- Top: Ø22.5 hole for the E-stop, 31 from the back face. The box is 62 deep
+  with the lid so that the E-stop's Ø60 legend plate fits on the top face, 1
+  from each edge. The 38 × 30 contact block, about 45 tall, fits either way
+  round in the inside depth (4.1 to 59 from the back face). With its 38 side
+  across the box, it ends 0.5 from a lid column and 1.2 from the GPS antenna
+  fins.
+- GPS board on four M3 inserts (30 × 20) on the back wall, beside the E-stop.
+- GPS antenna (25.46 × 25.16 board) pressed between two 1.6 thick fins under the
+  top wall, 25.4 apart, patch towards the top wall, its back edge against the
+  back wall. The fins are 8 deep.
+- Bottom: a hole shaped like the female XT60 (16.2 × 8.6, two corners chamfered;
+  the socket is held with hot glue), and a Ø15 hole for the GX16-8 socket with
+  two Ø3.4 holes 21 apart for its M3 screws.
+- Motor cables leave through a 9 × 16 slot in the back wall, in line with one arm
+  slot, and run hidden in that slot.
+- Lid: four M3 screws (socket, pan or button head) into inserts in the corner
+  columns, heads in Ø6.5 × 3 counterbores. The lid is 5 thick at the screws.
+- Printed on its back, no supports.
 
 ### Printed parts
 
@@ -180,7 +220,7 @@ Thread-locker on the set screws keeps them from loosening.
 - Every printed part must fit the 180 × 180 × 180 bed of a Bambu Lab A1 mini. The
   largest is the 250-tooth pulley: Ø159.2 pitch, Ø168 over the flanges, which
   leaves about 6 on each side (no room for a wide brim). The battery cradle
-  (159 long) and the electronics case (130 tall) also fit.
+  (159 long) and the electronics box (173 tall, printed on its back) also fit.
 
 ## Base stability
 
