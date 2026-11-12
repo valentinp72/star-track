@@ -170,23 +170,28 @@ to it (`electronics-box.stl`, `electronics-box-lid.stl`).
   stick out 6.7 past its edge (hole centres 1.5 above the PCB surface), and an opening for the ESP32 board's USB
   port nearest the GPS and hand-unit pins (the end of the ESP32 board is about
   0.85 past the PCB edge). There the wall is thickened inwards to 0.15 from the
-  port: a 13.5 × 9 pocket from outside takes the plug's moulding, and a 10 × 4.8
-  hole through the remaining 0.6 skin takes its metal shell. Port centre as
+  port: a 13.5 × 9 pocket from outside (R2 corners, 1.5 chamfer on its rim)
+  takes the plug's moulding, and a 10 × 4.8 hole through the remaining 0.6
+  skin takes its metal shell. Port centre as
   measured: about 5.5 above the PCB surface, and 17.6 from the PCB edge on the
   GPS side (its side 13.1 from that edge).
-- Top: Ø22.5 hole for the E-stop, 31 from the back face. The box is 62 deep
-  with the lid so that the E-stop's Ø60 legend plate fits on the top face, 1
-  from each edge. The 38 × 30 contact block, about 45 tall, fits either way
-  round in the inside depth (4.1 to 59 from the back face). With its 38 side
-  across the box, it ends 0.5 from a lid column and 1.2 from the GPS antenna
-  fins.
+- Top: Ø22.5 hole for the E-stop, 31 from the back face and 11 off the centre
+  line, away from the GPS. The box is 62 deep with the lid so that the E-stop's
+  Ø60 legend plate fits on the flat of the top face: 1 from the front and back
+  edges, and its side edge where the corner rounding starts. The 38 × 30
+  contact block, about 45 tall, goes in with its 30 side across the box (38
+  front to back, inside the 4.1–59 depth); it then ends 1.2 from the GPS
+  antenna fins.
 - GPS board on four M3 inserts (30 × 20) on the back wall, beside the E-stop.
 - GPS antenna (25.46 × 25.16 board) pressed between two 1.6 thick fins under the
   top wall, 25.4 apart, patch towards the top wall, its back edge against the
   back wall. The fins are 8 deep.
-- Bottom: a hole shaped like the female XT60 (16.2 × 8.6, two corners chamfered;
-  the socket is held with hot glue), and a Ø15 hole for the GX16-8 socket with
-  two Ø3.4 holes 21 apart for its M3 screws.
+- Bottom: a hole for the female XT60 (16.1 × 8.5 outside; hole 16.5 × 8.9). As
+  on the Amass XT60-F drawing, both corners of one short end are chamfered,
+  2.9 along by 2.6 across, leaving a 3.7 flat. A 1.6 thick lip, 5 tall, goes
+  round the hole inside, so the socket sits in 8 of plastic, held with hot glue.
+- Bottom: a Ø15 hole for the GX16-8 socket, with two Ø3.4 holes 21 apart for its
+  M3 screws.
 - Motor cables leave through a 9 × 16 slot in the back wall, in line with one arm
   slot, and run hidden in that slot.
 - Lid: four M3 screws (socket, pan or button head) into inserts in the corner
