@@ -198,10 +198,55 @@ to it (`electronics-box.stl`, `electronics-box-lid.stl`).
   columns, heads in Ø6.5 × 3 counterbores. The lid is 5 thick at the screws.
 - Printed on its back, no supports.
 
+### Hand unit
+
+[`cad/hand-unit.solidcraft`](../cad/hand-unit.solidcraft), STLs next to it
+(`hand-unit-bottom.stl`, `hand-unit-top.stl`, `hand-unit-button.stl`, print three
+buttons). The design also holds mock-ups of the breadboard, the joystick and the
+switches, which are not printed.
+
+- Electronics on a solderable 400-point breadboard
+  ([tebl Breadboard 400](https://github.com/tebl/breadboard/tree/main/Breadboard%20400):
+  81.28 × 53.34, two Ø3 holes on the centre line, 66.04 apart).
+- Gamepad shape for two hands, 125.5 × 87.2 × 32.7: a body round the breadboard
+  and two grips towards the user. Walls 2.5. Top edge rounded R6, bottom edge R4.
+  A bottom tray (13 tall) and a top shell, joined by four M3 screws from below
+  (heads in Ø6.5 counterbores) into M3 heat-set inserts (Ø4 holes) in columns of
+  the top shell: two beside the back corners of the breadboard, two in the grips.
+- Breadboard on two posts 5 tall, its two holes on M3 inserts: underside 7.5 above
+  the outer bottom face. The breadboard's height is set by the posts, not by the
+  soldering.
+- Joystick (KY-023 module, PCB 26.5 × 34.2 measured, four holes taken as 27 × 20)
+  screwed under the top shell on four bosses with M3 inserts, so the thumb force
+  goes into the case, not into solder joints, and its height does not depend on
+  the breadboard. The module lies above the right end of the breadboard, its 34.2
+  side front to back, its PCB 6 above the breadboard; it connects by five wires.
+  Stick axis 36 right of and 3 in front of the breadboard centre (`joy_x`,
+  `joy_y`); Ø24 opening in the top, which clears the corners of the stick's 16.6
+  square frame. The top face is 16 above the module PCB (`joy_top_h`); the top of
+  the stick is about 30 above it, so 14 above the top face.
+- Three 12 × 12 tactile switches on the breadboard, each across the centre gap
+  (pins in rows 6.35 either side of the centre line, 5.08 apart), centred on
+  columns 7, 12 and 17 of 30 from the left (x = −21.59, −8.89, 3.81 from the
+  breadboard centre), pressed flat on the board. Printed buttons, Ø9, in Ø9.5
+  guide tubes under the top, 3 above the top face. Each rests on its switch's
+  actuator (`sw_h` = 7.3 above the breadboard) and a Ø11.5 flange under the tube
+  keeps it in. Switches of another height need `sw_h` changed and the buttons
+  printed again.
+- One 3 mm LED, on 3.3 V and GND through a resistor (for example 4.7 kΩ for a dim
+  red light), as a power indicator: the 8-wire cable has no free wire for an LED
+  driven by the firmware. It sits in a Ø3.1 hole in a boss under the top (5.5
+  thick in all), above the middle button, 18 behind it: pushed in from inside up
+  to its rim and glued, on two wires, so the length of its legs does not matter.
+- Cable: Ø6.5 hole in the back wall, half in each shell, so it clamps the cable
+  when the case is closed. A cable tie inside takes the pull.
+- Printed with no supports: the bottom on its floor, the top on its top face, the
+  buttons on their flange.
+
 ### Printed parts
 
 - Printed: pulleys, motor spacers, azimuth pulley ring, battery cradle,
-  electronics case, drilling templates, cable guides.
+  electronics case, hand-unit case and buttons, drilling templates, cable guides.
 - The motors are not carried by printed parts in bending: each one is bolted to an
   aluminium plate, and the printed spacer between the plate and the L is clamped by
   bolts, so it mostly works in compression. Belt pull is about 10–60 N; a printed
