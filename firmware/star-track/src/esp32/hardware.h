@@ -40,6 +40,7 @@ class EspEStop : public core::EStop {
   void begin();
   void enableDrivers(bool on) override;
   bool pressed() override;
+  bool enabled() const { return on_; }  // the firmware drives EN_OUT low
 
  private:
   bool on_ = false;
@@ -83,6 +84,7 @@ class EspStorage : public core::Storage {
  public:
   void begin();
   bool load(const char *key, void *data, size_t len) override;
+  size_t size(const char *key) override;
   void save(const char *key, const void *data, size_t len) override;
   void erase(const char *key) override;
 

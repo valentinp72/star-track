@@ -121,4 +121,22 @@ bool configFromJson(Config &c, JsonObjectConst in, char *err, int errLen) {
   return true;
 }
 
+void configSave(const Config &c, JsonObject out) {
+  for (const Key &k : kKeys) put(c, k, out);
+  out["wifi.password"] = c.wifiPassword;
+}
+
+void configLoad(Config &c, JsonObjectConst in) {
+  Config next = c;
+  for (JsonPairConst kv : in) {
+    const Key *k = find(kv.key().c_str());
+    if (k && valid(*k, kv.value())) apply(next, *k, kv.value());
+  }
+  if (next.altMin >= next.altMax) {
+    next.altMin = c.altMin;
+    next.altMax = c.altMax;
+  }
+  c = next;
+}
+
 }  // namespace core

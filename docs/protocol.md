@@ -515,6 +515,7 @@ refused: the status shows `sun: null`.
 | `below_limit` | The target is below `alt.min` or above `alt.max`. |
 | `sun` | The target or the slew comes within `sun.min_sep` of the Sun, outside solar mode. See [Sun safety](#sun-safety). |
 | `align_mismatch` | An alignment star does not fit the earlier ones. See [`align_add`](#align_add). |
+| `updating` | The mount is writing a firmware or app update, then restarts. Only on the mount (see [`firmware/star-track/README.md`](../firmware/star-track/README.md#updates-over-wi-fi)). |
 
 ## Configuration
 

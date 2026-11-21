@@ -105,7 +105,7 @@ takes GPIO 33–37: none of them is used). Partitions of the 16 MB
 | Partition | Size | Contents |
 | --- | --- | --- |
 | NVS | 20 KB | Settings, site, alignment, park state, the Wi-Fi password. |
-| OTA data, app 0, app 1 | 2 × 3 MB | The firmware, twice: a new version is written to the other slot over Wi-Fi, the old one stays as a fallback. |
+| OTA data, app 0, app 1 | 2 × 3 MB | The firmware, twice: a new version is written to the other slot over Wi-Fi, the old one stays as a fallback until the new one confirms itself (see [updates over Wi-Fi](../firmware/star-track/README.md#updates-over-wi-fi)). |
 | LittleFS | about 9.9 MB | The phone app (`app/dist`), text files gzipped, served as they are (`Content-Encoding: gzip`). |
 | Core dump | 64 KB | The state of the firmware after a crash, read with `esptool`. |
 

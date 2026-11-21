@@ -89,7 +89,7 @@ const char *modeName(Mode m) {
 // ---------------------------------------------------------------- lifecycle
 
 void Mount::begin() {
-  p_.storage.load("config", &cfg_, sizeof cfg_);
+  loadConfig();
   SiteRecord site;
   if (p_.storage.load("site", &site, sizeof site)) {
     lat_ = site.lat;
@@ -534,6 +534,35 @@ bool Mount::sunAllows(double alt, double az, double toAxAlt, double toAxAz) {
 }
 
 // ---------------------------------------------------------------- persistence
+
+// The settings are a JSON record ("settings"), which other firmware versions
+// can read. Firmware 0.1.0 saved the Config struct as it is ("config").
+void Mount::loadConfig() {
+  char buf[kMaxSettings];
+  size_t n = p_.storage.size("settings");
+  if (n > 0 && n <= sizeof buf && p_.storage.load("settings", buf, n)) {
+    JsonDocument doc;
+    if (!deserializeJson(doc, buf, n)) configLoad(cfg_, doc.as<JsonObjectConst>());
+    return;
+  }
+  if (p_.storage.load("config", &cfg_, sizeof cfg_)) {
+    saveConfig();
+    p_.storage.erase("config");
+  }
+}
+
+void Mount::saveConfig() {
+  JsonDocument doc;
+  configSave(cfg_, doc.to<JsonObject>());
+  char buf[kMaxSettings];
+  size_t n = serializeJson(doc, buf, sizeof buf);
+  if (n > 0 && n < sizeof buf) p_.storage.save("settings", buf, n);
+}
+
+void Mount::setWifiPassword(const char *password) {
+  snprintf(cfg_.wifiPassword, sizeof cfg_.wifiPassword, "%s", password);
+  saveConfig();
+}
 
 void Mount::saveState() {
   StateRecord st{(uint8_t)(mode_ == Mode::Parked), p_.az.position(), p_.alt.position()};
@@ -1205,7 +1234,7 @@ bool Mount::cmdSetConfig(JsonObjectConst cmd, JsonObject) {
   if (in.isNull()) return fail("bad_arg", "config: an object is required");
   char err[64];
   if (!configFromJson(cfg_, in, err, sizeof err)) return fail("bad_arg", "%s", err);
-  p_.storage.save("config", &cfg_, sizeof cfg_);
+  saveConfig();
   return true;
 }
 

@@ -1,10 +1,11 @@
-// Unit tests for the core's maths, NMEA reader and pointing model.
+// Unit tests for the core's maths, NMEA reader, pointing model and settings record.
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "align.h"
 #include "astro.h"
+#include "config.h"
 #include "nmea.h"
 
 using namespace core;
@@ -253,7 +254,33 @@ static void testAltitudeIndex() {
   CHECK(worst > 2);
 }
 
+// The settings' record in flash: a round trip, and a record from another
+// firmware version (unknown key, bad value, missing keys).
+static void testSettingsRecord() {
+  Config c;
+  c.slewSpeed = 5;
+  c.azReverse = true;
+  snprintf(c.wifiPassword, sizeof c.wifiPassword, "%s", "abcdefgh2345");
+  JsonDocument doc;
+  configSave(c, doc.to<JsonObject>());
+  CHECK(!strcmp(doc["wifi.password"] | "", "abcdefgh2345"));
+  Config d;
+  configLoad(d, doc.as<JsonObjectConst>());
+  CHECK(d.slewSpeed == 5 && d.azReverse && !strcmp(d.wifiPassword, "abcdefgh2345"));
+
+  JsonDocument other;
+  other["slew.speed"] = 4;
+  other["future.key"] = 1;
+  other["track.gain"] = 1000;  // out of range
+  other["alt.min"] = 95;       // not below alt.max
+  Config e;
+  configLoad(e, other.as<JsonObjectConst>());
+  Config def;
+  CHECK(e.slewSpeed == 4 && e.trackGain == def.trackGain && e.altMin == def.altMin);
+}
+
 int main() {
+  testSettingsRecord();
   testTime();
   testSun();
   testCoordinates();

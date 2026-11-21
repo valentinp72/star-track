@@ -4,6 +4,7 @@
 #include "src/core/mount.h"
 #include "src/esp32/hardware.h"
 #include "src/esp32/network.h"
+#include "src/esp32/ota.h"
 #include "src/esp32/pins.h"
 
 using namespace esp32;
@@ -17,6 +18,7 @@ static EspGps gps;
 static EspLeds leds;
 static EspStorage storage;
 static Network net;
+static Ota ota(estop, az, alt);
 static core::Platform platform{clock_, az, alt, estop, inputs, gps, leds, storage, net, "esp32s3"};
 static core::Mount mount(platform);
 
@@ -36,15 +38,17 @@ void setup() {
   if (!az.begin(engine, kPinAzStep, kPinAzDir) || !alt.begin(engine, kPinAltStep, kPinAltDir))
     Network::consoleLog("error", "no step generator for an axis: the motors will not move");
 
-  net.beginWifi(storage);
-  net.beginServer();
-
   mount.onConnect(Network::kConsole, core::ClientKind::Console);
   mount.begin();
+
+  net.beginWifi(mount);
+  ota.begin(net.server());  // before the app's files, which would take /update
+  net.beginServer();
 }
 
 void loop() {
-  net.poll(mount);
-  mount.loop();
+  net.poll(mount, ota.active());
+  ota.poll(mount, net.wifiUp());
+  if (!ota.active()) mount.loop();
   delay(1);  // lets the idle task run (watchdog), and AsyncTCP on this core
 }

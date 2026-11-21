@@ -165,8 +165,10 @@ void EspLeds::set(uint8_t red, uint8_t blue) {
 
 void EspStorage::begin() { prefs_.begin("star-track", false); }
 
+size_t EspStorage::size(const char *key) { return prefs_.isKey(key) ? prefs_.getBytesLength(key) : 0; }
+
 bool EspStorage::load(const char *key, void *data, size_t len) {
-  if (prefs_.getBytesLength(key) != len) return false;
+  if (size(key) != len) return false;
   return prefs_.getBytes(key, data, len) == len;
 }
 

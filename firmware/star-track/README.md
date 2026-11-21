@@ -10,7 +10,8 @@ compiles but is not tested on the board yet.
 | [`src/esp32/`](src/esp32/) | The platform layer: steppers (FastAccelStepper), E-stop, hand unit, GPS, LEDs, NVS, the Wi-Fi access point, the web server and the serial console. |
 | `star-track.ino` | Connects the two and runs the loop. |
 | `partitions.csv` | The flash layout of [`docs/architecture.md`](../../docs/architecture.md#flash-layout). |
-| `app-fs.sh` | Makes the LittleFS image with the phone app, and writes it to the board. |
+| `app-fs.sh` | Makes the LittleFS image with the phone app (and its update for `ota.sh`), and writes it to the board over USB. |
+| `ota.sh` | Sends a new firmware or app image to the mount over Wi-Fi. |
 
 ## Build and upload
 
@@ -36,6 +37,40 @@ The firmware and the app are written to separate partitions: each can be
 updated without the other. Without the app's image, the mount still answers on
 the WebSocket and the serial console.
 
+## Updates over Wi-Fi
+
+From a computer joined to the mount's network:
+
+```sh
+firmware/star-track/ota.sh firmware   # compiles, then sends build/firmware/star-track.ino.bin
+firmware/star-track/ota.sh app        # makes build/app-fs.ota, then sends it
+```
+
+Both send the file to `POST /update` (`?target=app` for the app's image) as
+multipart form data, for example with
+`curl -F file=@star-track.ino.bin http://192.168.4.1/update`.
+
+- The mount must be idle, parked or in E-stop, with both axes still; otherwise
+  the reply is 409 and nothing is written. While the image is written, the
+  drivers are off, the mount does not run, and commands get the error
+  `updating`. Then the mount restarts: park it first to keep the alignment.
+- The app's update, `build/app-fs.ota`, holds only the blocks of the LittleFS
+  image that are not blank (about 400 of 2528), each after its number: 1.6 MB
+  to send and to write instead of 9.9 MB. The other blocks keep old data, which
+  LittleFS never reads (checked by unpacking an image whose blank blocks were
+  filled with random bytes).
+- A firmware image starts with the byte 0xE9, the app's update with `STFS`:
+  the wrong one for the target is refused.
+- A new firmware goes to the other app slot and runs on trial. It confirms
+  itself once the access point has been up for 30 s (`new firmware confirmed`
+  on the console). If it crashes or is reset before, the bootloader starts the
+  previous firmware again. Each boot prints the firmware's version and slot.
+- The app's image has one partition only: an interrupted upload leaves the app
+  missing until the next one. The firmware, the WebSocket and the serial
+  console keep working.
+- Anyone on the mount's Wi-Fi can send an update, as they can drive the mount:
+  the Wi-Fi password guards both.
+
 ## On the board
 
 - **Wi-Fi.** An access point named after `wifi.ssid` (default `star-track`),
@@ -43,9 +78,11 @@ the WebSocket and the serial console.
   password and saves it with the settings. Each boot prints the network name
   and password on the serial console, as a `log` line. The app is at
   `http://192.168.4.1/` (or `http://star-track.local/`), the WebSocket at `/ws`.
-  A new `wifi.ssid` or `wifi.password` applies at the next power-on. The
-  settings are saved as one record: a firmware whose settings record has a
-  different size starts from the defaults, and makes a new password.
+  A new `wifi.ssid` or `wifi.password` applies at the next power-on.
+- **Settings.** A JSON record in NVS, read key by key, so another firmware
+  version keeps the settings it knows (the Wi-Fi password among them) and
+  skips the others. Firmware 0.1.0's record (the struct as it is) is converted
+  at the first boot.
 - **Web server.** ESPAsyncWebServer, in AsyncTCP's task. WebSocket events wait
   in a queue until the loop hands them to the core, so the core runs in one
   task only. A fifth WebSocket client is refused. Files under `assets/` are
@@ -97,6 +134,7 @@ Makefile), so the core:
 | `pins.h` | The GPIO numbers of [`docs/architecture.md`](../../docs/architecture.md#pins). |
 | `hardware.h`, `hardware.cpp` | Clock, Axis, EStop, Inputs, Gps, Leds and Storage on the board. |
 | `network.h`, `network.cpp` | Link: the access point, the web server and WebSocket, the serial console. |
+| `ota.h`, `ota.cpp` | Updates over Wi-Fi, and the confirmation of a new firmware. |
 
 ## Control
 

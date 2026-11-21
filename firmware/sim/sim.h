@@ -85,6 +85,7 @@ class SimStorage : public core::Storage {
  public:
   explicit SimStorage(std::string path = "");
   bool load(const char *key, void *data, size_t len) override;
+  size_t size(const char *key) override;
   void save(const char *key, const void *data, size_t len) override;
   void erase(const char *key) override;
 

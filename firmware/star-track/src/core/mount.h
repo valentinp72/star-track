@@ -22,10 +22,11 @@ const char *modeName(Mode m);
 class Mount {
  public:
   static constexpr int kProto = 1;
-  static constexpr const char *kFirmwareVersion = "0.1.0";
+  static constexpr const char *kFirmwareVersion = "0.2.0";
   static constexpr int kMaxMessage = 4096;
   static constexpr int kMaxClients = 8;
   static constexpr int kMaxTablePoints = 64;
+  static constexpr int kMaxSettings = 1024;  // bytes of the settings' JSON record
   static constexpr int kControlPeriodMs = 50;  // 20 Hz
   static constexpr int kJogLifetimeMs = 200;
 
@@ -39,6 +40,9 @@ class Mount {
   void onMessage(int client, const char *text);
 
   Mode mode() const { return mode_; }
+  const Config &config() const { return cfg_; }
+  // For the platform, which makes the password at the first boot. Saved.
+  void setWifiPassword(const char *password);
   // The status event's fields (for the simulator's snapshots).
   void statusJson(JsonObject o) { fillStatus(o); }
 
@@ -109,6 +113,8 @@ class Mount {
   bool sunAllows(double alt, double az, double toAxAlt, double toAxAz);  // sets err_
 
   // Persistence.
+  void loadConfig();
+  void saveConfig();
   void saveState();
   void saveAlignment();
 

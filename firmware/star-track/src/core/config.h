@@ -29,4 +29,10 @@ void configToJson(const Config &c, JsonVariantConst keys, JsonObject out);
 // offending key into `err` and changes nothing.
 bool configFromJson(Config &c, JsonObjectConst in, char *err, int errLen);
 
+// The record in flash: every key, the password in clear.
+void configSave(const Config &c, JsonObject out);
+// From flash, written by this firmware or another version: each valid key is
+// applied on its own, unknown and invalid keys are skipped.
+void configLoad(Config &c, JsonObjectConst in);
+
 }  // namespace core

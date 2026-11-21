@@ -22,16 +22,19 @@ class Network : public core::Link {
 
   Network() : server_(80), ws_("/ws") {}
 
-  // Starts the access point with the SSID and password of the saved settings,
-  // making and saving a password at the first boot. Prints both on the console.
-  void beginWifi(core::Storage &storage);
+  // Starts the access point with the SSID and password of the settings, making
+  // and saving a password at the first boot. Prints both on the console.
+  void beginWifi(core::Mount &mount);
   // Mounts LittleFS and starts the web server. False if LittleFS is missing
   // (the WebSocket still works; the app is not served).
   bool beginServer();
   void beginConsole();
 
   // Hands the queued WebSocket events and the console's lines to the mount.
-  void poll(core::Mount &mount);
+  // While `updating`, commands get the error "updating" instead.
+  void poll(core::Mount &mount, bool updating);
+  bool wifiUp() const { return wifiUp_; }
+  AsyncWebServer &server() { return server_; }
   void send(int client, const char *text) override;
 
   // A JSON log line on the console, before the mount runs.
@@ -46,13 +49,15 @@ class Network : public core::Link {
   };
   void onEvent(AsyncWebSocketClient *c, AwsEventType type, void *arg, uint8_t *data, size_t len);
   void push(Kind kind, int client, char *text);
-  void readConsole(core::Mount &mount);
+  void readConsole(core::Mount &mount, bool updating);
+  void handle(core::Mount &mount, int client, const char *text, bool updating);
 
   AsyncWebServer server_;
   AsyncWebSocket ws_;
   QueueHandle_t queue_ = nullptr;
   std::string line_;
   uint32_t lastCleanup_ = 0;
+  bool wifiUp_ = false;
 };
 
 }  // namespace esp32

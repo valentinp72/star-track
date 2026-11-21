@@ -67,6 +67,7 @@ class Storage {
  public:
   virtual ~Storage() = default;
   virtual bool load(const char *key, void *data, size_t len) = 0;  // false if absent or a different size
+  virtual size_t size(const char *key) = 0;                         // 0 if absent
   virtual void save(const char *key, const void *data, size_t len) = 0;
   virtual void erase(const char *key) = 0;
 };

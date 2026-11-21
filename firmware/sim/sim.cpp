@@ -115,6 +115,11 @@ bool SimStorage::load(const char *key, void *data, size_t len) {
   return true;
 }
 
+size_t SimStorage::size(const char *key) {
+  auto it = records_.find(key);
+  return it == records_.end() ? 0 : it->second.size();
+}
+
 void SimStorage::save(const char *key, const void *data, size_t len) {
   const uint8_t *p = static_cast<const uint8_t *>(data);
   records_[key] = std::vector<uint8_t>(p, p + len);

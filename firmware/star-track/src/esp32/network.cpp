@@ -59,19 +59,19 @@ void Network::consoleLog(const char *level, const char *msg) {
 
 // ---------------------------------------------------------------- Wi-Fi
 
-void Network::beginWifi(core::Storage &storage) {
-  core::Config cfg;
-  storage.load("config", &cfg, sizeof cfg);  // defaults if absent
-
+void Network::beginWifi(core::Mount &mount) {
   WiFi.mode(WIFI_AP);  // the radio is on from here: esp_random() is truly random
-  if (strlen(cfg.wifiPassword) < 8) {
-    makePassword(cfg.wifiPassword);
-    storage.save("config", &cfg, sizeof cfg);
+  if (strlen(mount.config().wifiPassword) < 8) {
+    char pw[13];
+    makePassword(pw);
+    mount.setWifiPassword(pw);
     consoleLog("info", "first boot: made a new Wi-Fi password");
   }
+  const core::Config &cfg = mount.config();
   // WPA2 (a password is given), channel 1, SSID visible, at most 4 stations.
   bool ok = WiFi.softAP(cfg.wifiSsid, cfg.wifiPassword, 1, 0, kMaxWebSockets);
   char msg[160];
+  wifiUp_ = ok;
   if (ok) {
     snprintf(msg, sizeof msg, "Wi-Fi network \"%s\", password \"%s\", app at http://%s/", cfg.wifiSsid,
              cfg.wifiPassword, WiFi.softAPIP().toString().c_str());
@@ -156,7 +156,24 @@ void Network::beginConsole() {
   Serial.begin(115200);
 }
 
-void Network::readConsole(core::Mount &mount) {
+void Network::handle(core::Mount &mount, int client, const char *text, bool updating) {
+  if (!updating) {
+    mount.onMessage(client, text);
+    return;
+  }
+  JsonDocument filter, cmd, rep;
+  filter["id"] = true;
+  if (deserializeJson(cmd, text, DeserializationOption::Filter(filter))) return;
+  rep["re"] = cmd["id"];
+  rep["ok"] = false;
+  rep["err"] = "updating";
+  rep["msg"] = "an update is being written; the mount restarts when it is done";
+  char buf[200];
+  serializeJson(rep, buf, sizeof buf);
+  send(client, buf);
+}
+
+void Network::readConsole(core::Mount &mount, bool updating) {
   while (Serial.available()) {
     char c = (char)Serial.read();
     if (c == '\r') continue;
@@ -166,7 +183,7 @@ void Network::readConsole(core::Mount &mount) {
     }
     char *t = copy(line_);
     if (t) {
-      mount.onMessage(kConsole, t);
+      handle(mount, kConsole, t, updating);
       free(t);
     }
     line_.clear();
@@ -175,8 +192,8 @@ void Network::readConsole(core::Mount &mount) {
 
 // ---------------------------------------------------------------- both
 
-void Network::poll(core::Mount &mount) {
-  readConsole(mount);
+void Network::poll(core::Mount &mount, bool updating) {
+  readConsole(mount, updating);
   Event e;
   while (queue_ && xQueueReceive(queue_, &e, 0) == pdTRUE) {
     switch (e.kind) {
@@ -187,7 +204,7 @@ void Network::poll(core::Mount &mount) {
         mount.onDisconnect(e.client);
         break;
       case Kind::Message:
-        if (e.text) mount.onMessage(e.client, e.text);
+        if (e.text) handle(mount, e.client, e.text, updating);
         free(e.text);
         break;
     }
