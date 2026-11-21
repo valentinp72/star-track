@@ -21,6 +21,7 @@ describe('alignment stars', () => {
     const next = candidates(utc, site, [{ ra: first.ra, dec: first.dec, name: first.o.title }]);
     expect(next.find((x) => x.o.key === first.o.key)).toBeUndefined(); // within 10°: would replace it
     expect(next[0].minSep).toBeGreaterThan(60);
+    expect(next[0].altDiff).toBeGreaterThan(10); // at another height, for the altitude index
     expect(separation(next[0].ra, next[0].dec, first.ra, first.dec)).toBeCloseTo(next[0].minSep, 6);
   });
 

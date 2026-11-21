@@ -1078,24 +1078,34 @@ bool Mount::cmdAlignAdd(JsonObjectConst cmd, JsonObject r) {
   }
   s.axAlt = altAxisDeg();
   s.axAz = wrap360(azAxisDeg());
-  Vec3 h = vecFromAltaz(s.hAlt, s.hAz), a = vecFromAltaz(s.axAlt, s.axAz);
-  for (int i = 0; i < align_.count(); i++) {
-    const AlignStar &o = align_.star(i);
-    double sky = separationDeg(h, vecFromAltaz(o.hAlt, o.hAz));
-    double axes = separationDeg(a, vecFromAltaz(o.axAlt, o.axAz));
-    if (fabs(sky - axes) > kAlignToleranceDeg)
+  // Fitted on a copy first: kept only if every star fits the new model.
+  const char *name = s.name[0] ? s.name : "this star";
+  Alignment next = align_;
+  next.add(s);
+  if (next.count() == 1 && fabs(next.altIndexDeg()) > Alignment::kMaxIndexDeg)
+    return fail("align_mismatch",
+                "%s is at %.1f° altitude but the tube reads %.1f°: centre the star, or level the tube and send "
+                "set_alt_zero",
+                name, s.hAlt, s.axAlt);
+  for (int i = 0; i < next.count(); i++) {
+    double e = next.fitErrorDeg(i);
+    if (e > kAlignToleranceDeg) {
+      const AlignStar &o = next.star(i);
+      bool self = !strcmp(o.name, s.name) && o.ra == s.ra && o.dec == s.dec;
       return fail("align_mismatch",
-                  "%s and %s are %.1f° apart in the sky but %.1f° apart on the axes: centre the star, check its "
-                  "name, or clear the alignment if the mount was moved",
-                  s.name[0] ? s.name : "this star", o.name[0] ? o.name : "an earlier star", sky, axes);
+                  "%s does not fit the earlier stars (%s is %.1f° off): centre the star, check its name, or clear "
+                  "the alignment if the mount was moved",
+                  name, self ? name : (o.name[0] ? o.name : "an earlier star"), e);
+    }
   }
-  align_.add(s);
+  align_ = next;
   // The model now accounts for the jog that centred the star.
   offAz_ = offAlt_ = 0;
   posOk_ = true;
   saveAlignment();
   r["n"] = align_.count();
   r["rms"] = align_.rmsDeg();
+  r["alt_index"] = align_.altIndexDeg();
   return true;
 }
 
@@ -1115,6 +1125,7 @@ bool Mount::cmdAlignList(JsonObjectConst, JsonObject r) {
     s["dec"] = align_.star(i).dec;
     s["err"] = align_.residualDeg(i);
   }
+  r["alt_index"] = align_.altIndexDeg();
   return true;
 }
 

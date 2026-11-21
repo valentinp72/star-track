@@ -3,7 +3,8 @@
 
 Usage: test_session.py path/to/star-track-sim
 
-The mount is set up with a tilted base and an unknown north. The script aligns
+The mount is set up with a tilted base, an unknown north and a tube 4° off level
+at power-on. The script aligns
 on three stars, goes to M42 and tracks it for 4 hours of simulated time, then
 checks the E-stop, jogs, the hand unit, park, a position table, the GPS and the
 error replies. The simulator's sim_truth gives where the tube really points.
@@ -102,9 +103,17 @@ def arcmin(deg):
 
 
 def align_and_goto(s):
-    s.ok("sim_mount", tilt=1.5, tilt_az=70, north=140)
+    # The tube far off level at power-on (32° up): the first star shows it.
+    s.ok("sim_mount", tilt=1.5, tilt_az=70, north=140, alt_zero=32)
     s.ok("set_time", utc=T0)
     s.ok("set_site", lat=LAT, lon=LON)
+    s.ok("sim_point", ra=CAPELLA[0], dec=CAPELLA[1])
+    r = s.cmd("align_add", ra=CAPELLA[0], dec=CAPELLA[1], name="Capella")
+    check("a tube 32° off level at power-on is refused at the first star",
+          r["err"] == "align_mismatch" and "set_alt_zero" in r["msg"], r.get("msg", ""))
+
+    # From here, the tube was 4° above level at power-on: the alignment finds it.
+    s.ok("sim_mount", alt_zero=4)
 
     r = s.cmd("goto", ra=M42[0], dec=M42[1])
     check("goto before alignment is refused", r["err"] == "not_ready", r["msg"])
@@ -113,6 +122,8 @@ def align_and_goto(s):
     s.ok("sim_point", ra=CAPELLA[0], dec=CAPELLA[1])
     r = s.ok("align_add", ra=CAPELLA[0], dec=CAPELLA[1], name="Capella")
     check("first star", r["n"] == 1)
+    check("first star: the altitude index is found (level base assumed)", abs(r["alt_index"] + 4) < 1.5,
+          f"{r['alt_index']:.2f}°")
 
     # Star 2: goto with the one-star model (azimuth offset only), then centre.
     s.run(120)
@@ -136,6 +147,7 @@ def align_and_goto(s):
     s.ok("sim_point", ra=DENEB[0], dec=DENEB[1])
     r = s.ok("align_add", ra=DENEB[0], dec=DENEB[1], name="Deneb")
     check("three stars, residual under 1'", r["n"] == 3 and r["rms"] < 1 / 60, arcmin(r["rms"]))
+    check("three stars: altitude index -4°", abs(r["alt_index"] + 4) < 0.02, f"{r['alt_index']:.3f}°")
     stars = s.ok("align_list")["stars"]
     check("align_list names the stars", [x["name"] for x in stars] == ["Capella", "Aldebaran", "Deneb"])
 

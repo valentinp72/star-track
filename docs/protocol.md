@@ -147,7 +147,7 @@ Reported in [`status`](#status). Some commands need them:
 | `time_ok` | The mount's clock is set. | A GPS time, or `set_time`. |
 | `site_ok` | The site is known. | A GPS fix, `set_site`, or a site saved earlier. |
 | `aligned` | At least one alignment star. | `align_add`. Cleared by `align_clear`. |
-| `pos_ok` | The axis positions are trusted. | Power-on (assumes the tube was level and the steppers did not slip), `align_add`, `sync`. Cleared by the E-stop. |
+| `pos_ok` | The axis positions are trusted. | Power-on (assumes the steppers did not slip; the alignment finds the tube's altitude at power-on), `align_add`, `sync`. Cleared by the E-stop. |
 
 ## Commands
 
@@ -315,22 +315,31 @@ The user centres a star with the joystick, then the app sends what it is:
 
 ```json
 {"cmd": "align_add", "id": 8, "ra": 6.7525, "dec": -16.716, "name": "Sirius"}
-{"re": 8, "ok": true, "n": 2, "rms": 0.07}
+{"re": 8, "ok": true, "n": 2, "rms": 0.07, "alt_index": -1.3}
 ```
 
 - The mount pairs the star's alt/az (from its clock and site) with the axis
   positions now.
-- One star: an azimuth offset only, assuming a level base.
-- Two stars or more: the rotation that best maps the stars' sky directions onto
-  the axis directions (Horn's quaternion method). It absorbs a base that is not
-  level and an unknown north. A rotation has three parameters, so centring errors
-  of a few arcseconds stay a few arcseconds across the sky; a free 3×3 matrix
-  (Taki's method) can turn them into arcminutes when the stars are close together.
-  `rms` is the residual in degrees (with three stars or more).
-- Checked against the earlier stars: two stars are as far apart on the axes as in
-  the sky. If not (more than 2° of difference), the star is refused with
-  `align_mismatch`: it was not centred, or misidentified, or the mount was moved
-  (then `align_clear`).
+- The model has two parts:
+  - a rotation from the sky's directions to the axis directions. It absorbs a
+    base that is not level and an unknown north. A rotation has three
+    parameters, so centring errors of a few arcseconds stay a few arcseconds
+    across the sky; a free 3×3 matrix (Taki's method) can turn them into
+    arcminutes when the stars are close together;
+  - the altitude index `alt_index`: what the altitude axis reads (degrees) when
+    the tube is square to the azimuth axis. Not 0 when the tube was not level at
+    power-on.
+- One star: an azimuth offset, and the index from the star's altitude, assuming a
+  level base.
+- Two stars or more: the index (within ±10°) and the rotation (Horn's quaternion
+  method) that fit the stars best. Two stars fit exactly; a third shows the
+  error. `rms` is the residual in degrees (with three stars or more).
+- Refused with `align_mismatch` when the new model does not fit: a first star
+  more than 10° from the altitude the tube reads (the tube far from level at
+  power-on: `set_alt_zero`), or, with two stars or more, a star more than 2° from
+  the model. The star was not centred, or misidentified, or the mount was moved
+  (then `align_clear`). With two stars the index absorbs some of a wrong star:
+  the third star is the check.
 - A star within 10° of an earlier one replaces it (a star centred again).
 - After lost steps (`pos_ok` false, after the E-stop), the axis counters are first
   reset on this star, as with [`sync`](#sync), so the earlier stars still fit.
@@ -351,7 +360,8 @@ Removes every alignment star. `aligned` becomes false.
 ]}
 ```
 
-`err` is each star's residual in degrees (0 with fewer than three stars).
+`err` is each star's residual in degrees (0 with fewer than three stars). The
+reply also has `alt_index`, as for `align_add`.
 
 ### sync
 
@@ -380,8 +390,9 @@ Leaves `parked` for `idle`.
 
 ### set_alt_zero
 
-"The tube is level now": sets the altitude axis position to 0°. For a mount that
-was not level at power-on. Clears the alignment stars, sets `pos_ok`.
+"The tube is level now": sets the altitude axis position to 0°. For a tube far
+from level at power-on (more than 10°, beyond what the alignment finds), or to
+use `goto_altaz` before any alignment. Clears the alignment stars, sets `pos_ok`.
 
 ### get_config
 

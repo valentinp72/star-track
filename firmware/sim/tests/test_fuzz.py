@@ -4,7 +4,8 @@ after every step.
 
 Usage: test_fuzz.py path/to/star-track-sim [seeds] [actions]
 
-Each seed sets up a base with a random tilt and north, aligns on three stars,
+Each seed sets up a base with a random tilt and north, and a tube up to 5° off
+level at power-on, aligns on three stars,
 then runs random actions: gotos, gotos to alt/az, hand-unit and app jogs, time
 jumps, tracking on and off, stop, park, position tables, centre-and-sync,
 centre-and-align, E-stops with their recovery, setting changes. After every
@@ -128,7 +129,9 @@ def run_seed(path, seed, actions):
     cfg = {"slew.speed": 3.0, "jog.max_speed": 3.0}
     log = []
     try:
-        s.ok("sim_mount", tilt=rng.uniform(0, 3), tilt_az=rng.uniform(0, 360), north=rng.uniform(0, 360))
+        # A tilted base, north anywhere, and the tube up to 5° off level at power-on.
+        s.ok("sim_mount", tilt=rng.uniform(0, 3), tilt_az=rng.uniform(0, 360), north=rng.uniform(0, 360),
+             alt_zero=rng.uniform(-5, 5))
         s.ok("set_time", utc=utc)
         s.ok("set_site", lat=45, lon=5)
         s.ok("set_config", config={"sun.min_sep": 5})  # leave room to move by day

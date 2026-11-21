@@ -101,22 +101,70 @@ void Alignment::restore(const AlignStar *stars, int n) {
   compute();
 }
 
+// The best rotation with this altitude index, and its cost: the sum of the
+// squared distances (unit vectors) between the stars' axis directions and the
+// rotated horizon directions.
+Mat3 Alignment::rotationFor(double index, double *cost) const {
+  Vec3 sv[kMaxStars], tv[kMaxStars];
+  for (int i = 0; i < n_; i++) {
+    sv[i] = vecFromAltaz(stars_[i].hAlt, stars_[i].hAz);
+    tv[i] = vecFromAltaz(stars_[i].axAlt - index, stars_[i].axAz);
+  }
+  Mat3 r = bestRotation(sv, tv, n_);
+  if (cost) {
+    double c = 0;
+    for (int i = 0; i < n_; i++) {
+      Vec3 p = mul(r, sv[i]);
+      double dx = p.x - tv[i].x, dy = p.y - tv[i].y, dz = p.z - tv[i].z;
+      c += dx * dx + dy * dy + dz * dz;
+    }
+    *cost = c;
+  }
+  return r;
+}
+
 void Alignment::compute() {
   if (n_ == 0) {
     t_ = tInv_ = identity();
+    index_ = 0;
     return;
   }
   if (n_ == 1) {
+    // Level base assumed: the star's altitude gives the index, its azimuth north.
+    index_ = stars_[0].axAlt - stars_[0].hAlt;
     t_ = rotZ(wrap180(stars_[0].axAz - stars_[0].hAz));
     tInv_ = rotZ(-wrap180(stars_[0].axAz - stars_[0].hAz));
     return;
   }
-  Vec3 sv[kMaxStars], tv[kMaxStars];
-  for (int i = 0; i < n_; i++) {
-    sv[i] = vecFromAltaz(stars_[i].hAlt, stars_[i].hAz);
-    tv[i] = vecFromAltaz(stars_[i].axAlt, stars_[i].axAz);
+  // The index: a scan every 0.25°, then a golden-section search around the
+  // best point. Among equal minima (two stars can fit exactly at two indexes),
+  // the one closest to 0.
+  const double step = 0.25;
+  double best = 0, bestCost = 1e30;
+  for (double d = -kMaxIndexDeg; d <= kMaxIndexDeg + 1e-9; d += step) {
+    double c;
+    rotationFor(d, &c);
+    if (c < bestCost - 1e-12 || (fabs(c - bestCost) <= 1e-12 && fabs(d) < fabs(best))) {
+      bestCost = c;
+      best = d;
+    }
   }
-  t_ = bestRotation(sv, tv, n_);
+  double lo = fmax(best - step, -kMaxIndexDeg), hi = fmin(best + step, kMaxIndexDeg);
+  const double g = 0.6180339887498949;
+  double x1 = hi - g * (hi - lo), x2 = lo + g * (hi - lo), c1, c2;
+  rotationFor(x1, &c1);
+  rotationFor(x2, &c2);
+  for (int k = 0; k < 40; k++) {
+    if (c1 < c2) {
+      hi = x2, x2 = x1, c2 = c1, x1 = hi - g * (hi - lo);
+      rotationFor(x1, &c1);
+    } else {
+      lo = x1, x1 = x2, c1 = c2, x2 = lo + g * (hi - lo);
+      rotationFor(x2, &c2);
+    }
+  }
+  index_ = 0.5 * (lo + hi);
+  t_ = rotationFor(index_, nullptr);
   // The inverse of a rotation is its transpose.
   for (int i = 0; i < 3; i++)
     for (int j = 0; j < 3; j++) tInv_.m[i][j] = t_.m[j][i];
@@ -124,6 +172,7 @@ void Alignment::compute() {
 
 void Alignment::modelToAxis(const Vec3 &h, double &axAlt, double &axAz) const {
   altazFromVec(mul(t_, h), axAlt, axAz);
+  axAlt += index_;
 }
 
 double Alignment::syncWeight(const Vec3 &h) const {
@@ -145,7 +194,7 @@ void Alignment::toHorizon(double axAlt, double axAz, double &hAlt, double &hAz) 
   for (int pass = 0, done = 0; !done; pass++) {
     double w = 0;
     if (hasSync_ && pass > 0) w = syncWeight(vecFromAltaz(hAlt, hAz));
-    altazFromVec(mul(tInv_, vecFromAltaz(axAlt - w * syncDAlt_, axAz - w * syncDAz_)), hAlt, hAz);
+    altazFromVec(mul(tInv_, vecFromAltaz(axAlt - w * syncDAlt_ - index_, axAz - w * syncDAz_)), hAlt, hAz);
     done = !hasSync_ || pass >= 2;
   }
 }
@@ -161,11 +210,12 @@ void Alignment::sync(double hAlt, double hAz, double axAlt, double axAz) {
   hasSync_ = true;
 }
 
-double Alignment::residualDeg(int i) const {
-  if (n_ < 3) return 0;
+double Alignment::fitErrorDeg(int i) const {
   Vec3 predicted = mul(t_, vecFromAltaz(stars_[i].hAlt, stars_[i].hAz));
-  return separationDeg(normalize(predicted), vecFromAltaz(stars_[i].axAlt, stars_[i].axAz));
+  return separationDeg(normalize(predicted), vecFromAltaz(stars_[i].axAlt - index_, stars_[i].axAz));
 }
+
+double Alignment::residualDeg(int i) const { return n_ < 3 ? 0 : fitErrorDeg(i); }
 
 double Alignment::rmsDeg() const {
   if (n_ < 3) return 0;

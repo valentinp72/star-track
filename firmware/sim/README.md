@@ -34,13 +34,15 @@ Another ArduinoJson copy can be given with `make ARDUINOJSON=/path/to/ArduinoJso
   refraction round trips, the NMEA reader, and the pointing model on a tilted base.
 - `tests/test_fuzz.py`: random sequences of user actions (gotos, jogs, time jumps,
   tracking, park, tables, syncs, alignment stars, E-stops and their recovery,
-  setting changes) on bases with a random tilt and north. After every action the
+  setting changes) on bases with a random tilt and north, and a tube up to 5° off
+  level at power-on. After every action the
   firmware's position must be within 1′ of where the tube really points, and the
   mode, target, speeds and replies must be valid. `make test` runs 20 seeds of 200
   actions; `make fuzz` runs 200 seeds of 300 (about a minute).
-- `tests/test_session.py`: the simulator with a paused clock and a base tilted by
-  1.5° with north at 140° on the azimuth axis. It aligns on Capella, Aldebaran and
-  Deneb, goes to M42 and tracks it for 4 hours, then checks jogs, the hand unit, the
+- `tests/test_session.py`: the simulator with a paused clock, a base tilted by
+  1.5° with north at 140° on the azimuth axis, and a tube 4° above level at
+  power-on (and first 32°, which the first alignment star must refuse). It aligns
+  on Capella, Aldebaran and Deneb, goes to M42 and tracks it for 4 hours, then checks jogs, the hand unit, the
   E-stop, park, a position table, the GPS and the error replies. It takes about
   half a second.
 

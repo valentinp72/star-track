@@ -183,12 +183,83 @@ static void testAlignment() {
   CHECK_NEAR(wrap180(hAz - 90), 0, 1e-3);
 }
 
+// The tube was not level at power-on: the altitude counter reads the axis
+// altitude plus `index`.
+static void testAltitudeIndex() {
+  const double tilt = 1.5, tiltAz = 200, north = 33, index = 3.7;
+  Alignment a;
+  double axAlt, axAz, ex, ez;
+  // One star, level base: the index is found from it.
+  AlignStar s{};
+  s.hAlt = 35;
+  s.hAz = 80;
+  mountAxes(0, 0, north, s.hAlt, s.hAz, s.axAlt, s.axAz);
+  s.axAlt += index;
+  a.add(s);
+  CHECK_NEAR(a.altIndexDeg(), index, 1e-9);
+  a.toAxis(60, 250, axAlt, axAz);
+  mountAxes(0, 0, north, 60, 250, ex, ez);
+  CHECK_NEAR(axAlt, ex + index, 1e-9);
+
+  // Two stars or more on a tilted base: the index and the rotation, exactly.
+  const double sets[][4][2] = {
+      {{40, 50}, {30, 200}, {60, 300}, {20, 120}},
+      {{40, 50}, {40, 200}, {40, 300}, {40, 120}},  // all at the same altitude
+  };
+  for (const auto &stars : sets)
+    for (int n = 2; n <= 4; n++) {
+      a.clear();
+      for (int i = 0; i < n; i++) {
+        AlignStar st{};
+        st.hAlt = stars[i][0];
+        st.hAz = stars[i][1];
+        mountAxes(tilt, tiltAz, north, st.hAlt, st.hAz, st.axAlt, st.axAz);
+        st.axAlt += index;
+        a.add(st);
+      }
+      CHECK_NEAR(a.altIndexDeg(), index, 1e-4);
+      for (double alt = 10; alt < 85; alt += 15)
+        for (double az = 0; az < 360; az += 30) {
+          a.toAxis(alt, az, axAlt, axAz);
+          mountAxes(tilt, tiltAz, north, alt, az, ex, ez);
+          CHECK_NEAR(axAlt, ex + index, 1e-4);
+          CHECK_NEAR(wrap180(axAz - ez) * cos(ex * kDeg), 0, 1e-4);
+          double hAlt, hAz;
+          a.toHorizon(axAlt, axAz, hAlt, hAz);
+          CHECK_NEAR(hAlt, alt, 1e-4);
+        }
+      for (int i = 0; i < n; i++) CHECK_NEAR(a.fitErrorDeg(i), 0, 1e-4);
+    }
+
+  // A misidentified third star does not fit.
+  a.clear();
+  const double good[][2] = {{40, 50}, {30, 200}};
+  for (const auto &g : good) {
+    AlignStar st{};
+    st.hAlt = g[0];
+    st.hAz = g[1];
+    mountAxes(tilt, tiltAz, north, st.hAlt, st.hAz, st.axAlt, st.axAz);
+    st.axAlt += index;
+    a.add(st);
+  }
+  AlignStar wrong{};
+  wrong.hAlt = 60;
+  wrong.hAz = 300;
+  mountAxes(tilt, tiltAz, north, 52, 285, wrong.axAlt, wrong.axAz);  // the tube is on another star
+  wrong.axAlt += index;
+  a.add(wrong);
+  double worst = 0;
+  for (int i = 0; i < a.count(); i++) worst = fmax(worst, a.fitErrorDeg(i));
+  CHECK(worst > 2);
+}
+
 int main() {
   testTime();
   testSun();
   testCoordinates();
   testNmea();
   testAlignment();
+  testAltitudeIndex();
   printf("test_core: %d checks, %d failed\n", checks, failures);
   return failures ? 1 : 0;
 }

@@ -8,7 +8,7 @@
   import JogPad from './JogPad.svelte';
   import { candidates, whereToLook } from '../lib/align.js';
   import { apparent, horizon } from '../lib/sky.js';
-  import { formatAngle } from '../lib/format.js';
+  import { formatAngle, formatDeg } from '../lib/format.js';
   import { explain } from '../lib/errors.js';
   import { ui } from '../lib/ui.svelte.js';
 
@@ -17,6 +17,7 @@
   const st = $derived(mount.status);
   const aligned = $derived(!!st?.aligned);
   let used = $state([]); // align_list: [{name, ra, dec, err}]
+  let index = $state(0); // align_list's alt_index: the altitude counter's reading with the tube square to the base
   let picked = $state(null); // a candidate
   let busy = $state(false);
   let confirmClear = $state(false);
@@ -25,9 +26,12 @@
   async function refresh() {
     now = mount.now();
     try {
-      used = (await mount.send('align_list')).stars ?? [];
+      const r = await mount.send('align_list');
+      used = r.stars ?? [];
+      index = r.alt_index ?? 0;
     } catch {
       used = [];
+      index = 0;
     }
   }
 
@@ -117,8 +121,14 @@
       {:else}
         <p class="font-semibold">{used.length} star{used.length > 1 ? 's' : ''}{rms != null ? ` · fit ${formatAngle(rms)}` : ''}</p>
         <p class="mt-1 text-sm opacity-70">
-          {used.length === 1 ? 'Add a second star, far from the first.' : used.length === 2 ? 'A third star checks the fit.' : 'Aligned.'}
+          {used.length === 1 ? 'Add a second star, far from the first and at another height.' : used.length === 2 ? 'A third star checks the fit.' : 'Aligned.'}
         </p>
+        {#if Math.abs(index) >= 0.1}
+          <!-- index < 0: the counter read less than the true altitude, the tube was up at power-on -->
+          <p class="mt-1 text-sm opacity-70">
+            The tube was {formatDeg(Math.abs(index))} {index < 0 ? 'above' : 'below'} level at power-on.
+          </p>
+        {/if}
       {/if}
     </Block>
 

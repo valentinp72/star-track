@@ -114,8 +114,8 @@ another network), so its password is what keeps others from driving the mount.
     next hours) sent by the phone and interpolated by the mount. The Moon's
     topocentric parallax makes linear extrapolation drift.
 - Alignment: 2–3 stars, fitted as a rotation (absorbs a base that is not level
-  and an unknown north). Requires a known altitude zero (tube level at power-on or a
-  home switch). A sync after each goto improves local accuracy.
+  and an unknown north) and an altitude index (absorbs a tube up to 10° off level
+  at power-on). A sync after each goto improves local accuracy.
 - One JSON message set for WebSocket and serial: `set_time`, `set_site`, `goto`,
   `track`, `jog {x, y}`, `stop`, `align_add`, `sync`, `park`. Described in
   [protocol](protocol.md).
