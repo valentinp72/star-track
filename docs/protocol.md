@@ -315,7 +315,7 @@ The user centres a star with the joystick, then the app sends what it is:
 
 ```json
 {"cmd": "align_add", "id": 8, "ra": 6.7525, "dec": -16.716, "name": "Sirius"}
-{"re": 8, "ok": true, "n": 2, "rms": 0.07, "alt_index": -1.3}
+{"re": 8, "ok": true, "n": 3, "rms": 0.07, "alt_index": -1.3}
 ```
 
 - The mount pairs the star's alt/az (from its clock and site) with the axis
@@ -554,7 +554,8 @@ The simulator adds commands, all starting with `sim_`. The mount answers them wi
 
 - The simulator's clock drives everything, including the status rate: at ×1000,
   `stream` at 10 Hz sends 10 000 events per second of real time. The simulator
-  page sends `stream` with `hz: 0` and polls `status` in real time instead.
+  page sends `stream` with `hz: 0` and polls `status` in real time instead, and so
+  does the phone app when `hello` says `"sim": true`.
 - The simulator's build, options and tests are described in
   [`firmware/sim/`](../firmware/sim/).
 
@@ -571,17 +572,19 @@ sequenceDiagram
   M-->>A: ok, fw 0.1.0, board esp32s3
   A->>M: set_time, utc = Date.now()
   M-->>A: ok, source phone (gps with a fix)
+  A->>M: get_config
+  M-->>A: ok, the settings
   A->>M: set_site, lat, lon, save
   M-->>A: ok, source phone
   Note over A,M: The user centres Sirius with the on-screen joystick
   A-)M: jog x, y every 100 ms, no id, no reply
   A->>M: align_add Sirius
-  M-->>A: ok, n 1 (azimuth offset only)
+  M-->>A: ok, n 1 (north and the altitude index, level base assumed)
   A->>M: goto Betelgeuse, track false
   M-->>A: ok, eta 9.8 s
   Note over A,M: The user centres Betelgeuse
   A->>M: align_add Betelgeuse
-  M-->>A: ok, n 2 (tilt and north known from now on)
+  M-->>A: ok, n 2 (tilt, north and altitude index fitted)
   A->>M: goto M42, track true
   M-->>A: ok, eta 6.1 s
   M--)A: status events, mode goto, then tracking
@@ -595,17 +598,19 @@ out):
 < {"re":1,"ok":true,"proto":1,"fw":"0.1.0","board":"esp32s3","sim":false}
 > {"cmd":"set_time","id":2,"utc":1795300000000}
 < {"re":2,"ok":true,"source":"phone"}
-> {"cmd":"set_site","id":3,"lat":45.0,"lon":5.0,"save":true}
-< {"re":3,"ok":true,"source":"phone"}
+> {"cmd":"get_config","id":3}
+< {"re":3,"ok":true,"config":{"az.steps_per_rev":160000,...}}
+> {"cmd":"set_site","id":4,"lat":45.0,"lon":5.0,"save":true}
+< {"re":4,"ok":true,"source":"phone"}
   (the user jogs to Sirius with the joystick)
-> {"cmd":"align_add","id":4,"ra":6.7525,"dec":-16.716,"name":"Sirius"}
-< {"re":4,"ok":true,"n":1,"rms":0}
-> {"cmd":"goto","id":5,"ra":5.9195,"dec":7.407,"track":false}
-< {"re":5,"ok":true,"alt":38.2,"az":171.5,"eta":9.8}
+> {"cmd":"align_add","id":5,"ra":6.7525,"dec":-16.716,"name":"Sirius"}
+< {"re":5,"ok":true,"n":1,"rms":0,"alt_index":-1.1}
+> {"cmd":"goto","id":6,"ra":5.9195,"dec":7.407,"track":false}
+< {"re":6,"ok":true,"alt":38.2,"az":171.5,"eta":9.8}
   (the user centres Betelgeuse)
-> {"cmd":"align_add","id":6,"ra":5.9195,"dec":7.407,"name":"Betelgeuse"}
-< {"re":6,"ok":true,"n":2,"rms":0}
-> {"cmd":"goto","id":7,"ra":5.5881,"dec":-5.391}
-< {"re":7,"ok":true,"alt":23.4,"az":162.0,"eta":6.1}
+> {"cmd":"align_add","id":7,"ra":5.9195,"dec":7.407,"name":"Betelgeuse"}
+< {"re":7,"ok":true,"n":2,"rms":0,"alt_index":-1.3}
+> {"cmd":"goto","id":8,"ra":5.5881,"dec":-5.391}
+< {"re":8,"ok":true,"alt":23.4,"az":162.0,"eta":6.1}
 < {"ev":"status",...,"mode":"tracking",...}
 ```
