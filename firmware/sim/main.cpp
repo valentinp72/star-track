@@ -1,9 +1,10 @@
 // Simulator entry point: runs the mount firmware's core on the PC, with the
 // protocol on stdin/stdout (one JSON object per line) and on a WebSocket at
-// ws://localhost:8080/ws. The simulator page is at http://localhost:8080/sim.
+// ws://localhost:8080/ws. The phone app is at http://localhost:8080/ and the
+// simulator page at http://localhost:8080/sim.
 //
 //   star-track-sim [--paused] [--rate R] [--utc MS] [--state FILE]
-//                  [--port N] [--any] [--web DIR]
+//                  [--port N] [--any] [--web DIR] [--app DIR]
 //
 // --paused   the clock only moves with sim_run (for scripted tests)
 // --rate R   clock speed (default 1)
@@ -11,7 +12,8 @@
 // --state F  keep the flash records in file F between runs
 // --port N   HTTP and WebSocket port (default 8080; 0 = no server)
 // --any      listen on every network interface, not only this PC
-// --web DIR  directory of the web pages (default: firmware/sim/web)
+// --web DIR  directory of the simulator page (default: firmware/sim/web)
+// --app DIR  the phone app's build (default: app/dist)
 
 #include <poll.h>
 #include <stdio.h>
@@ -29,6 +31,9 @@
 #ifndef SIM_WEB_DIR
 #define SIM_WEB_DIR "web"
 #endif
+#ifndef SIM_APP_DIR
+#define SIM_APP_DIR "../../app/dist"
+#endif
 
 namespace {
 
@@ -45,7 +50,7 @@ int64_t steadyMs() {
 void usage() {
   fprintf(stderr,
           "usage: star-track-sim [--paused] [--rate R] [--utc MS] [--state FILE]\n"
-          "                      [--port N] [--any] [--web DIR]\n");
+          "                      [--port N] [--any] [--web DIR] [--app DIR]\n");
   exit(2);
 }
 
@@ -54,7 +59,7 @@ void usage() {
 int main(int argc, char **argv) {
   double rate = 1;
   int64_t utc = wallMs();
-  std::string state, web = SIM_WEB_DIR;
+  std::string state, web = SIM_WEB_DIR, app = SIM_APP_DIR;
   int port = 8080;
   bool any = false;
   for (int i = 1; i < argc; i++) {
@@ -73,6 +78,8 @@ int main(int argc, char **argv) {
       any = true;
     } else if (a == "--web" && i + 1 < argc) {
       web = argv[++i];
+    } else if (a == "--app" && i + 1 < argc) {
+      app = argv[++i];
     } else {
       usage();
     }
@@ -84,7 +91,7 @@ int main(int argc, char **argv) {
 
   sim::Server server;
   if (port > 0) {
-    if (!server.listen(port, any, web)) {
+    if (!server.listen(port, any, web, app)) {
       fprintf(stderr, "star-track-sim: cannot listen on port %d (in use?)\n", port);
       return 1;
     }
@@ -92,7 +99,9 @@ int main(int argc, char **argv) {
     server.onMessage = [&](int c, const std::string &text) { s.handleLine(c, text.c_str()); };
     server.onClose = [&](int c) { s.disconnect(c); };
     s.setServer(&server);
-    fprintf(stderr, "star-track-sim: simulator page at http://%s:%d/sim\n", any ? "<this PC>" : "localhost", port);
+    const char *host = any ? "<this PC>" : "localhost";
+    fprintf(stderr, "star-track-sim: phone app at http://%s:%d/, simulator page at http://%s:%d/sim\n", host, port,
+            host, port);
   }
 
   bool stdinOpen = true;

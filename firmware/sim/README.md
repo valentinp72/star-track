@@ -3,8 +3,9 @@
 Runs the mount firmware's core ([`../star-track/src/core/`](../star-track/src/core/))
 on the PC, with a model of the mount in place of the ESP32 and its peripherals. It
 speaks the protocol of [`docs/protocol.md`](../../docs/protocol.md) on a WebSocket
-and on stdin/stdout, adds the `sim_*` commands described there, and serves a page
-that shows what the simulated mount does.
+and on stdin/stdout, adds the `sim_*` commands described there, and serves the
+phone app ([`app/`](../../app/)) and a page that shows what the simulated mount
+does.
 
 The core is the same code the ESP32 will run: only the platform layer differs
 (`sim.cpp` here, `src/esp32/` on the mount, not written yet).
@@ -49,7 +50,10 @@ Another ArduinoJson copy can be given with `make ARDUINOJSON=/path/to/ArduinoJso
 ./build/star-track-sim
 ```
 
-Then open <http://localhost:8080/sim> in a browser. The simulator page shows:
+Then open <http://localhost:8080/sim> in a browser for the simulator page, and
+<http://localhost:8080/> for the phone app (its build, `app/dist/`: run
+`npm run build` in `app/` first; see [`app/README.md`](../../app/README.md)). The
+simulator page shows:
 
 - a sky chart with where the tube really points (`sim_truth`), where the firmware
   thinks it points (`status`) and the target, plus an eyepiece view (1.4°, the
@@ -93,6 +97,7 @@ Options:
 ./build/star-track-sim --utc 1795294800000 # start at a given UTC (ms since 1970)
 ./build/star-track-sim --port 8081     # another port; --port 0: no server
 ./build/star-track-sim --any           # reachable from other devices, e.g. a phone
+./build/star-track-sim --app DIR       # serve the phone app from DIR (default: app/dist)
 ```
 
 The protocol is also on stdin/stdout: type JSON lines, and replies and events come
@@ -109,8 +114,8 @@ back as lines. For example:
 
 The HTTP and WebSocket server (`server.cpp`) is a small single-threaded one: the
 main loop polls its sockets next to stdin, so the firmware's core never runs on
-two threads. It serves the files in `web/` and the protocol on `/ws`, up to 4
-WebSocket clients.
+two threads. It serves the phone app's build at `/`, the simulator page
+(`web/sim.html`) at `/sim` and the protocol on `/ws`, up to 4 WebSocket clients.
 
 ## The model
 

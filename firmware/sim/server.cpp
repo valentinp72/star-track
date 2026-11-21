@@ -95,14 +95,17 @@ std::string contentType(const std::string &path) {
   if (ends(".json")) return "application/json";
   if (ends(".svg")) return "image/svg+xml";
   if (ends(".png")) return "image/png";
+  if (ends(".webmanifest")) return "application/manifest+json";
+  if (ends(".woff2")) return "font/woff2";
   if (ends(".glb")) return "model/gltf-binary";
   return "application/octet-stream";
 }
 
 }  // namespace
 
-bool Server::listen(int port, bool everywhere, const std::string &webDir) {
+bool Server::listen(int port, bool everywhere, const std::string &webDir, const std::string &appDir) {
   webDir_ = webDir;
+  appDir_ = appDir;
   listenFd_ = socket(AF_INET, SOCK_STREAM, 0);
   if (listenFd_ < 0) return false;
   int one = 1;
@@ -225,19 +228,23 @@ void Server::httpRequest(Conn &c) {
     return;
   }
   if (method != "GET") return reply(c, 405, "Method Not Allowed", "text/plain", "GET only\n");
-  if (path == "/") {
-    c.out += "HTTP/1.1 302 Found\r\nLocation: /sim\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
-    c.closing = true;
-    return flush(c);
-  }
   if (path == "/favicon.ico") return reply(c, 204, "No Content", "text/plain", "");
-  if (path == "/sim") path = "/sim.html";
   if (path.find("..") != std::string::npos) return reply(c, 400, "Bad Request", "text/plain", "Bad path\n");
-  std::ifstream f(webDir_ + path, std::ios::binary);
+  std::string file;
+  if (path == "/sim" || path == "/sim.html") {
+    file = webDir_ + "/sim.html";
+  } else {
+    file = appDir_ + (path == "/" ? "/index.html" : path);
+  }
+  std::ifstream f(file, std::ios::binary);
+  if (!f && path == "/")
+    return reply(c, 404, "Not Found", "text/html; charset=utf-8",
+                 "<p>The phone app is not built: run <code>npm run build</code> in <code>app/</code>. "
+                 "The simulator page is at <a href=\"/sim\">/sim</a>.</p>\n");
   if (!f) return reply(c, 404, "Not Found", "text/plain", "Not found: " + path + "\n");
   std::ostringstream body;
   body << f.rdbuf();
-  reply(c, 200, "OK", contentType(path), body.str());
+  reply(c, 200, "OK", contentType(file), body.str());
 }
 
 void Server::wsFrames(Conn &c) {

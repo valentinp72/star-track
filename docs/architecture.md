@@ -52,7 +52,30 @@ calculations, so tracking continues when the phone is locked or disconnected.
   (MIT licence, about 1′ accuracy) for Sun, Moon, planets and precession, plus a
   static catalogue (Messier, bright NGC objects, named stars).
 - Web Bluetooth is not available in iOS Safari, so the link is Wi-Fi.
-- Red night-vision theme.
+- Red night-vision theme: Konsta UI's dark theme with a red accent, under a layer
+  that multiplies the screen by pure red, so it gives no green or blue light. The
+  iPhone's own status bar stays white; iOS's *Color Filters* (Accessibility,
+  colour tint) can turn the whole screen red, status bar and keyboard included.
+- Built with Svelte and Konsta UI (iOS look) by Vite, into a few files with no
+  external links (the access point has no internet). Code and build steps:
+  [`app/`](../app/).
+
+### Wi-Fi access
+
+The access point is the only way to reach the mount (the ESP32 never joins
+another network), so its password is what keeps others from driving the mount.
+
+- WPA2 (WPA2/WPA3 mixed mode if the iPhone joins it reliably), at most 4 stations.
+- The password is made at the first boot from the ESP32's hardware random number
+  generator: 12 letters and digits, without look-alikes (`0`/`O`, `1`/`l`/`I`).
+  Saved in NVS.
+- The mount prints the network name and password on the USB serial console at
+  every boot, to be written on a label on the case. The iPhone remembers the
+  network after the first time.
+- Changed from the app with `set_config` (`wifi.password`, 8 to 63 characters,
+  WPA2's limits), applied at the next power-on. Never sent back by `get_config`.
+- A forgotten password is read again on the USB console: physical access to the
+  mount gives full control anyway.
 - Possible later: a subset of the LX200 protocol over TCP so that SkySafari or
   Stellarium can also drive the mount.
 

@@ -1,6 +1,7 @@
 // Minimal HTTP and WebSocket server for the simulator, single-threaded: the
 // main loop polls its sockets next to stdin, so the core never runs on two
-// threads. Serves the web pages from a directory and the protocol on /ws.
+// threads. Serves the phone app (its build directory) at /, the simulator page
+// at /sim and the protocol on /ws.
 #pragma once
 
 #include <poll.h>
@@ -22,7 +23,8 @@ class Server {
   std::function<void(int client)> onClose;
 
   // Listens on 127.0.0.1:port (or every interface with `everywhere`).
-  bool listen(int port, bool everywhere, const std::string &webDir);
+  // webDir holds the simulator page, appDir the phone app's build.
+  bool listen(int port, bool everywhere, const std::string &webDir, const std::string &appDir);
   void addPollFds(std::vector<pollfd> &fds);
   void handle(const std::vector<pollfd> &fds);  // after poll()
   void send(int client, const std::string &text);
@@ -45,7 +47,7 @@ class Server {
   int wsCount() const;
 
   int listenFd_ = -1;
-  std::string webDir_;
+  std::string webDir_, appDir_;
   int nextId_ = 1;
   std::map<int, Conn> conns_;  // by fd
 };

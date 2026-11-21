@@ -10,7 +10,7 @@ BUILD := build
 CXX ?= g++
 CXXFLAGS ?= -O2 -g
 CXXFLAGS += -std=c++17 -Wall -Wextra -I$(CORE) -I$(ARDUINOJSON) -I. -MMD -MP
-CXXFLAGS += -DSIM_WEB_DIR='"$(abspath web)"'
+CXXFLAGS += -DSIM_WEB_DIR='"$(abspath web)"' -DSIM_APP_DIR='"$(abspath ../../app/dist)"'
 
 CORE_SRC := $(wildcard $(CORE)/*.cpp)
 CORE_OBJ := $(patsubst $(CORE)/%.cpp,$(BUILD)/core/%.o,$(CORE_SRC))

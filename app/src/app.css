@@ -1,0 +1,49 @@
+@import 'tailwindcss';
+@import 'konsta/svelte/theme.css';
+
+/* Konsta makes the `k-color-brand-*` classes from these. */
+@theme {
+  --color-brand-primary: #007aff;
+  --color-brand-red: #ff3b30;
+}
+
+html,
+body {
+  height: 100%;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+/* Home-screen app only: iOS 26 lays a blur band over the top of the screen,
+   about 24 px taller than the status bar (measured on an iPhone 14 Pro: safe
+   area 59 px, title row sharp from 83 px down), which blurred the navigation
+   bar. Safari's tab has no such band. Push everything that respects the top
+   safe area further down. */
+@media (display-mode: standalone) {
+  .k-app.safe-areas {
+    --k-safe-area-top: calc(env(safe-area-inset-top) + 24px);
+  }
+}
+
+/* Night mode: text a little dimmer than the accent colour, so that buttons and
+   the selected tab stand out once everything is red. */
+html.night {
+  --color-white: #a8a8a8;
+  color: #a8a8a8;
+}
+
+/* Night mode: dark theme with red accents, then this layer multiplies every
+   pixel by pure red, so the screen gives no green or blue light at all
+   (white text becomes red, grey becomes dark red). Covers the canvases too. */
+.night-filter {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  background: #ff0000;
+  mix-blend-mode: multiply;
+}

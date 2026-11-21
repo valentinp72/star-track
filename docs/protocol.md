@@ -1,10 +1,11 @@
-# Protocol (planned)
+# Protocol
 
-Status: design notes. Nothing below is implemented yet.
+Implemented by the firmware's core and the simulator. The mount's ESP32 layer
+(Wi-Fi, WebSocket, serial) is not written yet.
 
 The messages between the mount and its clients: the phone web app, a computer on the
 serial console, and test scripts. The mount firmware and the simulator
-(`firmware/sim/`, planned) both implement this protocol, with the same code.
+(`firmware/sim/`) both implement this protocol, with the same code.
 
 ## Transports
 
@@ -33,7 +34,8 @@ flowchart LR
 - Up to 4 WebSocket clients at once. Each one receives the events; a reply goes
   only to the client that sent the command.
 - Largest message: 4 KB. A longer one is rejected with `too_long`.
-- HTTP on the same port serves the web app at `/`. Not described here.
+- HTTP on the same port serves the phone app ([`app/`](../app/)) at `/`. Not
+  described here.
 - An LX200 subset over TCP (for SkySafari and Stellarium) is planned as a separate
   listener. It translates to the same commands and is not described here.
 
@@ -519,7 +521,7 @@ starting points, to be checked on the mount.
 | `park.alt`, `park.az` | 0, 0 | Park position in axis degrees (from the power-on position). |
 | `track.gain` | 1 | k in "speed = predicted rate + k × position error" (1/s). |
 | `sun.min_sep` | 15 | Keep-out radius around the Sun outside solar mode, degrees (5 to 45). |
-| `wifi.ssid`, `wifi.password` | `star-track`, (set at first boot) | The access point. Changes apply at the next power-on. |
+| `wifi.ssid`, `wifi.password` | `star-track`, (random, made at first boot) | The access point (WPA2). The password has 8 to 63 characters, and `get_config` returns `********` in its place. Changes apply at the next power-on. See [Wi-Fi access](architecture.md#wi-fi-access). |
 
 ## Simulator commands
 
