@@ -8,6 +8,7 @@
 
 #include "../core/config.h"
 #include "../core/json.h"
+#include "diag.h"
 
 namespace esp32 {
 
@@ -48,12 +49,18 @@ char *copy(const std::string &s) {
 
 }  // namespace
 
-void Network::consoleLog(const char *level, const char *msg) {
+void Network::logLine(const char *level, const char *msg, char *out, size_t n) {
   JsonDocument doc;
   doc["ev"] = "log";
   doc["level"] = level;
   doc["msg"] = msg;
-  serializeJson(doc, Serial);
+  serializeJson(doc, out, n);
+}
+
+void Network::consoleLog(const char *level, const char *msg) {
+  char buf[480];
+  logLine(level, msg, buf, sizeof buf);
+  Serial.write(buf);
   Serial.write('\n');
 }
 
@@ -199,6 +206,15 @@ void Network::poll(core::Mount &mount, bool updating) {
     switch (e.kind) {
       case Kind::Connect:
         mount.onConnect(e.client, core::ClientKind::WebSocket);
+        // Tells the app after an unexpected restart, which the user may have
+        // seen only as a lost connection.
+        if (resetWasFault()) {
+          char msg[360];
+          snprintf(msg, sizeof msg, "the mount %s, %lu s ago", resetReport(), (unsigned long)(millis() / 1000));
+          char buf[440];
+          logLine("warn", msg, buf, sizeof buf);
+          send(e.client, buf);
+        }
         break;
       case Kind::Disconnect:
         mount.onDisconnect(e.client);

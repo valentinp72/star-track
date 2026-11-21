@@ -39,6 +39,7 @@ class Network : public core::Link {
 
   // A JSON log line on the console, before the mount runs.
   static void consoleLog(const char *level, const char *msg);
+  static void logLine(const char *level, const char *msg, char *out, size_t n);  // a log event's JSON
 
  private:
   enum class Kind : uint8_t { Connect, Message, Disconnect };

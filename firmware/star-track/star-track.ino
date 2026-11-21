@@ -2,6 +2,7 @@
 // in the simulator) on the board's hardware (src/esp32/). See README.md.
 
 #include "src/core/mount.h"
+#include "src/esp32/diag.h"
 #include "src/esp32/hardware.h"
 #include "src/esp32/network.h"
 #include "src/esp32/ota.h"
@@ -30,6 +31,8 @@ void setup() {
   }
   leds.begin();
   net.beginConsole();
+  readResetReason();
+  if (*resetReport()) Network::consoleLog(resetWasFault() ? "warn" : "info", resetReport());
   storage.begin();
   inputs.begin();
   gps.begin();

@@ -102,6 +102,12 @@ multipart form data, for example with
   about 0 V and count as centred. To check on the board: with the hand unit
   unplugged, `status` must give `"hand": false`.
 - **LEDs.** PWM, as set by the core.
+- **Restarts.** Each boot logs why the board started, unless it was a
+  power-on. After a brown-out, a crash or a watchdog reset, each WebSocket
+  client also gets the reason as a `warn` log when it connects (the app shows
+  it). After a crash the log gives the task, the program counter and the
+  backtrace from the core dump; to find the code:
+  `xtensa-esp32s3-elf-addr2line -pfiaC -e build/firmware/star-track.ino.elf 0x…`.
 
 ## Rules for `src/core/`
 
@@ -135,6 +141,7 @@ Makefile), so the core:
 | `hardware.h`, `hardware.cpp` | Clock, Axis, EStop, Inputs, Gps, Leds and Storage on the board. |
 | `network.h`, `network.cpp` | Link: the access point, the web server and WebSocket, the serial console. |
 | `ota.h`, `ota.cpp` | Updates over Wi-Fi, and the confirmation of a new firmware. |
+| `diag.h`, `diag.cpp` | Why the board restarted, with the core dump's summary after a crash. |
 
 ## Control
 
