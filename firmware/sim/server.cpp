@@ -96,6 +96,8 @@ std::string contentType(const std::string &path) {
   if (ends(".svg")) return "image/svg+xml";
   if (ends(".png")) return "image/png";
   if (ends(".webmanifest")) return "application/manifest+json";
+  if (ends(".webp")) return "image/webp";
+  if (ends(".jpg")) return "image/jpeg";
   if (ends(".woff2")) return "font/woff2";
   if (ends(".glb")) return "model/gltf-binary";
   return "application/octet-stream";

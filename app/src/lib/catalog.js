@@ -46,16 +46,21 @@ function greekSpelled(desig) {
 
 const conName = (c) => CONSTELLATIONS[c] ?? c;
 
+// English Wikipedia articles of the Sun, Moon and planets (the catalogue's
+// objects have theirs in catalog.json).
+const BODY_WIKI = { Mercury: 'Mercury (planet)' };
+
 export const bodies = BODIES.map((b) => ({
   key: `body:${b}`,
   kind: 'body',
   body: b,
+  wiki: BODY_WIKI[b] ?? b,
   title: b,
   subtitle: b === 'Sun' ? 'Star' : b === 'Moon' ? 'Moon' : 'Planet',
   search: searchKey(b),
 }));
 
-export const dsos = data.dso.map(([id, other, name, type, con, ra, dec, mag, size]) => ({
+export const dsos = data.dso.map(([id, other, name, type, con, ra, dec, mag, size, wiki]) => ({
   key: `dso:${id}`,
   kind: 'dso',
   title: id,
@@ -69,11 +74,12 @@ export const dsos = data.dso.map(([id, other, name, type, con, ra, dec, mag, siz
   dec,
   mag,
   size, // arcminutes
+  wiki, // English Wikipedia article title, '' if none
   messier: id.startsWith('M '),
   search: searchKey(`${id} ${other} ${name} ${type} ${conName(con)}`),
 }));
 
-export const stars = data.stars.map(([ra, dec, mag, name = '', desig = ''], i) => {
+export const stars = data.stars.map(([ra, dec, mag, name = '', desig = '', wiki = ''], i) => {
   const con = desig.split(' ')[1] ?? '';
   return {
     key: `star:${i}`,
@@ -87,6 +93,7 @@ export const stars = data.stars.map(([ra, dec, mag, name = '', desig = ''], i) =
     ra,
     dec,
     mag,
+    wiki,
     search: searchKey(`${name} ${desig} ${greekSpelled(desig)} ${conName(con)}`),
   };
 });
@@ -96,3 +103,8 @@ export const stars = data.stars.map(([ra, dec, mag, name = '', desig = ''], i) =
 export const listedStars = stars.filter((s) => s.name || (/^[α-ω]/.test(s.desig) && s.mag <= 3.5));
 
 export const about = data.about;
+
+// The article's address on English Wikipedia.
+export function wikipediaUrl(title) {
+  return `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`;
+}

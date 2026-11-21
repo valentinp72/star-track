@@ -47,3 +47,8 @@ html.night {
   background: #ff0000;
   mix-blend-mode: multiply;
 }
+
+/* Pictures in night mode: dimmer, on top of the red filter. */
+html.night .object-picture {
+  filter: brightness(0.45);
+}

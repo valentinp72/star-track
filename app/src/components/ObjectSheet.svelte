@@ -5,6 +5,8 @@
   import { apparent, bodyMagnitude, horizon, riseSet, separation, sun as sunAt } from '../lib/sky.js';
   import { formatAz, formatDec, formatDeg, formatRa, formatTime } from '../lib/format.js';
   import { explain } from '../lib/errors.js';
+  import { wikipediaUrl } from '../lib/catalog.js';
+  import pictures from '../data/pictures.json';
   import { ui } from '../lib/ui.svelte.js';
 
   // `obj` is the open object (null: closed). `askSolar(then)` opens the solar
@@ -72,6 +74,9 @@
     }
   }
 
+  // The picture and summary of the main objects (scripts/build-pictures.mjs).
+  const extra = $derived(obj ? pictures.objects[obj.title] : null);
+
   const when = (t) => (t == null ? '—' : formatTime(t));
   const sizeText = (s) => (s == null ? null : s >= 60 ? `${(s / 60).toFixed(1)}°` : `${s}′`);
 </script>
@@ -87,6 +92,29 @@
     </div>
 
     <div class="max-h-[55vh] overflow-auto">
+      {#if extra?.img}
+        <figure class="mx-4 mt-4">
+          <img
+            src={extra.img}
+            width={extra.w}
+            height={extra.h}
+            alt={obj.title}
+            class="object-picture mx-auto block max-h-64 w-auto rounded-2xl"
+            loading="lazy"
+          />
+          <figcaption class="mt-1 text-center text-[11px] opacity-50">
+            {extra.artist} · <a href={extra.source} target="_blank" rel="noopener">{extra.license}</a>
+          </figcaption>
+        </figure>
+      {/if}
+      {#if extra?.summary}
+        <p class="mx-4 mt-3 text-[15px] leading-snug opacity-80">{extra.summary}</p>
+      {/if}
+      {#if obj.wiki}
+        <p class="mx-4 mt-2 text-[15px]">
+          <a class="text-primary" href={wikipediaUrl(obj.wiki)} target="_blank" rel="noopener">Wikipedia: {obj.wiki} ↗</a>
+        </p>
+      {/if}
       <List strong inset class="my-4!">
         {#if pos}
           <ListItem title="Altitude" after={formatDeg(pos.alt)} />

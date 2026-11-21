@@ -96,6 +96,20 @@ another network), so its password is what keeps others from driving the mount.
     acceleration (`slew.speed`, `slew.accel`) checked against the pass;
   - tested on the simulator with recorded passes, faster than real time.
 
+## Flash layout
+
+The board is an ESP32-S3-N16R8 module (16 MB flash, 8 MB octal PSRAM, which
+takes GPIO 33–37: none of them is used). Planned partitions of the 16 MB:
+
+| Partition | Size | Contents |
+| --- | --- | --- |
+| NVS | 24 KB | Settings, site, alignment, park state. |
+| OTA data, app 0, app 1 | 2 × 3 MB | The firmware, twice: a new version is written to the other slot over Wi-Fi, the old one stays as a fallback. |
+| LittleFS | about 9.9 MB | The phone app (`app/dist`), each file gzipped, served as it is (`Content-Encoding: gzip`). |
+
+The app is about 1.6 MB gzipped, most of it the pictures of the object sheet
+(`app/public/img`), which load only when a sheet opens.
+
 ## Firmware
 
 - Framework: the Arduino core 3.x (built on ESP-IDF 5), for FastAccelStepper and
@@ -454,8 +468,6 @@ Left out to keep the circuit simple. Each can be added later without other chang
 - Exact DC-DC converter (input range, output ripple).
 - Joystick type (analog or switches) and E-stop contact type (NC needed).
 - Hand-unit connector.
-- Exact ESP32-S3 board (flash and PSRAM size). The schematic uses the
-  ESP32-S3-DevKitC-1 pinout.
 - Exact battery (its size sets the cradle) and case.
 - Case size: the stripboard (about 145 × 62 mm) is larger than the 130 × 90 case in
   the model.

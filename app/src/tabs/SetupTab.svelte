@@ -90,7 +90,8 @@
 
 
 <BlockFooter class="mb-4!">
-  Star catalogue: HYG database. Deep-sky catalogue: OpenNGC. Both CC BY-SA 4.0. Positions: Astronomy Engine.
+  Star catalogue: HYG database. Deep-sky catalogue: OpenNGC. Both CC BY-SA 4.0. Pictures: Wikimedia Commons, each
+  with its author and licence. Summaries: Wikipedia, CC BY-SA 4.0. Positions: Astronomy Engine.
 </BlockFooter>
 
 <SiteSheet {mount} bind:opened={siteOpen} />

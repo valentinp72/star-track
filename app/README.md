@@ -26,7 +26,10 @@ sky chart, the mount's settings. Planned later: satellites (see
 All MIT licensed. Versions are pinned in `package.json`.
 
 The catalogue (`src/data/catalog.json`) comes from the HYG star database and
-OpenNGC, both CC BY-SA 4.0: see [`src/data/README.md`](src/data/README.md).
+OpenNGC, both CC BY-SA 4.0, with each object's English Wikipedia article. The
+object sheet shows a picture and a short summary for about 60 objects, from
+Wikimedia Commons (each picture with its author and licence) and Wikipedia
+(CC BY-SA 4.0): see [`src/data/README.md`](src/data/README.md).
 
 ## Develop
 
@@ -37,7 +40,7 @@ npm install
 npm run dev      # development server on port 5173, reloads on every change
 npm test         # tests
 npm run build    # the app in dist/, as the mount and the simulator serve it
-npm run size     # build, then the size of each file gzipped (budget 512 KB)
+npm run size     # build, then the size of each file gzipped (budget 4 MB)
 ```
 
 `npm run dev` needs a running simulator ([`firmware/sim/`](../firmware/sim/)): it
@@ -74,6 +77,7 @@ Without the development server, the simulator serves the last build at
 | `public/` | Files copied as they are: the web manifest and the icons. |
 | `icons/icon.svg` | The icon's source. `public/apple-touch-icon.png` (180 px, iOS) and `icon-192.png` (the manifest) are renderings of it. |
 | `scripts/size.mjs` | The size check of `npm run size`. |
+| `scripts/build-pictures.mjs` | The object pictures (`public/img/`) and `src/data/pictures.json`: see [`src/data/README.md`](src/data/README.md). |
 
 ## Notes for iOS
 

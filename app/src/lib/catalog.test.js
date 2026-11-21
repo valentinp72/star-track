@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bodies, dsos, listedStars, searchKey, stars } from './catalog.js';
+import { bodies, dsos, listedStars, searchKey, stars, wikipediaUrl } from './catalog.js';
 
 describe('catalog', () => {
   it('has the Messier objects and the bright stars', () => {
@@ -13,6 +13,14 @@ describe('catalog', () => {
     expect(vega.desig).toBe('α Lyr');
     expect(vega.conName).toBe('Lyra');
     expect(listedStars).toContain(vega);
+  });
+
+  it('links to Wikipedia', () => {
+    expect(dsos.find((d) => d.title === 'M 42').wiki).toBe('Orion Nebula');
+    expect(stars.find((s) => s.name === 'Vega').wiki).toBe('Vega');
+    expect(stars.find((s) => s.name === 'Mirfak').wiki).toBe('Alpha Persei');
+    expect(bodies.find((b) => b.body === 'Mercury').wiki).toBe('Mercury (planet)');
+    expect(wikipediaUrl('Alpha Persei')).toBe('https://en.wikipedia.org/wiki/Alpha_Persei');
   });
 
   it('has sane coordinates', () => {
