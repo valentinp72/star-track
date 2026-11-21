@@ -7,8 +7,9 @@ It speaks the protocol of [`docs/protocol.md`](../docs/protocol.md) on a
 WebSocket at `/ws`. Design choices: [Phone interface](../docs/architecture.md#phone-interface).
 
 Status: the connection and the mount's status, the catalogue with goto and
-tracking (Moon and planets by position tables), solar mode, the site. The
-joystick, alignment and sky chart are still to come.
+tracking (Moon and planets by position tables), solar mode, the site, the
+joystick with Stop, tracking and park, the way back after the E-stop. The
+alignment and the sky chart are still to come.
 
 ## Libraries
 
@@ -56,6 +57,7 @@ Without the development server, the simulator serves the last build at
 | `src/lib/sky.js` | Astronomy Engine: positions of date as the protocol wants them (topocentric, apparent), alt/az, the `track_table` points, rise and set. |
 | `src/lib/catalog.js` | The objects: Sun, Moon and planets; 549 deep-sky objects (all Messier, NGC/IC to magnitude 10); 1637 stars to magnitude 5. Search without spaces, case or accents. |
 | `src/lib/targets.svelte.js` | Sends gotos: fixed objects as RA/Dec of date, the Moon and planets as a table of positions every 10 minutes for 6 hours, renewed 1 hour before it ends; the Sun with `sun: true`. |
+| `src/lib/jog.js` | The joystick's `jog` messages: every 100 ms while held (the mount stops by itself 200 ms after the last), `0, 0` at once on release; Fine, Medium, Fast scale the deflection by 0.3, 0.6, 1. |
 | `src/lib/errors.js` | A sentence for each refusal from the mount. |
 | `src/lib/appearance.svelte.js` | Auto (follows the phone), dark, or night (red). Kept in the phone's storage. |
 | `src/lib/format.js` | Text for coordinates, times and modes. |

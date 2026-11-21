@@ -37,7 +37,6 @@
 {:else if estop}
   <Block strong inset class="bg-red-500! text-white">
     <p class="font-semibold">E-stop pressed</p>
-    <p class="mt-1 text-sm">The motors are off. Release the E-stop to move again.</p>
   </Block>
 {/if}
 {#if solar}

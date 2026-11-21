@@ -13,6 +13,7 @@
   import { Mount } from './lib/mount.svelte.js';
   import { Targets } from './lib/targets.svelte.js';
   import { appearance } from './lib/appearance.svelte.js';
+  import { ui } from './lib/ui.svelte.js';
 
   const mount = new Mount();
   const targets = new Targets(mount);
@@ -40,6 +41,17 @@
       window.removeEventListener('pageshow', resume);
       mount.stop();
     };
+  });
+
+  // The mount's warnings (a jog stopped at the Sun's zone, a target that set…)
+  // show on every tab. Not the E-stop's: its banner and steps say it.
+  let lastLog = null;
+  $effect(() => {
+    const l = mount.logs[0];
+    if (!l || l === lastLog) return;
+    lastLog = l;
+    if (/e-stop/i.test(l.msg)) return;
+    if (l.level === 'warn' || l.level === 'error') ui.showToast(l.msg.charAt(0).toUpperCase() + l.msg.slice(1), 5000);
   });
 
   // Konsta's dark mode follows the `dark` class on <html>.
