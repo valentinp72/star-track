@@ -1,0 +1,1092 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>star-track simulator</title>
+<style>
+:root {
+  --bg: #0e1117; --panel: #161b24; --sunk: #10141b; --line: #2a3242; --fg: #d8dde7; --muted: #8b94a8;
+  --truth: #f0a63a; --fw: #4fc3e8; --target: #e56bd0; --ok: #5cc48d; --bad: #f05252; --warn: #e8c547;
+  --font: system-ui, -apple-system, "Segoe UI", sans-serif; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 var(--font); }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel); position: sticky; top: 0; z-index: 5; }
+header h1 { font-size: 16px; margin: 0 8px 0 0; font-weight: 600; }
+.pill { font: 600 12px var(--mono); padding: 3px 9px; border-radius: 99px; border: 1px solid var(--line); text-transform: uppercase; letter-spacing: .04em; }
+.pill.on { background: var(--ok); color: #0b1a12; border-color: transparent; }
+.pill.off { color: var(--muted); }
+.pill.bad { background: var(--bad); color: #fff; border-color: transparent; }
+.pill.mode { background: #2b3550; }
+.pill.mode.estop { background: var(--bad); color: #fff; }
+.pill.mode.tracking { background: var(--ok); color: #0b1a12; }
+.pill.mode.goto, .pill.mode.manual { background: var(--warn); color: #221d05; }
+.pill.solar { background: #f5c518; color: #2a2000; border-color: transparent; }
+.pill.sunup { color: #f5c518; border-color: #f5c518; }
+#solarDialog { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: grid; place-items: center; z-index: 20; padding: 16px; }
+#solarDialog[hidden] { display: none; }
+#solarDialog > div { max-width: 520px; background: var(--panel); border: 2px solid #f5c518; border-radius: 10px; padding: 18px 20px; display: grid; gap: 10px; }
+#solarDialog h2 { color: #f5c518; font-size: 16px; text-transform: none; letter-spacing: 0; margin: 0; }
+#solarDialog ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+button.solar-on { background: #f5c518; color: #2a2000; border-color: transparent; font-weight: 600; }
+.led { width: 14px; height: 14px; border-radius: 50%; display: inline-block; border: 1px solid var(--line); vertical-align: middle; }
+.ledbox { display: flex; gap: 6px; align-items: center; color: var(--muted); font-size: 12px; }
+main { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 14px; padding: 14px 16px 24px; }
+@media (max-width: 1000px) { main { grid-template-columns: minmax(0, 1fr); } }
+.col { display: grid; gap: 14px; align-content: start; min-width: 0; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; min-width: 0; }
+h2 { font-size: 13px; margin: 0 0 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+canvas { display: block; width: 100%; background: var(--sunk); border-radius: 6px; }
+.charts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+#mount3d { position: relative; aspect-ratio: 4 / 3; background: var(--sunk); border-radius: 6px; overflow: hidden; }
+#mount3d canvas { position: absolute; inset: 0; width: 100%; height: 100%; background: none; cursor: grab; }
+#mount3d .fail { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; text-align: center; color: var(--muted); font-size: 12px; }
+#mount3d .tag { position: absolute; left: 8px; top: 6px; font-size: 11px; color: var(--muted); pointer-events: none; }
+.charts > div { display: grid; gap: 10px; }
+@media (max-width: 640px) { .charts { grid-template-columns: 1fr; } }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend b { font-weight: 600; }
+table.ro { width: 100%; border-collapse: collapse; font: 12.5px var(--mono); }
+table.ro th { text-align: left; color: var(--muted); font: 600 11px var(--font); text-transform: uppercase; letter-spacing: .05em; padding: 3px 6px 3px 0; }
+table.ro td { padding: 3px 6px 3px 0; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.c-truth { color: var(--truth); } .c-fw { color: var(--fw); } .c-target { color: var(--target); }
+.row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
+.row:last-child { margin-bottom: 0; }
+button { font: 500 13px var(--font); color: var(--fg); background: #232b3a; border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+button:hover { background: #2c3648; }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--fw); outline-offset: 1px; }
+button.primary { background: #2d4f7a; border-color: #3d6aa3; }
+button.active { background: var(--fw); color: #0a1820; border-color: transparent; }
+.estopbox { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--sunk); }
+.estopbox .knob-icon { width: 30px; height: 30px; border-radius: 50%; background: var(--bad); border: 3px solid #e8c547; flex: none; }
+.estopbox .estate { font-weight: 600; }
+.estopbox .estate small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+.estopbox.pressed { background: #3a1214; border-color: var(--bad); }
+.estopbox.pressed .knob-icon { box-shadow: inset 0 0 0 6px #7a1b1b; }
+.estopbox.pressed .estate { color: #ff8a8a; }
+#recover { margin: 14px 16px 0; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--bad); background: #2a1214; }
+#recover h2 { color: #ff8a8a; margin-bottom: 8px; }
+#recover ol { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 8px; }
+#recover li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+#recover .mark { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 600 12px var(--mono); border: 1px solid var(--line); flex: none; }
+#recover li.done .mark { background: var(--ok); color: #0b1a12; border-color: transparent; }
+#recover li.now .mark { background: var(--warn); color: #221d05; border-color: transparent; }
+#recover li.later { color: var(--muted); }
+#recover li .why { flex-basis: 100%; padding-left: 34px; font-size: 12px; color: var(--muted); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+select, input { font: 13px var(--font); color: var(--fg); background: var(--sunk); border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px; }
+input[type=number] { width: 76px; }
+label.small { font-size: 12px; color: var(--muted); display: inline-flex; gap: 4px; align-items: center; }
+.pads { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.pad { position: relative; aspect-ratio: 1; max-width: 170px; width: 100%; border-radius: 50%; background: var(--sunk); border: 1px solid var(--line); touch-action: none; cursor: grab; margin: 0 auto; }
+.pad::before, .pad::after { content: ""; position: absolute; background: var(--line); }
+.pad::before { left: 50%; top: 8%; bottom: 8%; width: 1px; }
+.pad::after { top: 50%; left: 8%; right: 8%; height: 1px; }
+.knob { position: absolute; width: 34%; height: 34%; left: 33%; top: 33%; border-radius: 50%; background: #2d4f7a; border: 2px solid #4a7fc0; pointer-events: none; }
+.padlabel { text-align: center; font-size: 12px; color: var(--muted); margin-top: 6px; }
+.hint { font-size: 12px; color: var(--muted); margin: 4px 0 0; }
+#log { height: 230px; overflow: auto; font: 12px/1.4 var(--mono); background: var(--sunk); border-radius: 6px; padding: 6px 8px; white-space: pre-wrap; word-break: break-word; }
+#log .out { color: var(--fw); } #log .in { color: var(--fg); } #log .err { color: var(--bad); } #log .ev { color: var(--warn); } #log .note { color: var(--muted); }
+#raw { width: 100%; font-family: var(--mono); }
+</style>
+</head>
+<body>
+<header>
+  <h1>star-track simulator</h1>
+  <span class="pill off" id="conn">offline</span>
+  <span class="pill mode" id="mode">—</span>
+  <span class="pill off" id="f-time">time</span>
+  <span class="pill off" id="f-site">site</span>
+  <span class="pill off" id="f-aligned">aligned</span>
+  <span class="pill off" id="f-pos">position</span>
+  <span class="pill off" id="f-sun" hidden>sun</span>
+  <span class="ledbox">LEDs <span class="led" id="led-red"></span><span class="led" id="led-blue"></span></span>
+  <span class="ledbox" id="clock">—</span>
+</header>
+
+<div id="solarDialog" hidden role="dialog" aria-modal="true" aria-labelledby="solarTitle">
+  <div>
+    <h2 id="solarTitle">Solar filter check</h2>
+    <p style="margin:0">Pointed at the Sun without a filter, the telescope blinds at once and its own parts can burn. Solar mode turns off the <span id="solarSep">15</span>° keep-out zone around the Sun. Before turning it on:</p>
+    <ul>
+      <li>a certified solar filter (ISO 12312-2) covers the whole front of the tube, fixed so that it cannot fall off;</li>
+      <li>the finder is capped or removed;</li>
+      <li>nobody looks through the eyepiece while the mount moves.</li>
+    </ul>
+    <p class="hint" style="margin:0">Solar mode turns off again at park and at power-on.</p>
+    <div class="row"><button class="solar-on" id="solarYes">The filter is on: turn on solar mode</button><button id="solarNo">Cancel</button></div>
+  </div>
+</div>
+
+<div id="recover" hidden>
+  <h2 id="recoverTitle">E-stop: how to get the mount going again</h2>
+  <ol>
+    <li id="rs1"><span class="mark">1</span><span>Release the E-stop (on the mount: turn the knob).</span><button id="rsRelease">Release the E-stop</button></li>
+    <li id="rs2"><span class="mark">2</span><span>Re-arm the mount: the firmware waits for <code>arm</code> before it moves again.</span><button id="rsArm">Arm</button></li>
+    <li id="rs3"><span class="mark">3</span><span id="rs3text">Find the position again: centre a known object and sync on it.</span><button id="rsSync">Centre and sync</button>
+      <span class="why">With the drivers off the motors had no holding torque, so the mount no longer trusts its position (pos_ok false). In the simulator, "Centre" moves the tube onto the selected object as you would with the joystick.</span></li>
+  </ol>
+</div>
+
+<main>
+  <div class="col">
+    <section>
+      <h2>Sky and mount</h2>
+      <div class="charts">
+        <canvas id="sky" height="440" title="Click an object to select it"></canvas>
+        <div>
+          <div id="mount3d" title="Drag to turn the view, scroll to zoom"><canvas id="m3d"></canvas></div>
+          <div class="pair">
+            <canvas id="eyepiece" height="200"></canvas>
+            <canvas id="axes" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="legend">
+        <span><b class="c-truth">✛ truth</b>: where the tube really points</span>
+        <span><b class="c-fw">○ firmware</b>: where the mount thinks it points</span>
+        <span><b class="c-target">◇ target</b></span>
+        <span>◎ alignment star</span>
+        <span>Sky chart seen from below: north up, east left. Eyepiece: 1.4° field, the 114/900 with a 25 mm eyepiece. 3D view: the mount at its true axis angles, base tilt and north, with rays to where the tube points and to the target; drag to turn it.</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Readouts</h2>
+      <table class="ro">
+        <thead><tr><th></th><th>RA</th><th>Dec</th><th>Alt</th><th>Az</th></tr></thead>
+        <tbody>
+          <tr><td class="c-truth">truth</td><td id="t-ra">—</td><td id="t-dec">—</td><td id="t-alt">—</td><td id="t-az">—</td></tr>
+          <tr><td class="c-fw">firmware</td><td id="p-ra">—</td><td id="p-dec">—</td><td id="p-alt">—</td><td id="p-az">—</td></tr>
+          <tr><td class="c-target">target</td><td id="g-ra">—</td><td id="g-dec">—</td><td id="g-alt">—</td><td id="g-az">—</td></tr>
+          <tr><td style="color:#f5c518">Sun</td><td colspan="2" id="sun-sep">—</td><td id="sun-alt">—</td><td id="sun-az">—</td></tr>
+        </tbody>
+      </table>
+      <table class="ro" style="margin-top:10px">
+        <tbody>
+          <tr><th>Pointing error</th><td id="e-point">—</td><th>Model error</th><td id="e-model">—</td></tr>
+          <tr><th>Az axis</th><td id="ax-az">—</td><th>Alt axis</th><td id="ax-alt">—</td></tr>
+          <tr><th>Firmware UTC</th><td id="utc-fw">—</td><th>True UTC</th><td id="utc-true">—</td></tr>
+          <tr><th>Site</th><td id="site">—</td><th>GPS</th><td id="gps">—</td></tr>
+        </tbody>
+      </table>
+      <p class="hint">Pointing error: truth to target. Model error: truth to where the firmware thinks it points.</p>
+    </section>
+
+    <section>
+      <h2>Messages</h2>
+      <div id="log"></div>
+      <div class="row" style="margin-top:8px">
+        <input id="raw" placeholder='Any command, for example {"cmd":"get_config"} (the id is added)'>
+      </div>
+      <div class="row">
+        <label class="small"><input type="checkbox" id="showPoll"> show status polling</label>
+        <button id="clearLog">Clear</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="col">
+    <section>
+      <h2>Start</h2>
+      <div class="row">
+        <button class="primary" id="quick">Quick start</button>
+        <button id="timesite">Send time and site</button>
+        <button id="clearAlign">Clear alignment</button>
+      </div>
+      <p class="hint">Quick start sends the time and site as the phone would, then centres and adds three bright stars, as a user would with the joystick.</p>
+    </section>
+
+    <section>
+      <h2>Object</h2>
+      <div class="row">
+        <select id="obj"></select>
+        <span id="objAlt" class="hint" style="margin:0"></span>
+      </div>
+      <div class="row">
+        <button class="primary" id="goto">Goto and track</button>
+        <button id="gotoOnly">Goto only</button>
+        <button id="centre" title="sim_point: moves the tube onto the object, as the user would with the joystick">Centre it (as the user)</button>
+        <button id="alignAdd" title="sim_point then align_add: centre the object, as the user would, and add it as an alignment star">Centre and align</button>
+        <button id="sync" title="sim_point then sync: centre the object, as the user would, and sync on it">Centre and sync</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Mount</h2>
+      <div class="row">
+        <button id="stop">Stop</button>
+        <button id="trackOn">Track on</button>
+        <button id="trackOff">Track off</button>
+        <button id="park">Park</button>
+        <button id="unpark">Unpark</button>
+        <button id="arm">Arm</button>
+        <button id="altZero" title="set_alt_zero: the tube is level now">Tube is level</button>
+        <button id="solarBtn" title="solar: lets the tube point at the Sun, after confirming a solar filter">Solar mode…</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Joysticks</h2>
+      <div class="pads">
+        <div>
+          <div class="pad" id="padApp"><div class="knob"></div></div>
+          <div class="padlabel">Phone app: <code>jog</code> every 100 ms</div>
+        </div>
+        <div>
+          <div class="pad" id="padHand"><div class="knob"></div></div>
+          <div class="padlabel">Hand unit: <code>sim_hand</code></div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <span class="hint" style="margin:0">Hand-unit buttons:</span>
+        <button data-btn="0">1 (stop)</button><button data-btn="1">2</button><button data-btn="2">3</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Simulator</h2>
+      <div class="row">
+        <span class="hint" style="margin:0">Clock</span>
+        <button data-rate="0">Pause</button><button data-rate="1">×1</button><button data-rate="10">×10</button>
+        <button data-rate="100">×100</button><button data-rate="1000">×1000</button>
+      </div>
+      <div class="row">
+        <span class="hint" style="margin:0">Jump</span>
+        <button data-run="60">+1 min</button><button data-run="600">+10 min</button><button data-run="3600">+1 h</button>
+        <label class="small" title="Gotos and jogs run at most at this clock speed, so they can be watched">slews at most
+          <select id="slewMax"><option value="1">×1</option><option value="10">×10</option><option value="0">no limit</option></select></label>
+      </div>
+      <div class="row">
+        <div class="estopbox" id="estopBox">
+          <span class="knob-icon" aria-hidden="true"></span>
+          <span class="estate" id="estopState">Released<small>drivers enabled</small></span>
+          <button id="estop">Press the E-stop</button>
+        </div>
+        <button id="gpsOn">GPS on</button>
+        <label class="small"><input type="checkbox" id="gpsFix" checked> GPS fix</label>
+      </div>
+      <div class="row">
+        <label class="small">tilt <input type="number" id="m-tilt" step="0.1" value="0">°</label>
+        <label class="small">towards az <input type="number" id="m-tiltaz" step="5" value="0">°</label>
+        <label class="small">north at axis <input type="number" id="m-north" step="5" value="0">°</label>
+        <label class="small">alt index <input type="number" id="m-altzero" step="0.1" value="0">°</label>
+        <button id="mountApply">Apply</button>
+      </div>
+      <p class="hint">The base: tilt, where north is on the azimuth axis, and the tube's altitude when the alt axis reads 0. Change it before aligning.</p>
+      <div class="row">
+        <select id="slipAxis"><option value="az">az</option><option value="alt">alt</option></select>
+        <input type="number" id="slipSteps" value="2000" step="100">
+        <button id="slip">Slip the axis (steps)</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const D = Math.PI / 180;
+
+// ------------------------------------------------------------------ catalogue
+// RA in hours, Dec in degrees. Bright stars (magnitude) and Messier objects.
+const CATALOG = [
+  ["Sirius", 6.7525, -16.716, -1.5], ["Canopus", 6.3992, -52.696, -0.7], ["Arcturus", 14.261, 19.182, 0.0],
+  ["Vega", 18.6156, 38.784, 0.0], ["Capella", 5.2782, 45.998, 0.1], ["Rigel", 5.2423, -8.202, 0.1],
+  ["Procyon", 7.655, 5.225, 0.4], ["Betelgeuse", 5.9195, 7.407, 0.5], ["Altair", 19.8464, 8.868, 0.8],
+  ["Aldebaran", 4.5987, 16.509, 0.9], ["Spica", 13.4199, -11.161, 1.0], ["Antares", 16.4901, -26.432, 1.0],
+  ["Pollux", 7.7553, 28.026, 1.1], ["Fomalhaut", 22.9608, -29.622, 1.2], ["Deneb", 20.6905, 45.28, 1.3],
+  ["Regulus", 10.1395, 11.967, 1.4], ["Castor", 7.5767, 31.888, 1.6], ["Mirfak", 3.4054, 49.861, 1.8],
+  ["Dubhe", 11.0621, 61.751, 1.8], ["Alkaid", 13.7923, 49.313, 1.9], ["Polaris", 2.5303, 89.264, 2.0],
+  ["Alpheratz", 0.1398, 29.091, 2.1], ["Hamal", 2.1196, 23.463, 2.0], ["Schedar", 0.6751, 56.537, 2.2],
+  ["M1 Crab Nebula", 5.5756, 22.0145], ["M13 Hercules Cluster", 16.6948, 36.461], ["M27 Dumbbell", 19.9934, 22.721],
+  ["M31 Andromeda", 0.7123, 41.269], ["M33 Triangulum", 1.5641, 30.66], ["M35", 6.1483, 24.333],
+  ["M36", 5.6061, 34.135], ["M37", 5.8722, 32.553], ["M38", 5.4783, 35.855], ["M42 Orion Nebula", 5.5881, -5.391],
+  ["M44 Beehive", 8.67, 19.667], ["M45 Pleiades", 3.7914, 24.105], ["M51 Whirlpool", 13.4979, 47.195],
+  ["M57 Ring Nebula", 18.8932, 33.029], ["M81", 9.9258, 69.065], ["M8 Lagoon", 18.0631, -24.383],
+  ["M103", 1.555, 60.658], ["M52", 23.4033, 61.59],
+].map(([name, ra, dec, mag]) => ({ name, ra, dec, mag, star: mag !== undefined }));
+// Solar system: positions computed for the current time (Astronomy Engine, or
+// a simple formula for the Sun when it could not load).
+const BODIES = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"];
+const BODY_STYLE = { Sun: ["#f5c518", 7], Moon: ["#d9dde6", 6], Mercury: ["#b0a89c", 2.5], Venus: ["#f3e7c0", 3.5], Mars: ["#e2704a", 3],
+  Jupiter: ["#e6c9a0", 3.5], Saturn: ["#e3cf8f", 3], Uranus: ["#9fd6e0", 2.5], Neptune: ["#7a9cf0", 2.5] };
+CATALOG.unshift(...BODIES.map(b => ({ name: b, body: b, ra: 0, dec: 0 })));
+
+// ------------------------------------------------------------------ astronomy (for drawing only)
+const wrap360 = d => ((d % 360) + 360) % 360;
+const wrap180 = d => { const r = wrap360(d); return r > 180 ? r - 360 : r; };
+function gmstDeg(utc) {
+  const d = (utc - 946728000000) / 86400000, t = d / 36525;
+  return wrap360(280.46061837 + 360.98564736629 * d + 0.000387933 * t * t - t * t * t / 38710000);
+}
+function altaz(ra, dec, utc, lat, lon) {
+  const h = (gmstDeg(utc) + lon - ra * 15) * D, d = dec * D, p = lat * D;
+  let alt = Math.asin(Math.sin(p) * Math.sin(d) + Math.cos(p) * Math.cos(d) * Math.cos(h)) / D;
+  const az = wrap360(Math.atan2(-Math.cos(d) * Math.sin(h), Math.sin(d) * Math.cos(p) - Math.cos(d) * Math.cos(h) * Math.sin(p)) / D);
+  const a = Math.max(alt, -1);
+  if (alt < 89.9) alt += 1.02 / Math.tan((a + 10.3 / (a + 5.11)) * D) / 60;
+  return { alt, az };
+}
+function sep(ra1, dec1, ra2, dec2) {
+  const a1 = ra1 * 15 * D, d1 = dec1 * D, a2 = ra2 * 15 * D, d2 = dec2 * D;
+  const c = Math.sin(d1) * Math.sin(d2) + Math.cos(d1) * Math.cos(d2) * Math.cos(a1 - a2);
+  return Math.acos(Math.max(-1, Math.min(1, c))) / D;
+}
+const fmtRa = h => { if (h == null) return "—"; h = ((h % 24) + 24) % 24; const s = Math.round(h * 3600); return `${String(Math.floor(s / 3600)).padStart(2, "0")}h${String(Math.floor(s / 60) % 60).padStart(2, "0")}m${String(s % 60).padStart(2, "0")}s`; };
+const fmtDeg = (d, sign = true) => { if (d == null) return "—"; const neg = d < 0; const s = Math.round(Math.abs(d) * 3600); return `${neg ? "−" : sign ? "+" : ""}${Math.floor(s / 3600)}°${String(Math.floor(s / 60) % 60).padStart(2, "0")}′${String(s % 60).padStart(2, "0")}″`; };
+const fmtAngle = d => d == null ? "—" : d < 1 / 60 ? `${(d * 3600).toFixed(1)}″` : d < 1 ? `${(d * 60).toFixed(2)}′` : `${d.toFixed(2)}°`;
+function sunRadecSimple(utc) {  // the firmware's formula
+  const n = (utc - 946728000000) / 86400000, L = 280.46 + 0.9856474 * n, g = (357.528 + 0.9856003 * n) * D;
+  const lam = (L + 1.915 * Math.sin(g) + 0.02 * Math.sin(2 * g)) * D, eps = (23.439 - 4e-7 * n) * D;
+  return { ra: wrap360(Math.atan2(Math.cos(eps) * Math.sin(lam), Math.cos(lam)) / D) / 15, dec: Math.asin(Math.sin(eps) * Math.sin(lam)) / D };
+}
+const haveAE = () => !!window.Astronomy;
+// Topocentric apparent RA/Dec of date, as the phone app will send them.
+function bodyRadec(body, utc, lat, lon) {
+  if (!haveAE()) return body === "Sun" ? sunRadecSimple(utc) : null;
+  const e = Astronomy.Equator(body, new Date(utc), new Astronomy.Observer(lat, lon, 0), true, true);
+  return { ra: e.ra, dec: e.dec };
+}
+function updateBodies() {
+  if (!truth) return;
+  for (const o of CATALOG) if (o.body) {
+    const p = bodyRadec(o.body, truth.utc, truth.site.lat, truth.site.lon);
+    o.missing = !p;
+    if (p) { o.ra = p.ra; o.dec = p.dec; }
+  }
+}
+const fmtUtc = ms => ms == null ? "—" : new Date(ms).toISOString().replace("T", " ").slice(0, 19);
+
+// ------------------------------------------------------------------ connection
+let ws = null, nextId = 1, pending = new Map(), connected = false;
+let sunMinSep = 15, modelError = null;
+let status = null, truth = null, alignStars = [], trail = [], lastMount = "", pickedDefault = false;
+
+function connect() {
+  ws = new WebSocket(`ws://${location.host}/ws`);
+  ws.onopen = async () => {
+    connected = true;
+    setConn();
+    const h = await call("hello", { proto: 1 });
+    note(`connected to ${h.board}, firmware ${h.fw}, protocol ${h.proto}`);
+    await call("stream", { hz: 0 }, true);  // this page polls instead, in real time
+    const c = await call("get_config", { keys: ["sun.min_sep"] }, true);
+    if (c.ok) sunMinSep = c.config["sun.min_sep"];
+    refreshAlign();
+  };
+  ws.onmessage = e => {
+    let m;
+    try { m = JSON.parse(e.data); } catch { return; }
+    if ("re" in m && pending.has(m.re)) {
+      const p = pending.get(m.re);
+      pending.delete(m.re);
+      if (!p.quiet || !m.ok || $("showPoll").checked) logLine(m.ok ? "in" : "err", "← " + JSON.stringify(m));
+      p.resolve(m);
+    } else if (m.ev === "log") {
+      logLine("ev", `log ${m.level}: ${m.msg}`);
+    } else if (m.ev !== "status") {
+      logLine(m.ok === false ? "err" : "in", "← " + JSON.stringify(m));
+    }
+  };
+  ws.onclose = () => {
+    connected = false;
+    setConn();
+    for (const p of pending.values()) p.resolve({ ok: false, err: "offline" });
+    pending.clear();
+    setTimeout(connect, 1000);
+  };
+}
+
+function call(cmd, args = {}, quiet = false) {
+  if (!connected) return Promise.resolve({ ok: false, err: "offline" });
+  return new Promise(resolve => {
+    const id = nextId++;
+    pending.set(id, { resolve, quiet });
+    const msg = { cmd, id, ...args };
+    ws.send(JSON.stringify(msg));
+    if (!quiet || $("showPoll").checked) logLine("out", "→ " + JSON.stringify(msg));
+  });
+}
+function fire(cmd, args = {}) { if (connected) ws.send(JSON.stringify({ cmd, ...args })); }
+
+function setConn() {
+  const c = $("conn");
+  c.textContent = connected ? "connected" : "offline";
+  c.className = "pill " + (connected ? "on" : "bad");
+}
+
+// ------------------------------------------------------------------ log
+function logLine(cls, text) {
+  const log = $("log");
+  const atBottom = log.scrollTop + log.clientHeight >= log.scrollHeight - 4;
+  const div = document.createElement("div");
+  div.className = cls;
+  div.textContent = text;
+  log.appendChild(div);
+  while (log.childNodes.length > 400) log.removeChild(log.firstChild);
+  if (atBottom) log.scrollTop = log.scrollHeight;
+}
+const note = t => logLine("note", "· " + t);
+$("clearLog").onclick = () => { $("log").textContent = ""; };
+$("raw").addEventListener("keydown", e => {
+  if (e.key !== "Enter") return;
+  let m;
+  try { m = JSON.parse(e.target.value); } catch { note("not valid JSON"); return; }
+  const { cmd, id, ...args } = m;
+  if (!cmd) { note("a cmd key is needed"); return; }
+  call(cmd, args);
+  e.target.value = "";
+});
+
+// ------------------------------------------------------------------ polling
+let polling = false;
+async function poll() {
+  if (!connected || polling) return;
+  polling = true;
+  // One request: the firmware's status and the truth at the same simulated instant.
+  const r = await call("sim_state", {}, true);
+  polling = false;
+  if (!r.ok) return;
+  status = r.status;
+  truth = r.truth;
+  modelError = r.model_error;
+  const t = truth;
+  trail.push([t.alt, t.az]);  // the path the tube really took, as seen on the chart
+  if (trail.length > 600) trail.shift();
+  render();
+}
+setInterval(poll, 100);
+async function refreshAlign() {
+  const r = await call("align_list", {}, true);
+  if (r.ok) alignStars = r.stars;
+}
+
+// ------------------------------------------------------------------ rendering
+function flag(id, on, label) {
+  const e = $(id);
+  e.className = "pill " + (on ? "on" : "off");
+  e.textContent = label;
+}
+function setText(id, v) { const e = $(id); if (e.textContent !== v) e.textContent = v; }
+
+function render() {
+  const s = status, t = truth;
+  updateBodies();
+  const sunPill = $("f-sun");
+  sunPill.hidden = !s.solar && !(s.sun && s.sun.alt > -2);
+  sunPill.className = "pill " + (s.solar ? "solar" : "sunup");
+  sunPill.textContent = s.solar ? "solar mode" : "sun up";
+  setText("solarBtn", s.solar ? "Solar mode off" : "Solar mode…");
+  $("solarBtn").className = s.solar ? "solar-on" : "";
+  setText("sun-alt", s.sun ? fmtDeg(s.sun.alt) : "—");
+  setText("sun-az", s.sun ? fmtDeg(s.sun.az, false) : "—");
+  setText("sun-sep", !s.sun ? "needs time and site" : s.sun.sep == null ? "tube: distance unknown (not aligned)"
+    : `tube ${s.sun.sep.toFixed(1)}° away${s.solar ? " (solar mode)" : ` (keep-out ${sunMinSep}°)`}`);
+  const m = $("mode");
+  m.textContent = s.mode;
+  m.className = "pill mode " + s.mode;
+  flag("f-time", s.time_ok, "time " + s.time_src);
+  flag("f-site", s.site_ok, "site " + s.site_src);
+  flag("f-aligned", s.aligned, s.aligned ? `aligned ${alignStars.length}★` : "not aligned");
+  flag("f-pos", s.pos_ok, s.pos_ok ? "position ok" : "position uncertain");
+  const led = v => v ? 0.3 + 0.7 * v / 255 : 0.06;  // dim values stay visible on screen
+  $("led-red").style.background = `rgba(255,40,40,${led(t.leds.red)})`;
+  $("led-blue").style.background = `rgba(60,120,255,${led(t.leds.blue)})`;
+  setText("clock", t.rate === 0 ? "clock paused" : t.effective_rate !== t.rate ? `clock ×${t.rate} (slewing at ×${t.effective_rate})` : `clock ×${t.rate}`);
+  if (document.activeElement !== $("slewMax")) $("slewMax").value = String(t.slew_rate_max);
+
+  setText("t-ra", fmtRa(t.ra)); setText("t-dec", fmtDeg(t.dec)); setText("t-alt", fmtDeg(t.alt)); setText("t-az", fmtDeg(t.az, false));
+  setText("p-ra", fmtRa(s.pos.ra)); setText("p-dec", fmtDeg(s.pos.dec)); setText("p-alt", fmtDeg(s.pos.alt)); setText("p-az", fmtDeg(s.pos.az, false));
+  const g = s.target || {};
+  setText("g-ra", fmtRa(g.ra)); setText("g-dec", fmtDeg(g.dec)); setText("g-alt", fmtDeg(g.alt)); setText("g-az", fmtDeg(g.az, false));
+  setText("e-point", g.ra != null ? fmtAngle(sep(t.ra, t.dec, g.ra, g.dec)) : "—");
+  const modelErr = modelError;
+  setText("e-model", modelErr == null ? "—" : fmtAngle(modelErr) + (modelErr > 0.5 ? ": the alignment no longer matches, sync or re-align" : ""));
+  $("e-model").style.color = modelErr > 0.5 ? "var(--bad)" : "";
+  const ax = (a, mech) => `${a.steps} steps, ${(a.speed * 3600).toFixed(1)}″/s, mech ${mech.toFixed(3)}°`;
+  setText("ax-az", ax(s.axes.az, t.axes.az));
+  setText("ax-alt", ax(s.axes.alt, t.axes.alt));
+  setText("utc-fw", fmtUtc(s.utc));
+  setText("utc-true", fmtUtc(t.utc));
+  setText("site", s.site ? `${s.site.lat.toFixed(3)}°, ${s.site.lon.toFixed(3)}°` : "—");
+  setText("gps", !t.gps.on ? "off" : s.gps ? `${s.gps.fix ? "fix" : "no fix"}, ${s.gps.sats} sats` : "on");
+
+  $("estopBox").classList.toggle("pressed", t.estop);
+  $("estopState").innerHTML = t.estop ? "PRESSED<small>drivers off, motors free</small>"
+    : `Released<small>${s.mode === "estop" ? "waiting for arm" : "drivers enabled"}</small>`;
+  setText("estop", t.estop ? "Release the E-stop" : "Press the E-stop");
+  renderRecovery(s, t);
+  $("gpsOn").textContent = t.gps.on ? "GPS off" : "GPS on";
+  document.querySelectorAll("[data-rate]").forEach(b => b.classList.toggle("active", +b.dataset.rate === t.rate));
+  const mountNow = JSON.stringify(t.mount);
+  if (mountNow !== lastMount) {  // only when the simulator's values change
+    lastMount = mountNow;
+    $("m-tilt").value = t.mount.tilt; $("m-tiltaz").value = t.mount.tilt_az;
+    $("m-north").value = t.mount.north; $("m-altzero").value = t.mount.alt_zero;
+  }
+  if (!pickedDefault) {  // start on the highest Messier object
+    pickedDefault = true;
+    let best = -1, bestAlt = 0;
+    CATALOG.forEach((c, i) => { const a = altaz(c.ra, c.dec, t.utc, t.site.lat, t.site.lon).alt; if (!c.star && !c.body && a > bestAlt) { bestAlt = a; best = i; } });
+    if (best >= 0) sel.value = best;
+  }
+  const o = selected();
+  if (o) {
+    const h = altaz(o.ra, o.dec, t.utc, t.site.lat, t.site.lon);
+    setText("objAlt", h.alt > 0 ? `alt ${h.alt.toFixed(1)}°, az ${h.az.toFixed(1)}°` : `below the horizon (alt ${h.alt.toFixed(1)}°)`);
+  }
+  drawSky();
+  drawEyepiece();
+  drawAxes();
+  mount3d.update();
+}
+
+// The recovery steps after an E-stop, shown while they are needed.
+let recoverSeen = false;
+function renderRecovery(s, t) {
+  const box = $("recover");
+  const needed = s.mode === "estop" || !s.pos_ok;
+  if (needed && s.mode === "estop") recoverSeen = true;
+  box.hidden = !(needed && recoverSeen);
+  if (box.hidden) { if (!needed) recoverSeen = false; return; }
+  const released = !t.estop, armed = s.mode !== "estop", found = s.pos_ok;
+  const step = (id, done, now) => { $(id).className = done ? "done" : now ? "now" : "later"; $(id).querySelector(".mark").textContent = done ? "✓" : id.slice(-1); };
+  step("rs1", released, !released);
+  step("rs2", armed, released && !armed);
+  step("rs3", found, armed && !found);
+  $("rsRelease").disabled = released;
+  $("rsArm").disabled = !released || armed;
+  const o = selected();
+  const oAlt = o ? altaz(o.ra, o.dec, t.utc, t.site.lat, t.site.lon).alt : -90;
+  const visible = oAlt > 5 && oAlt < 75;  // near the zenith the azimuth is too uncertain
+  $("rsSync").disabled = !armed || found || !visible;
+  setText("rsSync", s.aligned ? `Centre and sync on ${o.name.split(" ")[0]}` : `Centre and align on ${o.name.split(" ")[0]}`);
+  setText("rs3text", visible ? "Find the position again: centre a known object and sync on it."
+    : "Find the position again: pick an object between 5° and 75° altitude (Object panel), centre it and sync on it.");
+  setText("recoverTitle", t.estop ? "E-stop pressed: how to get the mount going again" : "After the E-stop: how to get the mount going again");
+}
+
+function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function prep(canvas) {
+  const r = window.devicePixelRatio || 1, w = canvas.clientWidth, h = canvas.clientHeight;
+  if (canvas.width !== Math.round(w * r) || canvas.height !== Math.round(h * r)) {
+    canvas.width = Math.round(w * r);
+    canvas.height = Math.round(h * r);
+  }
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(r, 0, 0, r, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  return { ctx, w, h, tiny: w < 80 || h < 80 };
+}
+function marker(ctx, kind, x, y, color, size = 7) {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  if (kind === "cross") {
+    ctx.moveTo(x - size * 1.6, y); ctx.lineTo(x - size * 0.4, y);
+    ctx.moveTo(x + size * 0.4, y); ctx.lineTo(x + size * 1.6, y);
+    ctx.moveTo(x, y - size * 1.6); ctx.lineTo(x, y - size * 0.4);
+    ctx.moveTo(x, y + size * 0.4); ctx.lineTo(x, y + size * 1.6);
+  } else if (kind === "circle") {
+    ctx.arc(x, y, size, 0, 2 * Math.PI);
+  } else if (kind === "diamond") {
+    ctx.moveTo(x, y - size); ctx.lineTo(x + size, y); ctx.lineTo(x, y + size); ctx.lineTo(x - size, y); ctx.closePath();
+  }
+  ctx.stroke();
+}
+
+let skyGeom = null;
+function drawSky() {
+  const c = $("sky");
+  c.style.height = c.clientWidth + "px";
+  const { ctx, w, h, tiny } = prep(c);
+  if (tiny) return;
+  const t = truth, s = status;
+  const cx = w / 2, cy = h / 2, R = Math.min(w, h) / 2 - 18;
+  const P = (alt, az) => { const r = R * (90 - alt) / 90; return [cx - r * Math.sin(az * D), cy - r * Math.cos(az * D)]; };
+  skyGeom = { P, R, cx, cy };
+  ctx.strokeStyle = css("--line"); ctx.lineWidth = 1;
+  for (const a of [0, 30, 60]) { ctx.beginPath(); ctx.arc(cx, cy, R * (90 - a) / 90, 0, 2 * Math.PI); ctx.stroke(); }
+  ctx.fillStyle = css("--muted"); ctx.font = "12px " + css("--font"); ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  for (const [l, az] of [["N", 0], ["E", 90], ["S", 180], ["W", 270]]) ctx.fillText(l, cx - (R + 11) * Math.sin(az * D), cy - (R + 11) * Math.cos(az * D));
+
+  const lat = t.site.lat, lon = t.site.lon;
+  ctx.font = "11px " + css("--font"); ctx.textAlign = "left";
+  for (const o of CATALOG) {
+    const p = altaz(o.ra, o.dec, t.utc, lat, lon);
+    o.xy = null;
+    if (p.alt < 0) continue;
+    const [x, y] = P(p.alt, p.az);
+    o.xy = [x, y];
+    if (o.body) {
+      if (o.missing) { o.xy = null; continue; }
+      const [color, r] = BODY_STYLE[o.body];
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fill();
+      ctx.fillStyle = color; ctx.fillText(o.name, x + r + 4, y);
+      continue;
+    }
+    ctx.fillStyle = o === selected() ? css("--fg") : o.star ? "#c9d1e0" : "#7f8aa3";
+    if (o.star) { ctx.beginPath(); ctx.arc(x, y, Math.max(1.2, 3.4 - o.mag), 0, 2 * Math.PI); ctx.fill(); }
+    else ctx.fillRect(x - 2, y - 2, 4, 4);
+    if (o === selected() || (o.star && o.mag < 1.2)) { ctx.fillStyle = css("--muted"); ctx.fillText(o.name.split(" ")[0], x + 6, y); }
+  }
+  // The Sun's keep-out zone: a circle of sun.min_sep on the sky.
+  if (s.sun && s.sun.alt > -sunMinSep) {
+    const a0 = s.sun.alt * D, z0 = s.sun.az * D, r = sunMinSep * D;
+    ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2 * Math.PI); ctx.clip();
+    ctx.beginPath();
+    for (let i = 0; i <= 72; i++) {
+      const b = i / 72 * 2 * Math.PI;
+      const alt = Math.asin(Math.sin(a0) * Math.cos(r) + Math.cos(a0) * Math.sin(r) * Math.cos(b));
+      const az = z0 + Math.atan2(Math.sin(b) * Math.sin(r) * Math.cos(a0), Math.cos(r) - Math.sin(a0) * Math.sin(alt));
+      const [x, y] = P(Math.max(alt / D, -15), az / D);
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = s.solar ? "rgba(245,197,24,0.06)" : "rgba(245,197,24,0.14)"; ctx.fill();
+    ctx.setLineDash(s.solar ? [3, 5] : [6, 4]); ctx.strokeStyle = "#f5c518"; ctx.lineWidth = 1.2; ctx.stroke(); ctx.setLineDash([]);
+    ctx.restore();
+  }
+  for (const a of alignStars) {
+    const p = altaz(a.ra, a.dec, t.utc, lat, lon);
+    if (p.alt >= 0) { const [x, y] = P(p.alt, p.az); ctx.strokeStyle = css("--fg"); ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(x, y, 9, 0, 2 * Math.PI); ctx.stroke(); }
+  }
+  // Trail of the true pointing.
+  ctx.strokeStyle = css("--truth"); ctx.globalAlpha = 0.35; ctx.lineWidth = 1.5; ctx.beginPath();
+  // A jump of more than 5° between two samples (a sim_point, a time jump) breaks the line.
+  let prev = null;
+  for (const [alt, az] of trail) {
+    const [x, y] = P(alt, az);
+    const jump = !prev || sep(prev[1] / 15, prev[0], az / 15, alt) > 5;
+    jump ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    prev = [alt, az];
+  }
+  ctx.stroke(); ctx.globalAlpha = 1;
+  if (s.target && s.target.alt != null && s.target.az != null) { const [x, y] = P(s.target.alt, s.target.az); marker(ctx, "diamond", x, y, css("--target"), 8); }
+  if (s.pos.alt != null && s.pos.az != null) { const [x, y] = P(s.pos.alt, s.pos.az); marker(ctx, "circle", x, y, css("--fw"), 9); }
+  const [x, y] = P(t.alt, t.az);
+  marker(ctx, "cross", x, y, css("--truth"), 6);
+}
+
+function drawEyepiece() {
+  const c = $("eyepiece");
+  c.style.height = Math.min(c.clientWidth, 260) + "px";
+  const { ctx, w, h, tiny } = prep(c);
+  if (tiny) return;
+  const t = truth, s = status;
+  const cx = w / 2, cy = h / 2, R = Math.min(w, h) / 2 - 8, field = 1.4;
+  const k = R / (field / 2);
+  ctx.fillStyle = "#05070b"; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2 * Math.PI); ctx.fill();
+  ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2 * Math.PI); ctx.clip();
+  // Offsets on the sky around the true pointing, east left, north up (in alt/az).
+  const off = (alt, az) => [cx - wrap180(az - t.az) * Math.cos(t.alt * D) * k, cy - (alt - t.alt) * k];
+  for (const o of CATALOG) {
+    const p = altaz(o.ra, o.dec, t.utc, t.site.lat, t.site.lon);
+    const [x, y] = off(p.alt, p.az);
+    if (Math.hypot(x - cx, y - cy) > R + 20) continue;
+    ctx.fillStyle = "#fff";
+    ctx.beginPath(); ctx.arc(x, y, o.star ? 3 : 5, 0, 2 * Math.PI); ctx.globalAlpha = o.star ? 1 : 0.35; ctx.fill(); ctx.globalAlpha = 1;
+    ctx.fillStyle = css("--muted"); ctx.font = "11px " + css("--font"); ctx.fillText(o.name, x + 8, y + 4);
+  }
+  if (s.target && s.target.alt != null && s.target.az != null) { const [x, y] = off(s.target.alt, s.target.az); marker(ctx, "diamond", x, y, css("--target"), 7); }
+  if (s.pos.alt != null && s.pos.az != null) { const [x, y] = off(s.pos.alt, s.pos.az); marker(ctx, "circle", x, y, css("--fw"), 8); }
+  ctx.restore();
+  ctx.strokeStyle = css("--line"); ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2 * Math.PI); ctx.stroke();
+  marker(ctx, "cross", cx, cy, css("--truth"), 4);
+  ctx.fillStyle = css("--muted"); ctx.font = "11px " + css("--font"); ctx.fillText("eyepiece 1.4°", 8, 14);
+}
+
+function drawAxes() {
+  const c = $("axes");
+  const { ctx, w, h, tiny } = prep(c);
+  if (tiny) return;
+  const s = status, t = truth;
+  // Firmware angles from its step counters (default 160 000 steps per turn).
+  const fwAz = s.axes.az.steps * 360 / 160000, fwAlt = s.axes.alt.steps * 360 / 160000;
+  const line = (x0, y0, deg, len, color, dash, width, up) => {
+    ctx.setLineDash(dash); ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath(); ctx.moveTo(x0, y0);
+    if (up) ctx.lineTo(x0 + Math.cos(deg * D) * len, y0 - Math.sin(deg * D) * len);
+    else ctx.lineTo(x0 + Math.sin(deg * D) * len, y0 - Math.cos(deg * D) * len);
+    ctx.stroke(); ctx.setLineDash([]);
+  };
+  ctx.fillStyle = css("--muted"); ctx.font = "11px " + css("--font"); ctx.textAlign = "center";
+  // Left half: the azimuth turntable from above.
+  const r = Math.min(w * 0.21, h / 2 - 24);
+  let cx = w * 0.25, cy = h / 2 + 8;
+  ctx.fillText("az, top", cx, 14);
+  ctx.strokeStyle = css("--line"); ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI); ctx.stroke();
+  for (let a = 0; a < 360; a += 30) { const x = Math.sin(a * D), y = -Math.cos(a * D); ctx.beginPath(); ctx.moveTo(cx + x * (r - 5), cy + y * (r - 5)); ctx.lineTo(cx + x * r, cy + y * r); ctx.stroke(); }
+  ctx.fillText("0", cx, cy - r - 5);
+  line(cx, cy, t.axes.az, r - 2, css("--truth"), [], 2, false);
+  line(cx, cy, fwAz, r - 10, css("--fw"), [4, 3], 2, false);
+  // Right half: the tube from the side, pivot at the bottom left.
+  const ra = Math.min(w * 0.4, h - 54);
+  cx = w * 0.56; cy = h - 24;
+  ctx.fillText("alt, side", w * 0.75, 14);
+  ctx.strokeStyle = css("--line"); ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(cx, cy, ra, -Math.PI / 2, 0); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + ra, cy); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - ra); ctx.stroke();
+  line(cx, cy, t.axes.alt + t.mount.alt_zero, ra - 2, css("--truth"), [], 3, true);
+  line(cx, cy, fwAlt, ra - 12, css("--fw"), [5, 4], 3, true);
+  ctx.textAlign = "left";
+  ctx.fillText("0°", cx + ra - 14, cy + 15);
+  ctx.fillText("90°", cx - 6, cy - ra - 6);
+}
+
+$("sky").addEventListener("click", e => {
+  const rect = e.target.getBoundingClientRect(), x = e.clientX - rect.left, y = e.clientY - rect.top;
+  let best = null, bd = 18;
+  for (const o of CATALOG) if (o.xy) { const d = Math.hypot(o.xy[0] - x, o.xy[1] - y); if (d < bd) { bd = d; best = o; } }
+  if (best) { $("obj").value = CATALOG.indexOf(best); if (status) render(); }
+});
+window.addEventListener("resize", () => status && render());
+
+// ------------------------------------------------------------------ controls
+const sel = $("obj");
+{
+  const groups = {};
+  for (const [key, label] of [["body", "Solar system"], ["star", "Bright stars"], ["dso", "Deep sky"]]) {
+    groups[key] = document.createElement("optgroup"); groups[key].label = label; sel.appendChild(groups[key]);
+  }
+  CATALOG.forEach((o, i) => {
+    const opt = document.createElement("option"); opt.value = i; opt.textContent = o.name;
+    groups[o.body ? "body" : o.star ? "star" : "dso"].appendChild(opt);
+  });
+}
+sel.value = CATALOG.findIndex(o => o.name.startsWith("M42"));
+sel.onchange = () => status && render();
+const selected = () => CATALOG[+sel.value];
+const radec = o => ({ ra: o.ra, dec: o.dec });
+
+// Actions made of several messages run with the clock paused, from a fresh
+// sim_truth: with a fast clock, minutes or hours would pass between them.
+let pausing = false;
+async function paused(fn) {
+  if (pausing) return fn();
+  pausing = true;
+  const t0 = await call("sim_truth", {}, true);
+  const rate = t0.ok ? t0.rate : 0;
+  try {
+    if (rate !== 0) await call("sim_clock", { rate: 0 }, true);
+    const t = await call("sim_truth", {}, true);
+    if (t.ok) { truth = t; updateBodies(); }
+    return await fn();
+  } finally {
+    if (rate !== 0) await call("sim_clock", { rate }, true);
+    pausing = false;
+  }
+}
+async function sendTimeSite() {
+  if (!truth) return;
+  await call("set_time", { utc: truth.utc });
+  await call("set_site", { lat: truth.site.lat, lon: truth.site.lon });
+}
+$("timesite").onclick = () => paused(sendTimeSite);
+$("quick").onclick = () => paused(async () => {
+  if (!truth) return;
+  await sendTimeSite();
+  await call("align_clear");
+  // Three bright stars well above the horizon, spread in azimuth.
+  const vis = CATALOG.filter(o => o.star && o.mag < 1.6).map(o => ({ o, p: altaz(o.ra, o.dec, truth.utc, truth.site.lat, truth.site.lon) }))
+    .filter(x => x.p.alt > 20 && x.p.alt < 75);
+  const chosen = [];
+  for (const x of vis.sort((a, b) => a.o.mag - b.o.mag)) {
+    if (chosen.every(c => Math.abs(wrap180(c.p.az - x.p.az)) > 50)) chosen.push(x);
+    if (chosen.length === 3) break;
+  }
+  if (chosen.length < 2) { note("not enough bright stars above 20° now"); return; }
+  for (const { o } of chosen) {
+    await call("sim_point", radec(o));
+    await call("align_add", { ...radec(o), name: o.name });
+  }
+  await refreshAlign();
+  note(`aligned on ${chosen.map(c => c.o.name).join(", ")}`);
+});
+$("clearAlign").onclick = async () => { await call("align_clear"); refreshAlign(); };
+// Moon and planets: a table of positions every 10 minutes for 6 hours, as the
+// phone app will send it; renewed while it is being tracked.
+let tableBody = null, tableEnd = 0;
+function bodyTable(body) {
+  const pts = [];
+  const t0 = truth.utc - 600000;
+  for (let k = 0; k <= 36; k++) {
+    const t = t0 + k * 600000, p = bodyRadec(body, t, truth.site.lat, truth.site.lon);
+    pts.push([Math.round(t), +p.ra.toFixed(6), +p.dec.toFixed(5)]);
+  }
+  tableEnd = pts[pts.length - 1][0];
+  return pts;
+}
+async function gotoSelected(track) {
+  const o = selected();
+  tableBody = null;
+  if (o.body === "Sun") {
+    if (!status?.solar) { askSolar(() => call("goto", { sun: true, track })); return; }
+    return call("goto", { sun: true, track });
+  }
+  if (o.body) {
+    if (o.missing) { note("planet positions need Astronomy Engine, which could not load"); return; }
+    if (!track) return call("goto", { ...radec(o), track: false });
+    const r = await call("track_table", { points: bodyTable(o.body) });
+    if (r.ok) tableBody = o.body;
+    return r;
+  }
+  return call("goto", { ...radec(o), track });
+}
+setInterval(() => {
+  if (tableBody && truth && status && (status.mode === "tracking" || status.mode === "manual") && truth.utc > tableEnd - 3600000)
+    call("track_table", { points: bodyTable(tableBody) });
+  if (status && status.mode === "idle") tableBody = null;
+}, 1000);
+$("goto").onclick = () => paused(() => gotoSelected(true));
+$("gotoOnly").onclick = () => paused(() => gotoSelected(false));
+$("slewMax").onchange = e => call("sim_clock", { slew_rate_max: +e.target.value });
+
+// Solar mode, after the filter check.
+let solarThen = null;
+function askSolar(then) { solarThen = then || null; $("solarSep").textContent = sunMinSep; $("solarDialog").hidden = false; $("solarYes").focus(); }
+$("solarYes").onclick = async () => {
+  $("solarDialog").hidden = true;
+  const r = await call("solar", { on: true, filter: true });
+  if (r.ok && solarThen) solarThen();
+  solarThen = null;
+};
+$("solarNo").onclick = () => { $("solarDialog").hidden = true; solarThen = null; };
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("solarDialog").hidden) $("solarNo").click(); });
+$("solarBtn").onclick = () => status?.solar ? call("solar", { on: false }) : askSolar();
+$("centre").onclick = () => paused(() => call("sim_point", radec(selected())));
+// The user centres the object before telling the mount what it is.
+$("alignAdd").onclick = () => paused(async () => {
+  const o = selected();
+  await call("sim_point", radec(o));
+  await call("align_add", { ...radec(o), name: o.name.split(" ")[0] });
+  refreshAlign();
+});
+$("sync").onclick = () => paused(async () => {
+  const o = selected();
+  await call("sim_point", radec(o));
+  await call("sync", radec(o));
+});
+$("stop").onclick = () => call("stop");
+$("trackOn").onclick = () => call("track", { on: true });
+$("trackOff").onclick = () => call("track", { on: false });
+$("park").onclick = () => call("park");
+$("unpark").onclick = () => call("unpark");
+$("arm").onclick = () => call("arm");
+$("altZero").onclick = async () => { await call("set_alt_zero"); refreshAlign(); };
+
+document.querySelectorAll("[data-rate]").forEach(b => b.onclick = () => call("sim_clock", { rate: +b.dataset.rate }));
+document.querySelectorAll("[data-run]").forEach(b => b.onclick = () => { trail = []; call("sim_run", { seconds: +b.dataset.run }); });
+$("estop").onclick = () => call("sim_estop", { pressed: !truth?.estop });
+$("rsRelease").onclick = () => call("sim_estop", { pressed: false });
+$("rsArm").onclick = () => call("arm");
+$("rsSync").onclick = () => paused(async () => {
+  const o = selected();
+  await call("sim_point", radec(o));
+  if (status?.aligned) await call("sync", radec(o));
+  else { await call("align_add", { ...radec(o), name: o.name.split(" ")[0] }); refreshAlign(); }
+});
+$("gpsOn").onclick = () => call("sim_gps", { on: !truth?.gps.on, fix: $("gpsFix").checked });
+$("gpsFix").onchange = () => truth?.gps.on && call("sim_gps", { on: true, fix: $("gpsFix").checked });
+$("mountApply").onclick = () => call("sim_mount", { tilt: +$("m-tilt").value, tilt_az: +$("m-tiltaz").value, north: +$("m-north").value, alt_zero: +$("m-altzero").value });
+$("slip").onclick = () => call("sim_fault", { axis: $("slipAxis").value, slip: +$("slipSteps").value });
+
+// Hand-unit buttons: held while the mouse is down.
+const buttons = [false, false, false];
+document.querySelectorAll("[data-btn]").forEach(b => {
+  const set = v => { buttons[+b.dataset.btn] = v; call("sim_hand", { buttons }); };
+  b.addEventListener("pointerdown", () => set(true));
+  b.addEventListener("pointerup", () => set(false));
+  b.addEventListener("pointerleave", () => buttons[+b.dataset.btn] && set(false));
+});
+
+// Joystick pads.
+function pad(el, onMove, onRelease) {
+  const knob = el.querySelector(".knob");
+  let active = false, x = 0, y = 0;
+  const update = e => {
+    const r = el.getBoundingClientRect();
+    x = ((e.clientX - r.left) / r.width) * 2 - 1;
+    y = -(((e.clientY - r.top) / r.height) * 2 - 1);
+    const n = Math.hypot(x, y);
+    if (n > 1) { x /= n; y /= n; }
+    knob.style.left = `${33 + x * 33}%`;
+    knob.style.top = `${33 - y * 33}%`;
+    onMove(x, y);
+  };
+  el.addEventListener("pointerdown", e => { active = true; el.setPointerCapture(e.pointerId); update(e); });
+  el.addEventListener("pointermove", e => active && update(e));
+  const end = () => { if (!active) return; active = false; x = y = 0; knob.style.left = knob.style.top = "33%"; onRelease(); };
+  el.addEventListener("pointerup", end);
+  el.addEventListener("pointercancel", end);
+  return () => (active ? [x, y] : null);
+}
+// The phone app repeats jog every 100 ms while the finger is down (dead-man).
+const appPad = pad($("padApp"), () => {}, () => fire("jog", { x: 0, y: 0 }));
+setInterval(() => { const v = appPad(); if (v) fire("jog", { x: +v[0].toFixed(2), y: +v[1].toFixed(2) }); }, 100);
+let handLast = 0;
+pad($("padHand"), (x, y) => {
+  const now = performance.now();
+  if (now - handLast < 50) return;
+  handLast = now;
+  call("sim_hand", { x: +x.toFixed(2), y: +y.toFixed(2) }, true);
+}, () => call("sim_hand", { x: 0, y: 0 }, true));
+
+// ------------------------------------------------------------------ 3D view
+// A simplified copy of the model in docs/3d (same dimensions and axes, mm, y up,
+// north +z, east −x). The L turns in azimuth about y; the tube turns in altitude
+// about x and points along +z at altitude 0, azimuth axis 0.
+const mount3d = (() => {
+  const box = $("mount3d");
+  if (!window.THREE || !THREE.OrbitControls) {
+    const f = document.createElement("div");
+    f.className = "fail";
+    f.textContent = "The 3D view needs three.js from the internet. The rest of the page works without it.";
+    box.appendChild(f);
+    return { update() {} };
+  }
+  const tag = document.createElement("div");
+  tag.className = "tag";
+  tag.textContent = "mount, true position";
+  box.appendChild(tag);
+
+  const canvas = $("m3d");
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(35, 4 / 3, 10, 30000);
+  camera.position.set(-1700, 1250, 2000);
+  const controls = new THREE.OrbitControls(camera, canvas);
+  controls.target.set(0, 520, 0);
+  controls.minDistance = 600;
+  controls.maxDistance = 9000;
+  controls.update();
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x445066, 0.8));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.7);
+  sun.position.set(-700, 1500, 900);
+  scene.add(sun);
+
+  const mat = c => new THREE.MeshStandardMaterial({ color: c, metalness: 0.1, roughness: 0.6 });
+  const M = { alu: mat(0xb9c0cc), dark: mat(0x3a4150), printed: mat(0xd27a2c), tube: mat(0xe9ecf1), tubeIn: mat(0x15181e),
+    motor: mat(0x272b33), steel: mat(0x9aa3b0), box: mat(0x5a6270), stop: mat(0xd83a3a) };
+  M.tubeIn.side = THREE.BackSide;
+  const G = (parent, x = 0, y = 0, z = 0) => { const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g); return g; };
+  const boxAt = (parent, m, sx, sy, sz, x, y, z) => { const o = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), m); o.position.set(x, y, z); parent.add(o); return o; };
+  const cyl = (parent, m, r, len, axis, x, y, z, seg = 40) => {
+    const g = new THREE.CylinderGeometry(r, r, len, seg, 1, m === M.tube);
+    if (axis === "x") g.rotateZ(Math.PI / 2);
+    if (axis === "z") g.rotateX(Math.PI / 2);
+    const o = new THREE.Mesh(g, m); o.position.set(x, y, z); parent.add(o); return o;
+  };
+
+  // Ground: a disc with a compass, fixed to the world.
+  const ground = new THREE.Mesh(new THREE.CircleGeometry(900, 72), new THREE.MeshBasicMaterial({ color: 0x07090d }));
+  ground.rotation.x = -Math.PI / 2; ground.position.y = -1; scene.add(ground);
+  const ringPts = [];
+  for (let i = 0; i <= 72; i++) { const a = i / 72 * 2 * Math.PI; ringPts.push(new THREE.Vector3(Math.sin(a) * 880, 0, Math.cos(a) * 880)); }
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts), new THREE.LineBasicMaterial({ color: 0x3a4458 })));
+  const label = (text, color, x, z) => {
+    const c = document.createElement("canvas"); c.width = c.height = 64;
+    const g = c.getContext("2d"); g.fillStyle = color; g.font = "bold 44px system-ui, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(text, 32, 34);
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false }));
+    sp.scale.set(130, 130, 1); sp.position.set(x, 40, z); scene.add(sp);
+  };
+  label("N", "#f05252", 0, 1000); label("S", "#8b94a8", 0, -1000); label("E", "#8b94a8", -1000, 0); label("W", "#8b94a8", 1000, 0);
+
+  // Base, on three feet; tilted with sim_mount's tilt, turned so that azimuth
+  // axis 0 points at sim_mount's north offset.
+  const tiltG = G(scene);
+  const northG = G(tiltG);
+  const rootG = G(northG, 0, 50, 0);
+  boxAt(rootG, M.alu, 30, 60, 650, 110, 30, 0);       // crossbar
+  boxAt(rootG, M.alu, 350, 60, 30, -80, 30, 0);       // stem
+  boxAt(rootG, M.dark, 90, 6.7, 90, 0, 66.15, 0);     // plate
+  for (const [x, z] of [[110, 305], [110, -305], [-235, 0]]) { cyl(rootG, M.dark, 20, 8, "y", x, -46, z); cyl(rootG, M.steel, 4, 42, "y", x, -21, z); }
+  cyl(rootG, M.printed, 80, 10, "y", 0, 88, 0, 60);    // azimuth pulley, fixed to the base
+  cyl(rootG, M.steel, 10, 200, "y", 0, 170, 0);       // azimuth shaft
+
+  // The L: turns in azimuth with its motors, battery and electronics case.
+  const LG = G(rootG);
+  boxAt(LG, M.alu, 380, 45, 90, 0, 195.3, 0);          // 380 bar
+  boxAt(LG, M.alu, 45, 620, 90, 167.5, 527.8, 0);      // 620 arm
+  boxAt(LG, M.dark, 68, 98, 100, -195, 269.3, 0);      // battery at the far end of the bar
+  boxAt(LG, M.box, 50, 130, 90, 215, 375, 0);          // electronics case, outer face of the arm
+  cyl(LG, M.stop, 19, 14, "x", 247, 410, 0);           // E-stop
+  boxAt(LG, M.motor, 42, 40, 42, 152.4, 113.5, 0);     // azimuth motor, under the arm end of the bar
+  boxAt(LG, M.motor, 40, 42, 42, 233, 615.4, 0);       // altitude motor, below the axis
+
+  // Altitude axis, 767.8 above the base plane, along x through the arm.
+  const altG = G(LG, 167.5, 767.8, 0);
+  cyl(altG, M.steel, 10, 200, "x", 6.5, 0, 0);          // altitude shaft
+  cyl(altG, M.printed, 80, 10, "x", 96.5, 0, 0, 60);   // altitude pulley, outside the arm
+  boxAt(altG, M.dark, 8, 100, 121, 70 - 167.5, 0, 0);  // clasp plate
+  const tubeX = -20 - 167.5;
+  cyl(altG, M.dark, 73, 96, "z", tubeX, 0, 0, 48);     // clasp ring
+  cyl(altG, M.tube, 65, 900, "z", tubeX, 0, 0, 56);    // tube, open end at +z
+  cyl(altG, M.tubeIn, 64, 900, "z", tubeX, 0, 0, 56);
+  cyl(altG, M.motor, 66.5, 24, "z", tubeX, 0, 438, 56);  // front ring
+  cyl(altG, M.motor, 17, 46, "y", tubeX, 85, 330, 24);   // focuser
+
+  // Rays from the tube's front end: where it points (truth) and the target.
+  const ray = (color, dashed) => {
+    const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(0, 0, 1)]);
+    const m = dashed ? new THREE.LineDashedMaterial({ color, dashSize: 60, gapSize: 40 }) : new THREE.LineBasicMaterial({ color });
+    const l = new THREE.Line(geo, m); l.frustumCulled = false; scene.add(l); return l;
+  };
+  const truthRay = ray(0xf0a63a, false), targetRay = ray(0xe56bd0, true);
+  const setRay = (l, from, dir, len) => {
+    const p = l.geometry.attributes.position;
+    p.setXYZ(0, from.x, from.y, from.z);
+    p.setXYZ(1, from.x + dir.x * len, from.y + dir.y * len, from.z + dir.z * len);
+    p.needsUpdate = true;
+    l.computeLineDistances();
+  };
+  // World direction for alt/az: north +z, east −x, up +y.
+  const dirAltaz = (alt, az) => new THREE.Vector3(-Math.sin(az * D) * Math.cos(alt * D), Math.sin(alt * D), Math.cos(az * D) * Math.cos(alt * D));
+
+  function resize() {
+    const w = box.clientWidth, h = box.clientHeight;
+    if (!w || !h) return;
+    const size = renderer.getSize(new THREE.Vector2());
+    if (size.x !== w || size.y !== h) { renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  }
+  const draw = () => { resize(); renderer.render(scene, camera); };
+  controls.addEventListener("change", draw);
+  window.addEventListener("resize", draw);
+
+  return {
+    update() {
+      const t = truth, s = status;
+      if (!t) return;
+      // Base: tilt towards tilt_az, then north (true az = axis az − north).
+      const toward = dirAltaz(0, t.mount.tilt_az);
+      const axis = new THREE.Vector3(0, 1, 0).cross(toward).normalize();
+      tiltG.quaternion.setFromAxisAngle(axis, t.mount.tilt * D);
+      northG.rotation.y = t.mount.north * D;
+      LG.rotation.y = -t.axes.az * D;
+      altG.rotation.x = -(t.axes.alt + t.mount.alt_zero) * D;
+      scene.updateMatrixWorld(true);
+      const front = new THREE.Vector3(tubeX, 0, 450).applyMatrix4(altG.matrixWorld);
+      setRay(truthRay, front, dirAltaz(t.alt, t.az), 2600);
+      targetRay.visible = !!(s.target && s.target.alt != null && s.target.az != null);
+      if (targetRay.visible) setRay(targetRay, front, dirAltaz(s.target.alt, s.target.az), 2600);
+      draw();
+    },
+    // Angle between the drawn tube and the true pointing, degrees (for checks).
+    tubeErrorDeg() {
+      const axis = new THREE.Vector3(0, 0, 1).transformDirection(altG.matrixWorld);
+      return axis.angleTo(dirAltaz(truth.alt, truth.az)) / D;
+    },
+  };
+})();
+
+connect();
+</script>
+</body>
+</html>

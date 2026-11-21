@@ -172,6 +172,7 @@ The table lists every command; the sections below give the details.
 | [`set_alt_zero`](#set_alt_zero) | — | — |
 | [`get_config`](#get_config) / [`set_config`](#set_config) | keys | — |
 | [`stream`](#stream) | `hz` | — |
+| [`solar`](#solar) | `on`, `filter` | — |
 
 "Armed" means the mode is not `estop`.
 
@@ -260,6 +261,10 @@ The app's stop button sends it; button 1 of the hand unit does the same.
 
 - Slews to the target, then tracks it if `track` is true (the default).
 - The reply gives the target's alt/az now and the estimated slew time in seconds.
+- `{"cmd": "goto", "sun": true}` goes to the Sun and follows it, from the mount's own
+  Sun position. Only in [solar mode](#solar).
+- Refused with `sun` if the target or the slew comes near the Sun (see
+  [Sun safety](#sun-safety)).
 - Refused with `below_limit` if the target is below `alt.min`, and with `not_ready`
   if a flag in the table above is missing (`msg` says which).
 - A target that sets below `alt.min` while tracking stops the tracking (mode `idle`)
@@ -283,7 +288,8 @@ position if there was none. `on: false` stops tracking and holds (mode `idle`).
 ### track_table
 
 For the Moon and planets, whose RA/Dec change during a night: the app sends a table
-of positions, and the mount interpolates.
+of positions, and the mount interpolates. The app computes them with Astronomy
+Engine (topocentric, apparent, of date); the mount has no planet or Moon theory.
 
 ```json
 {"cmd": "track_table", "id": 6, "points": [
@@ -313,8 +319,19 @@ The user centres a star with the joystick, then the app sends what it is:
 - The mount pairs the star's alt/az (from its clock and site) with the axis
   positions now.
 - One star: an azimuth offset only, assuming a level base.
-- Two stars or more: Taki's matrix method (absorbs a base that is not level and an
-  unknown north). With three or more, the best fit; `rms` is the residual in degrees.
+- Two stars or more: the rotation that best maps the stars' sky directions onto
+  the axis directions (Horn's quaternion method). It absorbs a base that is not
+  level and an unknown north. A rotation has three parameters, so centring errors
+  of a few arcseconds stay a few arcseconds across the sky; a free 3×3 matrix
+  (Taki's method) can turn them into arcminutes when the stars are close together.
+  `rms` is the residual in degrees (with three stars or more).
+- Checked against the earlier stars: two stars are as far apart on the axes as in
+  the sky. If not (more than 2° of difference), the star is refused with
+  `align_mismatch`: it was not centred, or misidentified, or the mount was moved
+  (then `align_clear`).
+- A star within 10° of an earlier one replaces it (a star centred again).
+- After lost steps (`pos_ok` false, after the E-stop), the axis counters are first
+  reset on this star, as with [`sync`](#sync), so the earlier stars still fit.
 - At most 6 stars. A seventh replaces the oldest.
 - Sets `aligned` and `pos_ok`. Saved in flash, and restored at power-on only after a
   [`park`](#park), when the axis positions are known.
@@ -337,9 +354,16 @@ Removes every alignment star. `aligned` becomes false.
 ### sync
 
 `{"cmd": "sync", "id": 10, "ra": 5.5881, "dec": -5.391}`: "the object now centred is
-this one". It corrects the model near that point (an offset added to the
-alignment, which fades away from it), without adding an alignment star. Used after
-a goto that landed slightly off. Sets `pos_ok`.
+this one". Sets `pos_ok`, without adding an alignment star.
+
+- With `pos_ok` true: it corrects the model near that point (an offset added to
+  the alignment, which fades out 30° away). Used after a goto that landed slightly
+  off.
+- With `pos_ok` false (steps lost at an E-stop): the lost steps are the same offset
+  everywhere on the sky, so it resets the axis counters instead, and the whole sky
+  is corrected. The reply has `"axes_reset": true`.
+- Refused (`bad_arg`) above 75° altitude, as is an `align_add` that resets the
+  axes: near the zenith a few arcseconds of error become arcminutes of azimuth.
 
 ### park
 
@@ -376,6 +400,21 @@ was not level at power-on. Clears the alignment stars, sets `pos_ok`.
 Saved in flash. All keys are checked before any is changed: one bad key or value
 refuses the whole command with `bad_arg`.
 
+### solar
+
+```json
+{"cmd": "solar", "id": 14, "on": true, "filter": true}
+{"re": 14, "ok": true, "solar": true}
+```
+
+- Turns solar mode on or off. On needs `"filter": true`: the app first asks the user
+  to confirm that a solar filter covers the whole front of the tube and the finder
+  is capped. Without it: `bad_arg`.
+- In solar mode the [Sun keep-out zone](#sun-safety) is off, so the tube may point at
+  the Sun (`goto` with `"sun": true`).
+- Solar mode is never saved: it is off at power-on, and turns off at the end of a
+  `park`. Turning it off while following the Sun stops the motion.
+
 ### stream
 
 `{"cmd": "stream", "id": 13, "hz": 10}` sends the `status` event on this connection at
@@ -399,7 +438,8 @@ Sent at 10 Hz (see [`stream`](#stream)), and at once on a change of mode.
  "target": {"ra": 5.5881, "dec": -5.391, "alt": 23.40, "az": 162.04},
  "axes": {"az":  {"steps": 72013, "speed": 0.0041},
           "alt": {"steps": 10404, "speed": 0.0019}},
- "estop": false, "hand": false}
+ "estop": false, "hand": false,
+ "solar": false, "sun": {"alt": -32.1, "az": 301.5, "sep": 98.4}}
 ```
 
 | Field | Meaning |
@@ -413,6 +453,8 @@ Sent at 10 Hz (see [`stream`](#stream)), and at once on a change of mode.
 | `axes` | Each axis's position in microsteps and its speed in °/s (signed). Raw: no alignment. |
 | `estop` | The E-stop is pressed (DRV_EN high while the firmware drives it low). |
 | `hand` | The hand unit's joystick is off centre (the app's jogs are ignored). |
+| `solar` | Solar mode is on. |
+| `sun` | The Sun's `alt` and `az`, and `sep`, its distance from where the tube points (`null` before alignment). `null` without time and site. |
 
 ### log
 
@@ -422,6 +464,29 @@ Sent at 10 Hz (see [`stream`](#stream)), and at once on a change of mode.
 
 `level` is `debug`, `info`, `warn` or `error`. `debug` is sent only on serial and
 stdin/stdout.
+
+## Sun safety
+
+The mount computes the Sun's position itself (to about 0.01°) from its clock and
+site, so the protection does not depend on the app. Outside solar mode, while the
+Sun is above −2° and the time and site are known:
+
+- a `goto`, `goto_altaz`, `track`, `track_table` or `park` is refused with `sun` if
+  its target is within `sun.min_sep` (default 15°) of the Sun, if any point of a
+  table comes that close, or if the slew would pass that close (both axes move at
+  the same top speed: a diagonal, then the longer axis alone). A slew that starts
+  inside the zone, for example just after solar mode was turned off, may leave it
+  if it moves away from the Sun until it is out;
+- before the alignment the azimuth is unknown, so the same commands are refused
+  while the Sun is up; jogs still work, with a `log` warning that the mount cannot
+  keep away from the Sun;
+- a jog that would end inside the zone, braking included, stops at its edge;
+  jogging away from the Sun works;
+- tracking that would enter the zone (the Sun moves about 1° a day against the
+  stars) stops, with a `log` warning.
+
+Without time and site the mount does not know where the Sun is, and nothing is
+refused: the status shows `sun: null`.
 
 ## Errors
 
@@ -435,6 +500,8 @@ stdin/stdout.
 | `parked` | Refused while parked: `unpark` first. |
 | `not_ready` | A readiness flag is missing. `msg` names it. |
 | `below_limit` | The target is below `alt.min` or above `alt.max`. |
+| `sun` | The target or the slew comes within `sun.min_sep` of the Sun, outside solar mode. See [Sun safety](#sun-safety). |
+| `align_mismatch` | An alignment star does not fit the earlier ones. See [`align_add`](#align_add). |
 
 ## Configuration
 
@@ -451,6 +518,7 @@ starting points, to be checked on the mount.
 | `jog.max_speed` | 3 | Jog speed at full deflection, °/s. |
 | `park.alt`, `park.az` | 0, 0 | Park position in axis degrees (from the power-on position). |
 | `track.gain` | 1 | k in "speed = predicted rate + k × position error" (1/s). |
+| `sun.min_sep` | 15 | Keep-out radius around the Sun outside solar mode, degrees (5 to 45). |
 | `wifi.ssid`, `wifi.password` | `star-track`, (set at first boot) | The access point. Changes apply at the next power-on. |
 
 ## Simulator commands
@@ -460,7 +528,7 @@ The simulator adds commands, all starting with `sim_`. The mount answers them wi
 
 | Command | Arguments | Effect |
 | --- | --- | --- |
-| `sim_clock` | `rate`, `utc` | Clock speed (0 = paused, 1, 10, 1000) and optionally a new true UTC (the time the GPS gives). |
+| `sim_clock` | `rate`, `utc`, `slew_rate_max` | Clock speed (0 = paused, 1, 10, 1000), optionally a new true UTC (the time the GPS gives), and the highest clock speed during gotos and jogs, so they can be watched (default 10; 0 = no limit). |
 | `sim_run` | `seconds` | Runs the mount for that much simulated time at once, then replies. For scripted tests with a paused clock. |
 | `sim_estop` | `pressed` | Presses or releases the E-stop. |
 | `sim_hand` | `x`, `y`, `sw`, `buttons` | Sets the hand unit's joystick (−1 to 1) and buttons (array of 3 booleans). |
@@ -468,10 +536,12 @@ The simulator adds commands, all starting with `sim_`. The mount answers them wi
 | `sim_mount` | `tilt`, `tilt_az`, `north`, `alt_zero` | The base's tilt (degrees, towards azimuth `tilt_az`), where north is in axis degrees, and the tube's altitude at axis 0. For alignment tests. |
 | `sim_fault` | `axis`, `slip` | Adds `slip` microsteps to an axis (`az` or `alt`) without the firmware knowing (a stalled or slipping motor). |
 | `sim_point` | `ra`, `dec` or `alt`, `az` | Points the tube there, as if the user had centred it with the joystick (the step counters follow). |
-| `sim_truth` | — | Where the tube really points (`alt`, `az`, `ra`, `dec`), the true UTC, the LEDs and whether the drivers are on. |
+| `sim_state` | — | `status` (the firmware's status fields), `truth` (as `sim_truth`) and `model_error` (degrees between the firmware's `pos` and the truth), all at the same simulated instant. The simulator page polls it. |
+| `sim_truth` | — | Where the tube really points (`alt`, `az`, `ra`, `dec`), the true UTC and site, the axes' mechanical angles, the LEDs, whether the drivers are on, and the simulator's settings (clock `rate` and the `effective_rate` now, `slew_rate_max`, E-stop, GPS, base, hand unit). |
 
 - The simulator's clock drives everything, including the status rate: at ×1000,
-  `stream` at 10 Hz sends 10 000 events per second of real time.
+  `stream` at 10 Hz sends 10 000 events per second of real time. The simulator
+  page sends `stream` with `hz: 0` and polls `status` in real time instead.
 - The simulator's build, options and tests are described in
   [`firmware/sim/`](../firmware/sim/).
 
@@ -498,7 +568,7 @@ sequenceDiagram
   M-->>A: ok, eta 9.8 s
   Note over A,M: The user centres Betelgeuse
   A->>M: align_add Betelgeuse
-  M-->>A: ok, n 2 (Taki matrix from now on)
+  M-->>A: ok, n 2 (tilt and north known from now on)
   A->>M: goto M42, track true
   M-->>A: ok, eta 6.1 s
   M--)A: status events, mode goto, then tracking

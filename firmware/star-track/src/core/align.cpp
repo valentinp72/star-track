@@ -8,10 +8,61 @@ namespace core {
 namespace {
 constexpr double kSyncRadiusDeg = 30.0;
 
-void addOuter(Mat3 &m, const Vec3 &a, const Vec3 &b) {
-  const double av[3] = {a.x, a.y, a.z}, bv[3] = {b.x, b.y, b.z};
-  for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++) m.m[i][j] += av[i] * bv[j];
+// Eigenvector of the largest eigenvalue of a symmetric 4×4 matrix (cyclic Jacobi).
+void largestEigenvector(double a[4][4], double out[4]) {
+  double v[4][4] = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
+  for (int sweep = 0; sweep < 50; sweep++) {
+    double off = 0;
+    for (int p = 0; p < 4; p++)
+      for (int q = p + 1; q < 4; q++) off += a[p][q] * a[p][q];
+    if (off < 1e-24) break;
+    for (int p = 0; p < 4; p++)
+      for (int q = p + 1; q < 4; q++) {
+        if (fabs(a[p][q]) < 1e-30) continue;
+        double theta = (a[q][q] - a[p][p]) / (2 * a[p][q]);
+        double t = (theta >= 0 ? 1 : -1) / (fabs(theta) + sqrt(theta * theta + 1));
+        double c = 1 / sqrt(t * t + 1), s = t * c;
+        for (int k = 0; k < 4; k++) {  // columns p, q
+          double akp = a[k][p], akq = a[k][q];
+          a[k][p] = c * akp - s * akq;
+          a[k][q] = s * akp + c * akq;
+        }
+        for (int k = 0; k < 4; k++) {  // rows p, q
+          double apk = a[p][k], aqk = a[q][k];
+          a[p][k] = c * apk - s * aqk;
+          a[q][k] = s * apk + c * aqk;
+        }
+        for (int k = 0; k < 4; k++) {
+          double vkp = v[k][p], vkq = v[k][q];
+          v[k][p] = c * vkp - s * vkq;
+          v[k][q] = s * vkp + c * vkq;
+        }
+      }
+  }
+  int best = 0;
+  for (int i = 1; i < 4; i++)
+    if (a[i][i] > a[best][best]) best = i;
+  for (int k = 0; k < 4; k++) out[k] = v[k][best];
+}
+
+// The rotation R minimising Σ |t_i − R s_i|² (Horn, 1987).
+Mat3 bestRotation(const Vec3 *s, const Vec3 *t, int n) {
+  double sxx = 0, sxy = 0, sxz = 0, syx = 0, syy = 0, syz = 0, szx = 0, szy = 0, szz = 0;
+  for (int i = 0; i < n; i++) {
+    sxx += s[i].x * t[i].x, sxy += s[i].x * t[i].y, sxz += s[i].x * t[i].z;
+    syx += s[i].y * t[i].x, syy += s[i].y * t[i].y, syz += s[i].y * t[i].z;
+    szx += s[i].z * t[i].x, szy += s[i].z * t[i].y, szz += s[i].z * t[i].z;
+  }
+  double nm[4][4] = {{sxx + syy + szz, syz - szy, szx - sxz, sxy - syx},
+                     {syz - szy, sxx - syy - szz, sxy + syx, szx + sxz},
+                     {szx - sxz, sxy + syx, -sxx + syy - szz, syz + szy},
+                     {sxy - syx, szx + sxz, syz + szy, -sxx - syy + szz}};
+  double q[4];
+  largestEigenvector(nm, q);
+  double w = q[0], x = q[1], y = q[2], z = q[3];
+  return {{{1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w)},
+           {2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w)},
+           {2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)}}};
 }
 }  // namespace
 
@@ -21,7 +72,16 @@ void Alignment::clear() {
   compute();
 }
 
-void Alignment::add(const AlignStar &s) {
+bool Alignment::add(const AlignStar &s) {
+  Vec3 h = vecFromAltaz(s.hAlt, s.hAz);
+  for (int i = 0; i < n_; i++) {
+    if (separationDeg(h, vecFromAltaz(stars_[i].hAlt, stars_[i].hAz)) < kSameStarDeg) {
+      stars_[i] = s;
+      hasSync_ = false;
+      compute();
+      return true;
+    }
+  }
   if (n_ == kMaxStars) {
     memmove(&stars_[0], &stars_[1], sizeof(AlignStar) * (kMaxStars - 1));
     n_--;
@@ -29,6 +89,7 @@ void Alignment::add(const AlignStar &s) {
   stars_[n_++] = s;
   hasSync_ = false;
   compute();
+  return false;
 }
 
 void Alignment::restore(const AlignStar *stars, int n) {
@@ -50,32 +111,15 @@ void Alignment::compute() {
     tInv_ = rotZ(-wrap180(stars_[0].axAz - stars_[0].hAz));
     return;
   }
-  // T = (Σ t sᵀ)(Σ s sᵀ)⁻¹ over the stars and the normals of each pair of stars.
-  // With two stars this is Taki's method (the two stars and their normal).
-  Mat3 a{}, b{};
+  Vec3 sv[kMaxStars], tv[kMaxStars];
   for (int i = 0; i < n_; i++) {
-    Vec3 s = vecFromAltaz(stars_[i].hAlt, stars_[i].hAz);
-    Vec3 t = vecFromAltaz(stars_[i].axAlt, stars_[i].axAz);
-    addOuter(a, t, s);
-    addOuter(b, s, s);
-    for (int j = i + 1; j < n_; j++) {
-      Vec3 s2 = vecFromAltaz(stars_[j].hAlt, stars_[j].hAz);
-      Vec3 t2 = vecFromAltaz(stars_[j].axAlt, stars_[j].axAz);
-      Vec3 sn = normalize(cross(s, s2)), tn = normalize(cross(t, t2));
-      addOuter(a, tn, sn);
-      addOuter(b, sn, sn);
-    }
+    sv[i] = vecFromAltaz(stars_[i].hAlt, stars_[i].hAz);
+    tv[i] = vecFromAltaz(stars_[i].axAlt, stars_[i].axAz);
   }
-  Mat3 bInv, t, tInv;
-  if (!invert(b, bInv)) {  // stars too close together: keep the first star's offset
-    t_ = rotZ(wrap180(stars_[0].axAz - stars_[0].hAz));
-    tInv_ = rotZ(-wrap180(stars_[0].axAz - stars_[0].hAz));
-    return;
-  }
-  t = mul(a, bInv);
-  if (!invert(t, tInv)) return;
-  t_ = t;
-  tInv_ = tInv;
+  t_ = bestRotation(sv, tv, n_);
+  // The inverse of a rotation is its transpose.
+  for (int i = 0; i < 3; i++)
+    for (int j = 0; j < 3; j++) tInv_.m[i][j] = t_.m[j][i];
 }
 
 void Alignment::modelToAxis(const Vec3 &h, double &axAlt, double &axAz) const {

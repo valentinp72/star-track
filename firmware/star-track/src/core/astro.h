@@ -41,6 +41,10 @@ void radecToAltaz(double raH, double decDeg, int64_t utcMs, double latDeg, doubl
 void altazToRadec(double altDeg, double azDeg, int64_t utcMs, double latDeg, double lonDeg, double &raH,
                   double &decDeg);
 
+// The Sun's apparent RA/Dec of date, to about 0.01° (Astronomical Almanac's
+// low-precision formula).
+void sunRadec(int64_t utcMs, double &raH, double &decDeg);
+
 // Unit vector for alt/az: x north, y east, z up.
 Vec3 vecFromAltaz(double altDeg, double azDeg);
 void altazFromVec(const Vec3 &v, double &altDeg, double &azDeg);

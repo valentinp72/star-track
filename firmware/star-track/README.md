@@ -26,7 +26,7 @@ Makefile), so the core:
 | --- | --- |
 | `platform.h` | Clock, Axis, EStop, Inputs, Gps, Leds, Storage, Link. |
 | `mount.h`, `mount.cpp` | Modes, the 20 Hz control loop, the commands and events. |
-| `align.h`, `align.cpp` | Pointing model: one-star azimuth offset, Taki's method from two stars, sync. |
+| `align.h`, `align.cpp` | Pointing model: one-star azimuth offset, best-fit rotation from two stars (Horn's method), sync. |
 | `astro.h`, `astro.cpp` | Sidereal time, RA/Dec ↔ alt/az, refraction, vectors and matrices. |
 | `nmea.h`, `nmea.cpp` | RMC and GGA sentences from the GPS. |
 | `config.h`, `config.cpp` | The settings and their `get_config` / `set_config` keys. |

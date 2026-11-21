@@ -43,6 +43,18 @@ static void testTime() {
   CHECK_NEAR(gmstDeg(utcMs(1987, 4, 10, 19, 21, 0)), (8 + 34 / 60.0 + 57.0896 / 3600) * 15, 1e-4);
 }
 
+static void testSun() {
+  // Meeus, example 25.a: 1992-10-13 0h TD, apparent RA 13h13m31.4s, Dec -7°47'06".
+  double ra, dec;
+  sunRadec(utcMs(1992, 10, 13, 0, 0, 0), ra, dec);
+  CHECK_NEAR(ra, 13 + 13 / 60.0 + 31.4 / 3600, 0.01 / 15);
+  CHECK_NEAR(dec, -(7 + 47 / 60.0 + 6 / 3600.0), 0.01);
+  // Near the equinox the Sun is close to RA 0, Dec 0.
+  sunRadec(utcMs(2026, 3, 20, 14, 46, 0), ra, dec);
+  CHECK_NEAR(wrap180(ra * 15), 0, 0.05);
+  CHECK_NEAR(dec, 0, 0.02);
+}
+
 static void testCoordinates() {
   // Round trips through alt/az, with and without refraction.
   const double lat = 45, lon = 5;
@@ -173,6 +185,7 @@ static void testAlignment() {
 
 int main() {
   testTime();
+  testSun();
   testCoordinates();
   testNmea();
   testAlignment();

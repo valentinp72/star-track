@@ -94,10 +94,14 @@ class SimStorage : public core::Storage {
   std::map<std::string, std::vector<uint8_t>> records_;
 };
 
-// Messages from the core go to the console (stdout).
-class ConsoleLink : public core::Link {
+class Server;
+
+// Messages from the core: client 0 is the console (stdout), the others are
+// WebSocket clients of the server.
+class SimLink : public core::Link {
  public:
   void send(int client, const char *text) override;
+  Server *server = nullptr;
 };
 
 // The whole simulated mount.
@@ -110,11 +114,22 @@ class Sim {
   void begin(int64_t utcMs);
   void advance(int64_t ms);  // runs the mount for `ms` of simulated time
   void handleLine(int client, const char *line);
+  void connect(int client);  // a WebSocket client
+  void disconnect(int client);
+  void setServer(Server *s) { link_.server = s; }
 
   double rate = 1;  // sim clock speed for the real-time loop
+  double slewRateMax = 10;  // clock speed limit during slews, so they can be watched (0: none)
+  // The clock speed the real-time loop should use now.
+  double effectiveRate() {
+    core::Mode m = mount_.mode();
+    bool slewing = m == core::Mode::Goto || m == core::Mode::Manual;
+    return slewing && slewRateMax > 0 && rate > slewRateMax ? slewRateMax : rate;
+  }
 
  private:
   bool simCommand(JsonObjectConst cmd, JsonObject reply, std::string &err, std::string &msg);
+  void fillTruth(JsonObject r);
   core::Vec3 truthVector();
   void pointAt(const core::Vec3 &world);
   core::Mat3 mountToWorld();
@@ -127,7 +142,7 @@ class Sim {
   SimGps gps_;
   SimLeds leds_;
   SimStorage storage_;
-  ConsoleLink link_;
+  SimLink link_;
   core::Platform platform_;
   core::Mount mount_;
 

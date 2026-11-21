@@ -13,6 +13,13 @@ namespace {
 
 constexpr double kArrivedDeg = 0.005;  // goto ends when both axes are this close
 constexpr float kDeadZone = 0.1f;
+// Two alignment stars are as far apart on the axes as in the sky (the mount is a
+// rotation of the horizon), give or take a level error and refraction.
+constexpr double kAlignToleranceDeg = 2.0;
+// Near the zenith the azimuth of a direction is poorly defined (a few arcseconds
+// of error become arcminutes of azimuth), so a sync or an axis reset there would
+// spoil the rest of the sky.
+constexpr double kZenithLimitDeg = 75.0;
 
 // Flash records. Changing a struct changes its size, so an old record is ignored.
 struct StateRecord {
@@ -190,6 +197,10 @@ void Mount::setAxisPosition(Axis &a, double deg, int32_t spr, bool reverse) {
 // ---------------------------------------------------------------- targets
 
 bool Mount::targetRadec(int64_t t, double &ra, double &dec) {
+  if (target_.kind == Target::Sun) {
+    sunRadec(t + utcOffset_, ra, dec);
+    return true;
+  }
   if (target_.kind == Target::Sky) {
     ra = target_.ra;
     dec = target_.dec;
@@ -335,6 +346,21 @@ void Mount::control(double dt) {
       break;
   }
 
+  if (mode_ == Mode::Manual && jogging) {
+    if (movingIntoSun(vAz, vAlt)) {
+      vAz = vAlt = 0;
+      if (!sunJogWarned_) log("warn", "jog stopped %.0f° from the Sun: solar mode is off", cfg_.sunMinSep);
+      sunJogWarned_ = true;
+    } else {
+      sunJogWarned_ = false;
+    }
+    double sAlt, sAz;
+    if (align_.count() == 0 && sunWatch(sAlt, sAz) && sAlt > 0 && !sunJogWarned_) {
+      log("warn", "the Sun is up and the mount is not aligned: it cannot keep the tube away from the Sun");
+      sunJogWarned_ = true;
+    }
+  }
+
   if (mode_ == Mode::Manual && !manualFromTracking_) {
     double alt = altAxisDeg();
     if ((alt <= cfg_.altMin && vAlt < 0) || (alt >= cfg_.altMax && vAlt > 0)) vAlt = 0;
@@ -369,18 +395,33 @@ void Mount::follow(double jogAz, double jogAlt) {
     log("warn", "target below alt.min, tracking stopped");
     return;
   }
+  if (target_.kind == Target::Sun && !solar_) {
+    stopAxes();
+    setMode(Mode::Idle);
+    log("warn", "solar mode is off: stopped following the Sun");
+    return;
+  }
   double eAz = wrap180(az0 - azAxisDeg()), eAlt = alt0 - altAxisDeg();
   double rAz = wrap180(az1 - az0) + jogAz, rAlt = (alt1 - alt0) + jogAlt;
   double vmax = cfg_.slewSpeed;
   double k = cfg_.trackGain;
-  runAz(clampAbs(rAz + correction(eAz, vmax, cfg_.slewAccel, k), vmax));
-  runAlt(clampAbs(rAlt + correction(eAlt, vmax, cfg_.slewAccel, k), vmax));
+  double vAz = clampAbs(rAz + correction(eAz, vmax, cfg_.slewAccel, k), vmax);
+  double vAlt = clampAbs(rAlt + correction(eAlt, vmax, cfg_.slewAccel, k), vmax);
+  if (movingIntoSun(vAz, vAlt)) {
+    stopAxes();
+    setMode(Mode::Idle);
+    log("warn", "stopped %.0f° from the Sun: solar mode is off", cfg_.sunMinSep);
+    return;
+  }
+  runAz(vAz);
+  runAlt(vAlt);
 
   if (mode_ == Mode::Goto && fabs(eAz) < kArrivedDeg && fabs(eAlt) < kArrivedDeg) {
     if (gotoPark_) {
       p_.az.stop(cfg_.slewAccel * cfg_.azStepsPerRev / 360.0f);
       p_.alt.stop(cfg_.slewAccel * cfg_.altStepsPerRev / 360.0f);
       target_.kind = Target::None;
+      solar_ = false;
       setMode(Mode::Parked);
       saveState();
       saveAlignment();
@@ -409,9 +450,86 @@ void Mount::updateLeds() {
   p_.leds.set(red, blue);
 }
 
+void Mount::resetAxes(double alt, double az) {
+  align_.clearSync();
+  double pAlt, pAz;
+  align_.toAxis(alt, az, pAlt, pAz);
+  double curAlt = altAxisDeg(), curAz = azAxisDeg();
+  double dAlt = pAlt - curAlt, dAz = wrap180(pAz - curAz);
+  setAxisPosition(p_.alt, pAlt, cfg_.altStepsPerRev, cfg_.altReverse);
+  setAxisPosition(p_.az, curAz + dAz, cfg_.azStepsPerRev, cfg_.azReverse);
+  log("info", "axis counters reset after lost steps: alt %+.3f°, az %+.3f°", dAlt, dAz);
+}
+
 bool Mount::horizonFromAxis(double &alt, double &az) {
   if (align_.count() == 0) return false;
   align_.toHorizon(altAxisDeg(), azAxisDeg(), alt, az);
+  return true;
+}
+
+// ---------------------------------------------------------------- Sun safety
+
+bool Mount::sunWatch(double &sunAlt, double &sunAz) {
+  if (solar_ || !timeOk_ || !siteOk_) return false;
+  double ra, dec;
+  sunRadec(utc(), ra, dec);
+  radecToAltaz(ra, dec, utc(), lat_, lon_, sunAlt, sunAz);
+  return sunAlt > -2;  // below that, the Earth is in the way
+}
+
+bool Mount::movingIntoSun(double vAz, double vAlt) {
+  double sAlt, sAz, alt0, az0, alt1, az1;
+  if (align_.count() == 0 || !sunWatch(sAlt, sAz)) return false;
+  Vec3 sun = vecFromAltaz(sAlt, sAz);
+  align_.toHorizon(altAxisDeg(), azAxisDeg(), alt0, az0);
+  // Where the axes would be after one more control period and a full stop.
+  auto lead = [&](double v) { return v * 0.1 + v * fabs(v) / (2 * cfg_.slewAccel); };
+  align_.toHorizon(altAxisDeg() + lead(vAlt), azAxisDeg() + lead(vAz), alt1, az1);
+  double now = separationDeg(vecFromAltaz(alt0, az0), sun), ahead = separationDeg(vecFromAltaz(alt1, az1), sun);
+  return ahead < cfg_.sunMinSep && ahead < now;
+}
+
+// Both axes slew at the same top speed, so the path is a diagonal then a
+// straight run on the axis with further to go. Checked every 0.5°.
+bool Mount::slewNearSun(double toAxAlt, double toAxAz) {
+  double sAlt, sAz;
+  if (align_.count() == 0 || !sunWatch(sAlt, sAz)) return false;
+  Vec3 sun = vecFromAltaz(sAlt, sAz);
+  double alt0 = altAxisDeg(), az0 = azAxisDeg();
+  double dAlt = toAxAlt - alt0, dAz = wrap180(toAxAz - az0);
+  double len = fmax(fabs(dAlt), fabs(dAz));
+  int n = (int)ceil(len / 0.5);
+  // A slew that starts inside the zone (solar mode just turned off) may leave it,
+  // as long as it moves away from the Sun until it is out.
+  bool leaving = true;
+  double prev = -1;
+  for (int i = 0; i <= n; i++) {
+    double s = n ? len * i / n : 0;
+    double a = alt0 + copysign(fmin(s, fabs(dAlt)), dAlt), z = az0 + copysign(fmin(s, fabs(dAz)), dAz);
+    double hAlt, hAz;
+    align_.toHorizon(a, z, hAlt, hAz);
+    double d = separationDeg(vecFromAltaz(hAlt, hAz), sun);
+    if (d >= cfg_.sunMinSep) {
+      leaving = false;
+    } else if (!leaving || d < prev) {
+      return true;
+    }
+    prev = d;
+  }
+  return false;
+}
+
+bool Mount::sunAllows(double alt, double az, double toAxAlt, double toAxAz) {
+  double sAlt, sAz;
+  if (!sunWatch(sAlt, sAz)) return true;
+  if (align_.count() == 0)
+    return fail("sun", "the Sun is up and the azimuth is unknown: align first, or turn on solar mode");
+  double d = separationDeg(vecFromAltaz(alt, az), vecFromAltaz(sAlt, sAz));
+  if (d < cfg_.sunMinSep)
+    return fail("sun", "target %.1f° from the Sun (limit %.0f°): turn on solar mode with a solar filter", d,
+                cfg_.sunMinSep);
+  if (slewNearSun(toAxAlt, toAxAz))
+    return fail("sun", "the slew would pass within %.0f° of the Sun: go round it with a jog first", cfg_.sunMinSep);
   return true;
 }
 
@@ -564,6 +682,22 @@ void Mount::fillStatus(JsonObject o) {
   l["speed"] = altSpeedDeg();
   o["estop"] = p_.estop.pressed();
   o["hand"] = handActive_;
+  o["solar"] = solar_;
+  if (timeOk_ && siteOk_) {
+    double ra, dec, sAlt, sAz;
+    sunRadec(utc(), ra, dec);
+    radecToAltaz(ra, dec, utc(), lat_, lon_, sAlt, sAz);
+    JsonObject sun = o["sun"].to<JsonObject>();
+    sun["alt"] = sAlt;
+    sun["az"] = sAz;
+    double pAlt, pAz;
+    if (horizonFromAxis(pAlt, pAz))
+      sun["sep"] = separationDeg(vecFromAltaz(pAlt, pAz), vecFromAltaz(sAlt, sAz));
+    else
+      sun["sep"] = nullptr;
+  } else {
+    o["sun"] = nullptr;
+  }
 }
 
 void Mount::log(const char *level, const char *fmt, ...) {
@@ -652,7 +786,7 @@ void Mount::onMessage(int clientId, const char *text) {
       {"align_list", &Mount::cmdAlignList},  {"sync", &Mount::cmdSync},
       {"park", &Mount::cmdPark},             {"unpark", &Mount::cmdUnpark},
       {"set_alt_zero", &Mount::cmdSetAltZero}, {"get_config", &Mount::cmdGetConfig},
-      {"set_config", &Mount::cmdSetConfig},
+      {"set_config", &Mount::cmdSetConfig},  {"solar", &Mount::cmdSolar},
   };
 
   rep["re"] = cmd["id"];
@@ -771,20 +905,26 @@ bool Mount::cmdJog(JsonObjectConst cmd, JsonObject) {
 
 bool Mount::cmdGoto(JsonObjectConst cmd, JsonObject r) {
   double ra, dec;
+  bool sun = cmd["sun"] | false;
   if (!armed() || !need(timeOk_, "time_ok", "send set_time") || !need(siteOk_, "site_ok", "send set_site") ||
-      !need(align_.count() > 0, "aligned", "add an alignment star") || !getNumber(cmd, "ra", 0, 24, ra) ||
-      !getNumber(cmd, "dec", -90, 90, dec))
+      !need(align_.count() > 0, "aligned", "add an alignment star"))
     return false;
-  double alt, az;
+  if (sun) {
+    if (!solar_) return fail("sun", "solar mode is off: fit a solar filter, then send solar with filter: true");
+    sunRadec(utc(), ra, dec);
+  } else if (!getNumber(cmd, "ra", 0, 24, ra) || !getNumber(cmd, "dec", -90, 90, dec)) {
+    return false;
+  }
+  double alt, az, axAlt, axAz;
   radecToAltaz(ra, dec, utc(), lat_, lon_, alt, az);
   if (alt < cfg_.altMin || alt > cfg_.altMax)
     return fail("below_limit", "target at alt %.1f, limits %.1f to %.1f", alt, cfg_.altMin, cfg_.altMax);
-  target_.kind = Target::Sky;
+  align_.toAxis(alt, az, axAlt, axAz);
+  if (!sunAllows(alt, az, axAlt, axAz)) return false;
+  target_.kind = sun ? Target::Sun : Target::Sky;
   target_.ra = wrap24(ra);
   target_.dec = dec;
   startGoto(cmd["track"] | true, false);
-  double axAlt, axAz;
-  targetAxis(now(), axAlt, axAz);
   r["alt"] = alt;
   r["az"] = az;
   r["eta"] = etaSeconds(axAlt, axAz);
@@ -801,6 +941,15 @@ bool Mount::cmdGotoAltaz(JsonObjectConst cmd, JsonObject r) {
   if (hasAz && !need(align_.count() > 0, "aligned", "azimuth needs an alignment star")) return false;
   if (hasAlt && (alt < cfg_.altMin || alt > cfg_.altMax))
     return fail("below_limit", "alt %.1f outside %.1f to %.1f", alt, cfg_.altMin, cfg_.altMax);
+  if (align_.count() > 0) {
+    double curAlt, curAz, axAlt, axAz;
+    horizonFromAxis(curAlt, curAz);
+    double tAlt = hasAlt ? alt : curAlt, tAz = hasAz ? wrap360(az) : curAz;
+    align_.toAxis(tAlt, tAz, axAlt, axAz);
+    if (!sunAllows(tAlt, tAz, axAlt, axAz)) return false;
+  } else if (!sunAllows(0, 0, 0, 0)) {  // refused while the Sun is up: the azimuth is unknown
+    return false;
+  }
   if (align_.count() == 0) {
     target_.kind = Target::AxisPos;
     target_.alt = alt;
@@ -830,7 +979,9 @@ bool Mount::cmdTrack(JsonObjectConst cmd, JsonObject) {
   if (!armed() || !need(timeOk_, "time_ok", "send set_time") || !need(siteOk_, "site_ok", "send set_site") ||
       !need(align_.count() > 0, "aligned", "add an alignment star"))
     return false;
-  if (target_.kind != Target::Sky && target_.kind != Target::Table) {
+  if (target_.kind == Target::Sun && !solar_)
+    return fail("sun", "solar mode is off: fit a solar filter, then send solar with filter: true");
+  if (target_.kind != Target::Sky && target_.kind != Target::Table && target_.kind != Target::Sun) {
     double alt, az;
     horizonFromAxis(alt, az);
     target_.kind = Target::Sky;
@@ -859,6 +1010,32 @@ bool Mount::cmdTrackTable(JsonObjectConst cmd, JsonObject r) {
   }
   int64_t t = utc();
   if (t < tmp[0].utc || t >= tmp[n - 1].utc) return fail("bad_arg", "points: the table does not cover now");
+  // Sun: no point of the table may come near it (outside solar mode).
+  double sAlt, sAz;
+  if (sunWatch(sAlt, sAz)) {
+    for (int i = 0; i < n; i++) {
+      if (tmp[i].utc < t - 600000) continue;
+      double sra, sdec;
+      sunRadec(tmp[i].utc, sra, sdec);
+      Vec3 a = vecFromAltaz(0, 0), b = a;
+      double alt1, az1, alt2, az2;
+      radecToAltaz(tmp[i].ra, tmp[i].dec, tmp[i].utc, lat_, lon_, alt1, az1);
+      radecToAltaz(sra, sdec, tmp[i].utc, lat_, lon_, alt2, az2);
+      a = vecFromAltaz(alt1, az1);
+      b = vecFromAltaz(alt2, az2);
+      if (alt2 > -2 && separationDeg(a, b) < cfg_.sunMinSep)
+        return fail("sun", "points[%d] is %.1f° from the Sun (limit %.0f°): turn on solar mode with a solar filter", i,
+                    separationDeg(a, b), cfg_.sunMinSep);
+    }
+    int k = 0;
+    while (k < n - 2 && tmp[k + 1].utc <= t) k++;
+    double f = (double)(t - tmp[k].utc) / (tmp[k + 1].utc - tmp[k].utc);
+    double ra = tmp[k].ra + f * wrap180((tmp[k + 1].ra - tmp[k].ra) * 15) / 15, dec = tmp[k].dec + f * (tmp[k + 1].dec - tmp[k].dec);
+    double alt, az, axAlt, axAz;
+    radecToAltaz(ra, dec, t, lat_, lon_, alt, az);
+    align_.toAxis(alt, az, axAlt, axAz);
+    if (!sunAllows(alt, az, axAlt, axAz)) return false;
+  }
   bool replace = target_.kind == Target::Table && (mode_ == Mode::Tracking || mode_ == Mode::Manual);
   memcpy(target_.table, tmp, sizeof(TablePoint) * n);
   target_.tableN = n;
@@ -892,8 +1069,26 @@ bool Mount::cmdAlignAdd(JsonObjectConst cmd, JsonObject r) {
   s.ra = ra;
   s.dec = dec;
   radecToAltaz(ra, dec, utc(), lat_, lon_, s.hAlt, s.hAz);
+  if (!posOk_ && align_.count() > 0) {
+    if (s.hAlt > kZenithLimitDeg)
+      return fail("bad_arg", "after lost steps, use a star below %.0f° altitude: near the zenith the azimuth is "
+                  "too uncertain", kZenithLimitDeg);
+    resetAxes(s.hAlt, s.hAz);  // steps were lost: bring the earlier stars back in line first
+    r["axes_reset"] = true;
+  }
   s.axAlt = altAxisDeg();
   s.axAz = wrap360(azAxisDeg());
+  Vec3 h = vecFromAltaz(s.hAlt, s.hAz), a = vecFromAltaz(s.axAlt, s.axAz);
+  for (int i = 0; i < align_.count(); i++) {
+    const AlignStar &o = align_.star(i);
+    double sky = separationDeg(h, vecFromAltaz(o.hAlt, o.hAz));
+    double axes = separationDeg(a, vecFromAltaz(o.axAlt, o.axAz));
+    if (fabs(sky - axes) > kAlignToleranceDeg)
+      return fail("align_mismatch",
+                  "%s and %s are %.1f° apart in the sky but %.1f° apart on the axes: centre the star, check its "
+                  "name, or clear the alignment if the mount was moved",
+                  s.name[0] ? s.name : "this star", o.name[0] ? o.name : "an earlier star", sky, axes);
+  }
   align_.add(s);
   // The model now accounts for the jog that centred the star.
   offAz_ = offAlt_ = 0;
@@ -923,14 +1118,22 @@ bool Mount::cmdAlignList(JsonObjectConst, JsonObject r) {
   return true;
 }
 
-bool Mount::cmdSync(JsonObjectConst cmd, JsonObject) {
+bool Mount::cmdSync(JsonObjectConst cmd, JsonObject r) {
   double ra, dec;
   if (!need(align_.count() > 0, "aligned", "add an alignment star first") || !getNumber(cmd, "ra", 0, 24, ra) ||
       !getNumber(cmd, "dec", -90, 90, dec))
     return false;
   double alt, az;
   radecToAltaz(ra, dec, utc(), lat_, lon_, alt, az);
-  align_.sync(alt, az, altAxisDeg(), wrap360(azAxisDeg()));
+  if (alt > kZenithLimitDeg)
+    return fail("bad_arg", "sync on an object below %.0f° altitude: near the zenith the azimuth is too uncertain",
+                kZenithLimitDeg);
+  if (posOk_) {
+    align_.sync(alt, az, altAxisDeg(), wrap360(azAxisDeg()));  // a local refinement
+  } else {
+    resetAxes(alt, az);  // steps were lost (E-stop): the same offset everywhere
+    r["axes_reset"] = true;
+  }
   offAz_ = offAlt_ = 0;
   posOk_ = true;
   return true;
@@ -938,6 +1141,13 @@ bool Mount::cmdSync(JsonObjectConst cmd, JsonObject) {
 
 bool Mount::cmdPark(JsonObjectConst, JsonObject r) {
   if (!armed() || !need(posOk_, "pos_ok", "align on a star or sync")) return false;
+  if (align_.count() > 0) {
+    double alt, az;
+    align_.toHorizon(cfg_.parkAlt, cfg_.parkAz, alt, az);
+    if (!sunAllows(alt, az, cfg_.parkAlt, cfg_.parkAz)) return false;
+  } else if (!sunAllows(0, 0, 0, 0)) {
+    return false;
+  }
   target_.kind = Target::AxisPos;
   target_.alt = cfg_.parkAlt;
   target_.az = cfg_.parkAz;
@@ -965,6 +1175,17 @@ bool Mount::cmdSetAltZero(JsonObjectConst, JsonObject) {
 
 bool Mount::cmdGetConfig(JsonObjectConst cmd, JsonObject r) {
   configToJson(cfg_, cmd["keys"], r["config"].to<JsonObject>());
+  return true;
+}
+
+bool Mount::cmdSolar(JsonObjectConst cmd, JsonObject r) {
+  bool on = cmd["on"] | false;
+  if (on && !(cmd["filter"] | false))
+    return fail("bad_arg", "filter: send filter: true to confirm a solar filter covers the front of the tube");
+  if (on && !solar_) log("warn", "solar mode on: the Sun keep-out zone is off until solar mode is turned off");
+  if (!on && solar_) log("info", "solar mode off: the tube keeps %.0f° away from the Sun again", cfg_.sunMinSep);
+  solar_ = on;
+  r["solar"] = solar_;
   return true;
 }
 

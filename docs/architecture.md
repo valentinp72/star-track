@@ -73,7 +73,7 @@ calculations, so tracking continues when the phone is locked or disconnected.
   - Moon and planets: a table of positions (for example every 10 minutes for the
     next hours) sent by the phone and interpolated by the mount. The Moon's
     topocentric parallax makes linear extrapolation drift.
-- Alignment: 2–3 stars with Taki's matrix method (absorbs a base that is not level
+- Alignment: 2–3 stars, fitted as a rotation (absorbs a base that is not level
   and an unknown north). Requires a known altitude zero (tube level at power-on or a
   home switch). A sync after each goto improves local accuracy.
 - One JSON message set for WebSocket and serial: `set_time`, `set_site`, `goto`,

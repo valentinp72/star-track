@@ -10,10 +10,11 @@ BUILD := build
 CXX ?= g++
 CXXFLAGS ?= -O2 -g
 CXXFLAGS += -std=c++17 -Wall -Wextra -I$(CORE) -I$(ARDUINOJSON) -I. -MMD -MP
+CXXFLAGS += -DSIM_WEB_DIR='"$(abspath web)"'
 
 CORE_SRC := $(wildcard $(CORE)/*.cpp)
 CORE_OBJ := $(patsubst $(CORE)/%.cpp,$(BUILD)/core/%.o,$(CORE_SRC))
-SIM_OBJ := $(BUILD)/sim.o $(BUILD)/main.o
+SIM_OBJ := $(BUILD)/sim.o $(BUILD)/server.o $(BUILD)/main.o
 TEST_OBJ := $(BUILD)/tests/test_core.o
 
 all: $(BUILD)/star-track-sim
@@ -41,10 +42,17 @@ check-deps:
 test: $(BUILD)/test_core $(BUILD)/star-track-sim
 	./$(BUILD)/test_core
 	python3 tests/test_session.py ./$(BUILD)/star-track-sim
+	python3 tests/test_fuzz.py ./$(BUILD)/star-track-sim 20 200
+
+# A longer run of the random test: make fuzz SEEDS=200 ACTIONS=300
+SEEDS ?= 200
+ACTIONS ?= 300
+fuzz: $(BUILD)/star-track-sim
+	python3 tests/test_fuzz.py ./$(BUILD)/star-track-sim $(SEEDS) $(ACTIONS)
 
 clean:
 	rm -rf $(BUILD)
 
-.PHONY: all test clean check-deps
+.PHONY: all test fuzz clean check-deps
 
 -include $(CORE_OBJ:.o=.d) $(SIM_OBJ:.o=.d) $(TEST_OBJ:.o=.d)

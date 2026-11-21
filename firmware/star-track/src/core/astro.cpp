@@ -80,6 +80,16 @@ void altazToRadec(double altDeg, double azDeg, int64_t utcMs, double latDeg, dou
   horToEqu(trueAlt, azDeg, lstDeg(utcMs, lonDeg), latDeg, raH, decDeg);
 }
 
+void sunRadec(int64_t utcMs, double &raH, double &decDeg) {
+  double n = julianDate(utcMs) - 2451545.0;
+  double l = 280.460 + 0.9856474 * n;
+  double g = (357.528 + 0.9856003 * n) * kDeg;
+  double lambda = (l + 1.915 * sin(g) + 0.020 * sin(2 * g)) * kDeg;
+  double eps = (23.439 - 0.0000004 * n) * kDeg;
+  raH = wrap24(atan2(cos(eps) * sin(lambda), cos(lambda)) / kDeg / 15.0);
+  decDeg = asin(sin(eps) * sin(lambda)) / kDeg;
+}
+
 Vec3 vecFromAltaz(double altDeg, double azDeg) {
   double a = altDeg * kDeg, z = azDeg * kDeg;
   return {cos(a) * cos(z), cos(a) * sin(z), sin(a)};

@@ -6,6 +6,8 @@
 
 #include <fstream>
 
+#include "server.h"
+
 using namespace core;
 
 namespace sim {
@@ -138,7 +140,11 @@ void SimStorage::write() {
 
 // ---------------------------------------------------------------- link
 
-void ConsoleLink::send(int, const char *text) {
+void SimLink::send(int client, const char *text) {
+  if (client != Sim::kConsole) {
+    if (server) server->send(client, text);
+    return;
+  }
   fputs(text, stdout);
   fputc('\n', stdout);
   fflush(stdout);
@@ -156,6 +162,10 @@ void Sim::begin(int64_t utcMs) {
   mount_.begin();
   mount_.onConnect(kConsole, ClientKind::Console);
 }
+
+void Sim::connect(int client) { mount_.onConnect(client, ClientKind::WebSocket); }
+
+void Sim::disconnect(int client) { mount_.onDisconnect(client); }
 
 void Sim::advance(int64_t ms) {
   for (int64_t done = 0; done < ms;) {
@@ -215,7 +225,12 @@ bool Sim::simCommand(JsonObjectConst cmd, JsonObject r, std::string &err, std::s
       rate = v;
     }
     if (!cmd["utc"].isNull()) utcOffset_ = cmd["utc"].as<long long>() - clock_.ms;
+    if (num("slew_rate_max", v)) {
+      if (v < 0) return err = "bad_arg", msg = "slew_rate_max: 0 (no limit) or more", false;
+      slewRateMax = v;
+    }
     r["rate"] = rate;
+    r["slew_rate_max"] = slewRateMax;
     r["utc"] = trueUtc();
     return true;
   }
@@ -270,6 +285,32 @@ bool Sim::simCommand(JsonObjectConst cmd, JsonObject r, std::string &err, std::s
     return true;
   }
   if (name == "sim_truth") {
+    fillTruth(r);
+    return true;
+  }
+  if (name == "sim_state") {
+    // The firmware's status and the truth at the same simulated instant.
+    JsonObject st = r["status"].to<JsonObject>();
+    mount_.statusJson(st);
+    st.remove("ev");
+    JsonObject tr = r["truth"].to<JsonObject>();
+    fillTruth(tr);
+    // How far the firmware's belief is from where the tube really points.
+    JsonVariantConst pAlt = st["pos"]["alt"], pAz = st["pos"]["az"];
+    if (pAlt.isNull() || pAz.isNull())
+      r["model_error"] = nullptr;
+    else
+      r["model_error"] = separationDeg(vecFromAltaz(pAlt.as<double>(), pAz.as<double>()),
+                                       vecFromAltaz(tr["alt"].as<double>(), tr["az"].as<double>()));
+    return true;
+  }
+  err = "unknown_cmd";
+  msg = "unknown simulator command \"" + name + "\"";
+  return false;
+}
+
+void Sim::fillTruth(JsonObject r) {
+  {
     double alt, az, ra, dec;
     altazFromVec(truthVector(), alt, az);
     altazToRadec(alt, az, trueUtc(), gps_.lat, gps_.lon, ra, dec);
@@ -281,11 +322,28 @@ bool Sim::simCommand(JsonObjectConst cmd, JsonObject r, std::string &err, std::s
     r["leds"]["red"] = leds_.red;
     r["leds"]["blue"] = leds_.blue;
     r["drivers"] = estop_.driversOn();
-    return true;
+    r["estop"] = estop_.isPressed;
+    r["rate"] = rate;
+    r["slew_rate_max"] = slewRateMax;
+    r["effective_rate"] = effectiveRate();
+    JsonObject site = r["site"].to<JsonObject>();
+    site["lat"] = gps_.lat;
+    site["lon"] = gps_.lon;
+    JsonObject axes = r["axes"].to<JsonObject>();  // mechanical angles, degrees
+    axes["az"] = az_.mechSteps() * 360.0 / stepsPerRev_;
+    axes["alt"] = alt_.mechSteps() * 360.0 / stepsPerRev_;
+    JsonObject m = r["mount"].to<JsonObject>();
+    m["tilt"] = tiltDeg_;
+    m["tilt_az"] = tiltAzDeg_;
+    m["north"] = northDeg_;
+    m["alt_zero"] = altZeroDeg_;
+    JsonObject g = r["gps"].to<JsonObject>();
+    g["on"] = gps_.enabled;
+    g["fix"] = gps_.fix;
+    JsonObject h = r["hand"].to<JsonObject>();
+    h["x"] = inputs_.x;
+    h["y"] = inputs_.y;
   }
-  err = "unknown_cmd";
-  msg = "unknown simulator command \"" + name + "\"";
-  return false;
 }
 
 void Sim::handleLine(int client, const char *line) {

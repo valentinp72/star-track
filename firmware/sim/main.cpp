@@ -1,12 +1,17 @@
 // Simulator entry point: runs the mount firmware's core on the PC, with the
-// protocol on stdin/stdout (one JSON object per line).
+// protocol on stdin/stdout (one JSON object per line) and on a WebSocket at
+// ws://localhost:8080/ws. The simulator page is at http://localhost:8080/sim.
 //
 //   star-track-sim [--paused] [--rate R] [--utc MS] [--state FILE]
+//                  [--port N] [--any] [--web DIR]
 //
 // --paused   the clock only moves with sim_run (for scripted tests)
 // --rate R   clock speed (default 1)
 // --utc MS   true UTC at start, ms since 1970 (default: the PC's clock)
 // --state F  keep the flash records in file F between runs
+// --port N   HTTP and WebSocket port (default 8080; 0 = no server)
+// --any      listen on every network interface, not only this PC
+// --web DIR  directory of the web pages (default: firmware/sim/web)
 
 #include <poll.h>
 #include <stdio.h>
@@ -16,8 +21,14 @@
 
 #include <chrono>
 #include <string>
+#include <vector>
 
+#include "server.h"
 #include "sim.h"
+
+#ifndef SIM_WEB_DIR
+#define SIM_WEB_DIR "web"
+#endif
 
 namespace {
 
@@ -32,7 +43,9 @@ int64_t steadyMs() {
 }
 
 void usage() {
-  fprintf(stderr, "usage: star-track-sim [--paused] [--rate R] [--utc MS] [--state FILE]\n");
+  fprintf(stderr,
+          "usage: star-track-sim [--paused] [--rate R] [--utc MS] [--state FILE]\n"
+          "                      [--port N] [--any] [--web DIR]\n");
   exit(2);
 }
 
@@ -41,7 +54,9 @@ void usage() {
 int main(int argc, char **argv) {
   double rate = 1;
   int64_t utc = wallMs();
-  std::string state;
+  std::string state, web = SIM_WEB_DIR;
+  int port = 8080;
+  bool any = false;
   for (int i = 1; i < argc; i++) {
     std::string a = argv[i];
     if (a == "--paused") {
@@ -52,6 +67,12 @@ int main(int argc, char **argv) {
       utc = atoll(argv[++i]);
     } else if (a == "--state" && i + 1 < argc) {
       state = argv[++i];
+    } else if (a == "--port" && i + 1 < argc) {
+      port = atoi(argv[++i]);
+    } else if (a == "--any") {
+      any = true;
+    } else if (a == "--web" && i + 1 < argc) {
+      web = argv[++i];
     } else {
       usage();
     }
@@ -61,32 +82,58 @@ int main(int argc, char **argv) {
   s.rate = rate;
   s.begin(utc);
 
+  sim::Server server;
+  if (port > 0) {
+    if (!server.listen(port, any, web)) {
+      fprintf(stderr, "star-track-sim: cannot listen on port %d (in use?)\n", port);
+      return 1;
+    }
+    server.onOpen = [&](int c) { s.connect(c); };
+    server.onMessage = [&](int c, const std::string &text) { s.handleLine(c, text.c_str()); };
+    server.onClose = [&](int c) { s.disconnect(c); };
+    s.setServer(&server);
+    fprintf(stderr, "star-track-sim: simulator page at http://%s:%d/sim\n", any ? "<this PC>" : "localhost", port);
+  }
+
+  bool stdinOpen = true;
   std::string buf;
   int64_t last = steadyMs();
   double pending = 0;
   for (;;) {
-    struct pollfd pfd = {STDIN_FILENO, POLLIN, 0};
-    int r = poll(&pfd, 1, s.rate > 0 ? sim::Sim::kStepMs : 100);
-    if (r > 0) {
+    std::vector<pollfd> fds;
+    if (stdinOpen) fds.push_back({STDIN_FILENO, POLLIN, 0});
+    server.addPollFds(fds);
+    poll(fds.data(), fds.size(), s.effectiveRate() > 0 ? sim::Sim::kStepMs : 100);
+
+    if (stdinOpen && fds[0].revents) {
       char chunk[4096];
       ssize_t n = read(STDIN_FILENO, chunk, sizeof chunk);
-      if (n <= 0) break;  // end of input
-      buf.append(chunk, n);
-      size_t nl;
-      while ((nl = buf.find('\n')) != std::string::npos) {
-        std::string line = buf.substr(0, nl);
-        buf.erase(0, nl + 1);
-        if (!line.empty() && line.back() == '\r') line.pop_back();
-        s.handleLine(sim::Sim::kConsole, line.c_str());
+      if (n <= 0) {
+        if (port <= 0) break;  // end of input, nothing else to serve
+        stdinOpen = false;
+      } else {
+        buf.append(chunk, n);
+        size_t nl;
+        while ((nl = buf.find('\n')) != std::string::npos) {
+          std::string line = buf.substr(0, nl);
+          buf.erase(0, nl + 1);
+          if (!line.empty() && line.back() == '\r') line.pop_back();
+          s.handleLine(sim::Sim::kConsole, line.c_str());
+        }
+        if (buf.size() > 65536) buf.clear();  // runaway line without a newline
       }
-      if (buf.size() > 65536) buf.clear();  // runaway line without a newline
     }
+    server.handle(fds);
+
     int64_t t = steadyMs();
-    pending += (t - last) * s.rate;
+    pending += (t - last) * s.effectiveRate();
     last = t;
     if (pending >= 1) {
+      // At most one real second of work per pass, so the page stays responsive.
       int64_t ms = (int64_t)pending;
+      if (ms > 100000) ms = 100000;
       pending -= ms;
+      if (pending > 100000) pending = 0;
       s.advance(ms);
     }
   }

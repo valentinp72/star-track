@@ -26,7 +26,7 @@ M42 = (5.5881, -5.391)
 
 class Sim:
     def __init__(self, path):
-        self.p = subprocess.Popen([path, "--paused", "--utc", str(T0)], stdin=subprocess.PIPE,
+        self.p = subprocess.Popen([path, "--paused", "--port", "0", "--utc", str(T0)], stdin=subprocess.PIPE,
                                   stdout=subprocess.PIPE, text=True, bufsize=1)
         self.next_id = 1
         self.logs = []
@@ -122,6 +122,10 @@ def align_and_goto(s):
     check("goto Aldebaran with one star lands within 5°", e1 < 5, arcmin(e1))
     s.ok("sim_point", ra=ALDEBARAN[0], dec=ALDEBARAN[1])
     s.ok("align_add", ra=ALDEBARAN[0], dec=ALDEBARAN[1], name="Aldebaran")
+
+    # A star that is not centred (the tube is still on Aldebaran) is refused.
+    r = s.cmd("align_add", ra=DENEB[0], dec=DENEB[1], name="Deneb")
+    check("an alignment star that is not centred is refused", r["err"] == "align_mismatch", r["msg"])
 
     # Star 3: with two stars the tilt and north are known.
     s.run(120)
@@ -276,6 +280,71 @@ def errors(s):
     check("hello", h["proto"] == 1 and h["sim"] and h["board"] == "sim")
 
 
+def sep_altaz(alt1, az1, alt2, az2):
+    """Angle between two alt/az directions, in degrees."""
+    a1, z1, a2, z2 = map(math.radians, (alt1, az1, alt2, az2))
+    c = math.sin(a1) * math.sin(a2) + math.cos(a1) * math.cos(a2) * math.cos(z1 - z2)
+    return math.degrees(math.acos(max(-1.0, min(1.0, c))))
+
+
+def sun_safety(s):
+    day = T0 + 14 * 3600 * 1000  # the next day, 11:00 UTC
+    s.ok("set_config", config={"alt.min": 0})
+    s.run(5)  # the GPS (turned off before) no longer counts as a fix
+    s.ok("sim_clock", utc=day)
+    r = s.ok("set_time", utc=day)
+    check("phone time accepted once the GPS is off", r["source"] == "phone")
+    sun = s.status()["sun"]
+    check("the Sun is up at 11:00 UTC", sun["alt"] > 10, f"alt {sun['alt']:.1f}°")
+
+    r = s.cmd("goto_altaz", alt=sun["alt"] + 5, az=sun["az"])
+    check("goto 5° from the Sun is refused", r["err"] == "sun", r["msg"])
+    s.ok("sim_point", alt=sun["alt"], az=sun["az"] - 40)
+    r = s.cmd("goto_altaz", alt=sun["alt"], az=sun["az"] + 40)
+    check("a slew across the Sun is refused", r["err"] == "sun" and "slew" in r["msg"], r["msg"])
+
+    s.ok("sim_hand", x=1, y=0)  # jog towards the Sun (azimuth increasing)
+    s.run(30)
+    st = s.status()
+    s.ok("sim_hand", x=0, y=0)
+    s.run(1)
+    check("a jog towards the Sun stops at the edge of the zone", 15 <= st["sun"]["sep"] < 17,
+          f"{st['sun']['sep']:.2f}° from the Sun")
+    check("the jog stop is logged", any("jog stopped" in m["msg"] for m in s.logs))
+    s.ok("sim_hand", x=-1, y=0)  # away from the Sun: allowed
+    s.run(2)
+    s.ok("sim_hand", x=0, y=0)
+    s.run(1)
+    check("jogging away from the Sun works", s.status()["sun"]["sep"] > st["sun"]["sep"] + 3)
+
+    r = s.cmd("goto", sun=True)
+    check("goto the Sun needs solar mode", r["err"] == "sun")
+    r = s.cmd("solar", on=True)
+    check("solar mode needs the filter confirmation", r["err"] == "bad_arg" and "filter" in r["msg"])
+    s.ok("solar", on=True, filter=True)
+    check("status shows solar mode", s.status()["solar"])
+    s.ok("goto", sun=True)
+    s.wait_mode("tracking", 120)
+    s.run(600)
+    st, t = s.status(), s.ok("sim_truth")
+    e = sep_altaz(t["alt"], t["az"], st["sun"]["alt"], st["sun"]["az"])
+    check("solar mode: tracks the Sun", st["mode"] == "tracking" and e < 1 / 60, arcmin(e))
+    s.ok("solar", on=False)
+    s.run(0.5)
+    check("solar mode off stops following the Sun", s.status()["mode"] == "idle")
+    sun = s.status()["sun"]
+    r = s.cmd("goto_altaz", alt=sun["alt"] + 3, az=sun["az"])
+    check("from the Sun, a slew deeper into the zone is refused", r["err"] == "sun")
+    r = s.cmd("goto_altaz", alt=sun["alt"] + 25, az=sun["az"])
+    check("from the Sun, a slew straight out of the zone is allowed", r["ok"], r.get("msg", ""))
+    s.wait_mode("idle", 60)
+    s.ok("solar", on=True, filter=True)
+    s.ok("park")
+    s.wait_mode("parked", 240)
+    check("park turns solar mode off", not s.status()["solar"])
+    s.ok("unpark")
+
+
 def main():
     if len(sys.argv) != 2:
         sys.exit(__doc__)
@@ -288,6 +357,7 @@ def main():
         table(s)
         gps(s)
         errors(s)
+        sun_safety(s)
     finally:
         s.close()
     failed = [n for n, ok in checks if not ok]

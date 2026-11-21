@@ -39,6 +39,8 @@ class Mount {
   void onMessage(int client, const char *text);
 
   Mode mode() const { return mode_; }
+  // The status event's fields (for the simulator's snapshots).
+  void statusJson(JsonObject o) { fillStatus(o); }
 
  private:
   struct TablePoint {
@@ -46,7 +48,7 @@ class Mount {
     double ra, dec;
   };
   struct Target {
-    enum Kind { None, Sky, Table, Horizon, AxisPos } kind = None;
+    enum Kind { None, Sky, Table, Horizon, AxisPos, Sun } kind = None;
     double ra = 0, dec = 0;  // Sky
     double alt = 0, az = 0;  // Horizon (apparent) or AxisPos (axis degrees)
     TablePoint table[kMaxTablePoints];
@@ -61,7 +63,7 @@ class Mount {
   };
   struct Error {
     const char *code = nullptr;
-    char msg[96] = "";
+    char msg[200] = "";
   };
   using Handler = bool (Mount::*)(JsonObjectConst cmd, JsonObject reply);
 
@@ -96,6 +98,15 @@ class Mount {
 
   // Pointing.
   bool horizonFromAxis(double &alt, double &az);  // false before alignment
+  // After lost steps: sets the axis counters so the model puts (alt, az) where the
+  // tube points now. Corrects the whole sky, unlike a sync.
+  void resetAxes(double alt, double az);
+
+  // Sun safety (outside solar mode).
+  bool sunWatch(double &sunAlt, double &sunAz);  // true when the keep-out zone applies
+  bool movingIntoSun(double vAz, double vAlt);    // braking from this speed would end in the zone
+  bool slewNearSun(double toAxAlt, double toAxAz);
+  bool sunAllows(double alt, double az, double toAxAlt, double toAxAz);  // sets err_
 
   // Persistence.
   void saveState();
@@ -133,6 +144,7 @@ class Mount {
   bool cmdSetAltZero(JsonObjectConst, JsonObject);
   bool cmdGetConfig(JsonObjectConst, JsonObject);
   bool cmdSetConfig(JsonObjectConst, JsonObject);
+  bool cmdSolar(JsonObjectConst, JsonObject);
 
   Platform &p_;
   Config cfg_;
@@ -156,6 +168,8 @@ class Mount {
   int appJogClient_ = -1;
   bool handActive_ = false;
   bool stopButton_ = false;
+  bool solar_ = false;          // solar mode: the user confirmed a solar filter
+  bool sunJogWarned_ = false;
 
   int64_t lastControl_ = 0;
   int currentClient_ = -1;  // sender of the command being handled
