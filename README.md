@@ -6,7 +6,7 @@ controlled from a phone, with a joystick, buttons and an emergency stop for manu
 This branch restarts the project. It currently holds design notes, an interactive 3D
 model of the mount, the electronics schematic and PCB, a board test sketch, and the
 mount firmware's core with a simulator that runs it on a PC (the ESP32 layer is not
-written yet), and the start of the phone app.
+written yet), and the phone app.
 
 ## Contents
 
@@ -20,7 +20,7 @@ written yet), and the start of the phone app.
 | [`firmware/board-test/`](firmware/board-test/) | Arduino sketch (arduino-cli) that checks the soldered board from a serial menu: LEDs, E-stop, GPS, motors, hand unit. |
 | [`firmware/star-track/`](firmware/star-track/) | Mount firmware: the hardware-independent core (protocol, modes, tracking, pointing model). The ESP32 platform layer is still to come. |
 | [`firmware/sim/`](firmware/sim/) | Simulator: builds the firmware's core for the PC with a model of the mount, speaks the protocol on stdin/stdout and a WebSocket, serves the phone app and a simulator page; `make test` runs unit tests and a scripted night. |
-| [`app/`](app/) | Phone web app (Svelte, Konsta UI), served by the mount over its Wi-Fi access point and added to the iPhone's home screen. In progress: connection, status, catalogue and goto so far. |
+| [`app/`](app/) | Phone web app (Svelte, Konsta UI), served by the mount over its Wi-Fi access point and added to the iPhone's home screen. Catalogue and goto, joystick, alignment, sky chart, settings. |
 
 ## Earlier attempts
 

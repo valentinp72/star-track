@@ -1,7 +1,10 @@
-<!-- Enter the site by hand and send it to the mount (saved in its flash). The
-     GPS, when it has a fix, takes precedence on the mount. -->
+<!-- The site: a saved one in one tap, or entered by hand (and saved under a
+     name if given), sent to the mount (kept in its flash). The GPS, when it has
+     a fix, takes precedence on the mount. -->
 <script>
-  import { Sheet, Block, BlockFooter, Button, List, ListInput, Link, Segmented, SegmentedButton } from 'konsta/svelte';
+  import { Sheet, Block, BlockTitle, BlockFooter, Button, List, ListInput, ListItem, Link, Segmented, SegmentedButton } from 'konsta/svelte';
+  import { sites } from '../lib/sites.svelte.js';
+  import { formatLat, formatLon } from '../lib/format.js';
   import { explain } from '../lib/errors.js';
   import { ui } from '../lib/ui.svelte.js';
 
@@ -22,6 +25,8 @@
   let elev = $state('');
   let south = $state(false);
   let west = $state(false);
+  let name = $state('');
+  let editing = $state(false);
   let busy = $state(false);
 
   // Fill in from the mount's site, or the last one sent, each time it opens.
@@ -33,6 +38,8 @@
     elev = s ? String(Math.round(s.elev ?? 0)) : '';
     south = s ? s.lat < 0 : false;
     west = s ? s.lon < 0 : false;
+    name = '';
+    editing = false;
   });
 
   const num = (t) => Number(String(t).trim().replace(',', '.'));
@@ -40,8 +47,11 @@
   const lonOk = $derived(lon !== '' && num(lon) >= 0 && num(lon) <= 180);
   const elevOk = $derived(elev === '' || (Number.isFinite(num(elev)) && num(elev) > -500 && num(elev) < 9000));
 
-  async function send() {
-    const site = { lat: num(lat) * (south ? -1 : 1), lon: num(lon) * (west ? -1 : 1), elev: elev === '' ? 0 : num(elev) };
+  function typed() {
+    return { lat: num(lat) * (south ? -1 : 1), lon: num(lon) * (west ? -1 : 1), elev: elev === '' ? 0 : num(elev) };
+  }
+
+  async function send(site) {
     busy = true;
     try {
       const r = await mount.send('set_site', { ...site, save: true });
@@ -50,7 +60,8 @@
       } catch {
         // not kept
       }
-      ui.showToast(r.source === 'gps' ? 'The mount uses its GPS site' : 'Site sent to the mount');
+      if (!site.name && name.trim()) sites.put({ ...site, name });
+      ui.showToast(r.source === 'gps' ? 'The mount uses its GPS site' : `Site sent to the mount${site.name ? `: ${site.name}` : ''}`);
       opened = false;
     } catch (e) {
       ui.showAlert('Site', explain(e));
@@ -65,7 +76,38 @@
     <div class="text-[22px] font-bold">Site</div>
     <Link onClick={() => (opened = false)}>Cancel</Link>
   </div>
+  <div class="max-h-[75vh] overflow-auto">
+  {#if sites.list.length}
+    <BlockTitle class="flex justify-between">
+      <span>Saved</span>
+      <Link onClick={() => (editing = !editing)}>{editing ? 'Done' : 'Edit'}</Link>
+    </BlockTitle>
+    <List strong inset>
+      {#each sites.list as s (s.name)}
+        {#if editing}
+          <ListItem title={s.name}>
+            {#snippet media()}
+              <button
+                class="flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white"
+                onclick={() => sites.remove(s.name)}
+                aria-label={`Delete ${s.name}`}>−</button
+              >
+            {/snippet}
+          </ListItem>
+        {:else}
+          <ListItem
+            link
+            title={s.name}
+            after={`${formatLat(s.lat)}, ${formatLon(s.lon)}`}
+            onClick={() => !busy && mount.connected && send(s)}
+          />
+        {/if}
+      {/each}
+    </List>
+    <BlockTitle>New</BlockTitle>
+  {/if}
   <List strong inset class="mt-4!">
+    <ListInput label="Name (to save it)" type="text" placeholder="Garden" value={name} onInput={(e) => (name = e.target.value)} />
     <ListInput
       label="Latitude (°)"
       type="text"
@@ -106,6 +148,9 @@
   </Block>
   <BlockFooter>Degrees with decimals. The town is close enough: the star alignment absorbs a few kilometres.</BlockFooter>
   <Block class="my-4!">
-    <Button large rounded disabled={!latOk || !lonOk || !elevOk || busy || !mount.connected} onClick={send}>Send to the mount</Button>
+    <Button large rounded disabled={!latOk || !lonOk || !elevOk || busy || !mount.connected} onClick={() => send(typed())}>
+      {name.trim() ? 'Save and send to the mount' : 'Send to the mount'}
+    </Button>
   </Block>
+  </div>
 </Sheet>

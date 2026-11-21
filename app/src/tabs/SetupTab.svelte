@@ -2,6 +2,7 @@
 <script>
   import { BlockTitle, BlockFooter, List, ListItem, Segmented, SegmentedButton, Block, Toggle } from 'konsta/svelte';
   import SiteSheet from '../components/SiteSheet.svelte';
+  import SettingsPopup from '../components/SettingsPopup.svelte';
   import { explain } from '../lib/errors.js';
   import { ui } from '../lib/ui.svelte.js';
   import { appearance } from '../lib/appearance.svelte.js';
@@ -10,6 +11,7 @@
   let { mount, askSolar } = $props();
 
   let siteOpen = $state(false);
+  let settingsOpen = $state(false);
 
   // The switch shows the mount's solar mode: it only changes when the mount
   // says so (turning it on first asks for the filter check).
@@ -66,6 +68,7 @@
       <Toggle bind:checked={solarSwitch} disabled={!mount.connected} onChange={toggleSolar} />
     {/snippet}
   </ListItem>
+  <ListItem link title="Mount settings" onClick={() => (settingsOpen = true)} />
 </List>
 
 <BlockTitle>Connection</BlockTitle>
@@ -91,3 +94,4 @@
 </BlockFooter>
 
 <SiteSheet {mount} bind:opened={siteOpen} />
+<SettingsPopup {mount} bind:opened={settingsOpen} />

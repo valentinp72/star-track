@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "size": "vite build && node scripts/size.mjs"
   },
   "dependencies": {
     "astronomy-engine": "2.1.19",
