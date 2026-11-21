@@ -1,7 +1,7 @@
 # Protocol
 
-Implemented by the firmware's core and the simulator. The mount's ESP32 layer
-(Wi-Fi, WebSocket, serial) is not written yet.
+Implemented by the firmware's core, served by the mount's ESP32 layer (Wi-Fi,
+WebSocket, serial) and by the simulator.
 
 The messages between the mount and its clients: the phone web app, a computer on the
 serial console, and test scripts. The mount firmware and the simulator

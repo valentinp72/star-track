@@ -99,13 +99,15 @@ another network), so its password is what keeps others from driving the mount.
 ## Flash layout
 
 The board is an ESP32-S3-N16R8 module (16 MB flash, 8 MB octal PSRAM, which
-takes GPIO 33–37: none of them is used). Planned partitions of the 16 MB:
+takes GPIO 33–37: none of them is used). Partitions of the 16 MB
+([`partitions.csv`](../firmware/star-track/partitions.csv)):
 
 | Partition | Size | Contents |
 | --- | --- | --- |
-| NVS | 24 KB | Settings, site, alignment, park state. |
+| NVS | 20 KB | Settings, site, alignment, park state, the Wi-Fi password. |
 | OTA data, app 0, app 1 | 2 × 3 MB | The firmware, twice: a new version is written to the other slot over Wi-Fi, the old one stays as a fallback. |
-| LittleFS | about 9.9 MB | The phone app (`app/dist`), each file gzipped, served as it is (`Content-Encoding: gzip`). |
+| LittleFS | about 9.9 MB | The phone app (`app/dist`), text files gzipped, served as they are (`Content-Encoding: gzip`). |
+| Core dump | 64 KB | The state of the firmware after a crash, read with `esptool`. |
 
 The app is about 1.6 MB gzipped, most of it the pictures of the object sheet
 (`app/public/img`), which load only when a sheet opens.

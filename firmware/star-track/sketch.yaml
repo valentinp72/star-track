@@ -1,0 +1,2 @@
+# The partition scheme sets the 3 MB size check; partitions.csv sets the layout.
+default_fqbn: esp32:esp32:esp32s3:FlashSize=16M,PSRAM=opi,PartitionScheme=app3M_fat9M_16MB

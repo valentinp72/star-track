@@ -7,8 +7,8 @@ and on stdin/stdout, adds the `sim_*` commands described there, and serves the
 phone app ([`app/`](../../app/)) and a page that shows what the simulated mount
 does.
 
-The core is the same code the ESP32 will run: only the platform layer differs
-(`sim.cpp` here, `src/esp32/` on the mount, not written yet).
+The core is the same code the ESP32 runs: only the platform layer differs
+(`sim.cpp` here, `src/esp32/` on the mount).
 
 ## Build and test
 
