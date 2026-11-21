@@ -113,11 +113,11 @@ Thread-locker on the set screws keeps them from loosening.
 ### Altitude
 
 - The shaft crosses the arm 70 below its top (height ≈ 818 in the model).
-- Pulley and motor move to the outer face of the arm. The pulley (the same part as
-  on azimuth) is bolted with four M5 × 20 screws and nuts, through its Ø9.5
-  notches on Ø39 with a DIN 9021 washer (Ø15) under each head, to
-  a second STHRB20 holder on the outer end of the shaft, hub toward the bearing
-  (about 3 clear of the outer bearing's insert).
+- Pulley and motor move to the outer face of the arm. The pulley is the azimuth
+  one without the notches: four Ø5.5 holes on Ø39 instead, and a Ø20.4 bore
+  that centres it on the shaft. It lies flat on the flange of a second STHRB20
+  holder on the outer end of the shaft, hub toward the bearing (about 3 clear of
+  the outer bearing's insert), bolted to it with four M5 × 20 screws and nuts.
 - The motor sits 152.4 below the shaft (610 closed GT2 belt, as on azimuth), on a
   Motedis motor plate held 63 from the arm by a printed spacer bolted into the
   arm's slots. Sliding the spacer down tensions the belt.
@@ -256,7 +256,8 @@ switches, which are not printed.
   bracket flexing 0.05 at the motor would turn the axis by about 2′ each time the
   torque reverses.
 - Files: [`cad/pulley-gt2-250t.solidcraft`](../cad/pulley-gt2-250t.solidcraft)
-  and its STL (three bodies that overlap by 0.1, fused by the slicer; about 145 g
+  (azimuth) and [`cad/pulley-gt2-250t-altitude.solidcraft`](../cad/pulley-gt2-250t-altitude.solidcraft),
+  each with its STL (three bodies that overlap by 0.1, fused by the slicer; about 145 g
   of PETG, no supports), [`cad/azimuth-motor-spacer.stl`](../cad/azimuth-motor-spacer.stl),
   [`cad/altitude-motor-spacer.stl`](../cad/altitude-motor-spacer.stl),
   [`cad/azimuth-pulley-ring.stl`](../cad/azimuth-pulley-ring.stl). The spacers
@@ -264,10 +265,11 @@ switches, which are not printed.
   with M3 × 8 screws. Their four Ø6.6 holes to the extrusion have Ø13 × 2.5
   counterbores for an M6 head and a DIN 125 washer, which leaves 7.5 of
   plastic, so an M6 × 20 screw reaches about 6 into a slot-10 T-nut.
-- The pulley's centre (Ø28.5 bore, four Ø9.5 notches on Ø39) follows the STHRB20
-  table from the seller; check it against the real holder before printing. Its
-  four Ø6.6 holes on the 48 × 48 square are for the azimuth M6 screws; on
-  altitude they stay empty. Six curved slots (16 wide, on R58) lighten the web.
+- The azimuth pulley's centre (Ø28.5 bore, four Ø9.5 notches on Ø39) follows the
+  STHRB20 table from the seller; check it against the real holder before
+  printing. Its four Ø6.6 holes on the 48 × 48 square are for the M6 screws.
+  The altitude pulley has a Ø20.4 bore and four Ø5.5 holes on Ø39 instead, and
+  no M6 holes. Six curved slots (16 wide, on R58) lighten the web.
 - Not printed: anything that carries the telescope's weight in bending (bearing
   housings, shaft supports, the link between tube and shaft). Plastic creeps under
   constant load and the play would come back.
