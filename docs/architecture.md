@@ -60,7 +60,9 @@ calculations, so tracking continues when the phone is locked or disconnected.
 
 - Framework: the Arduino core 3.x (built on ESP-IDF 5), for FastAccelStepper and
   an async web server, built with arduino-cli. A board test sketch is in
-  [`firmware/board-test/`](../firmware/board-test/). Note: `server/main/main.c`
+  [`firmware/board-test/`](../firmware/board-test/). The mount firmware's core is in
+  [`firmware/star-track/`](../firmware/star-track/), and runs on a PC in the
+  [simulator](../firmware/sim/). Note: `server/main/main.c`
   in `v3` declares an Arduino `WiFiServer` inside an ESP-IDF project and does not
   compile as is.
 - Modes: E-STOP → IDLE → MANUAL / GOTO / TRACKING / PARKED.

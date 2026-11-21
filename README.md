@@ -4,8 +4,9 @@ Motorised alt-azimuth mount for a 114/900 Newtonian reflector (Omegon 114/900),
 controlled from a phone, with a joystick, buttons and an emergency stop for manual use.
 
 This branch restarts the project. It currently holds design notes, an interactive 3D
-model of the mount, the electronics schematic and PCB, and a board test sketch; no mount
-firmware yet.
+model of the mount, the electronics schematic and PCB, a board test sketch, and the
+mount firmware's core with a simulator that runs it on a PC (the ESP32 layer is not
+written yet).
 
 ## Contents
 
@@ -17,6 +18,8 @@ firmware yet.
 | [`docs/3d/index.html`](docs/3d/index.html) | Interactive 3D model of the redesigned mount. Open it in a browser (needs an internet connection to load three.js from a CDN). |
 | [`electronics/`](electronics/) | KiCad schematic: power input and battery, ESP32-S3 board, two TMC2209 drivers, GPS, E-stop, LEDs, hand unit (joystick and buttons). [PDF](electronics/star-track.pdf) and PNG exports alongside. Two-layer PCB for the board on the mount (through-hole, plus four SMD parts for hand soldering), and a stripboard alternative (24 × 56 holes) with pictures of both sides. |
 | [`firmware/board-test/`](firmware/board-test/) | Arduino sketch (arduino-cli) that checks the soldered board from a serial menu: LEDs, E-stop, GPS, motors, hand unit. |
+| [`firmware/star-track/`](firmware/star-track/) | Mount firmware: the hardware-independent core (protocol, modes, tracking, pointing model). The ESP32 platform layer is still to come. |
+| [`firmware/sim/`](firmware/sim/) | Simulator: builds the firmware's core for the PC with a model of the mount, speaks the protocol on stdin/stdout; `make test` runs unit tests and a scripted night. |
 
 ## Earlier attempts
 

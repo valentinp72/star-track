@@ -84,7 +84,8 @@ Three kinds, told apart by their first key:
   nutation, aberration and, for the Moon, parallax (Astronomy Engine does all four).
   The mount applies none of them.
 - The mount converts between RA/Dec and alt/az with its clock and site, and adds
-  atmospheric refraction (Bennett's formula at 10 °C and 1010 hPa) to the altitude.
+  atmospheric refraction to the altitude (Saemundsson's formula, and Bennett's for the
+  inverse, at 10 °C and 1010 hPa).
 - Both axes: 200 steps × 1/64 microsteps × 250/20 belt = 160 000 microsteps per turn,
   8.1″ per microstep. Set by `az.steps_per_rev` and `alt.steps_per_rev` in
   [Configuration](#configuration).
@@ -231,7 +232,7 @@ Re-arms the mount after the E-stop has been released.
 
 Stops every motion with the configured deceleration and ends tracking. The mode
 becomes `idle`. Accepted in every mode (in `estop` and `parked` it does nothing).
-The app's stop button sends it; so does the hand unit's stop button.
+The app's stop button sends it; button 1 of the hand unit does the same.
 
 ### jog
 
@@ -315,8 +316,8 @@ The user centres a star with the joystick, then the app sends what it is:
 - Two stars or more: Taki's matrix method (absorbs a base that is not level and an
   unknown north). With three or more, the best fit; `rms` is the residual in degrees.
 - At most 6 stars. A seventh replaces the oldest.
-- Sets `aligned` and `pos_ok`. Saved in flash with the axis positions, so a reboot
-  without moving the mount keeps the alignment.
+- Sets `aligned` and `pos_ok`. Saved in flash, and restored at power-on only after a
+  [`park`](#park), when the axis positions are known.
 
 ### align_clear
 
@@ -449,7 +450,7 @@ starting points, to be checked on the mount.
 | `slew.accel` | 2 | Acceleration for gotos and stops, °/s². |
 | `jog.max_speed` | 3 | Jog speed at full deflection, °/s. |
 | `park.alt`, `park.az` | 0, 0 | Park position in axis degrees (from the power-on position). |
-| `track.gain` | 0.5 | k in "speed = predicted rate + k × position error" (1/s). |
+| `track.gain` | 1 | k in "speed = predicted rate + k × position error" (1/s). |
 | `wifi.ssid`, `wifi.password` | `star-track`, (set at first boot) | The access point. Changes apply at the next power-on. |
 
 ## Simulator commands
@@ -459,12 +460,20 @@ The simulator adds commands, all starting with `sim_`. The mount answers them wi
 
 | Command | Arguments | Effect |
 | --- | --- | --- |
-| `sim_clock` | `rate`, `utc` | Clock speed (0 = paused, 1, 10, 1000) and optionally a new time. |
+| `sim_clock` | `rate`, `utc` | Clock speed (0 = paused, 1, 10, 1000) and optionally a new true UTC (the time the GPS gives). |
+| `sim_run` | `seconds` | Runs the mount for that much simulated time at once, then replies. For scripted tests with a paused clock. |
 | `sim_estop` | `pressed` | Presses or releases the E-stop. |
 | `sim_hand` | `x`, `y`, `sw`, `buttons` | Sets the hand unit's joystick (−1 to 1) and buttons (array of 3 booleans). |
-| `sim_gps` | `fix`, `lat`, `lon`, `sats` | GPS fix on or off, at a given site. `fix: false` sends no fix; `null` stops the NMEA. |
-| `sim_mount` | `tilt`, `north` | The base's tilt (degrees, and its direction) and where north is in axis coordinates, for alignment tests. |
-| `sim_fault` | `axis`, `slip` | Adds `slip` microsteps to an axis without the firmware knowing (a stalled or slipping motor). |
+| `sim_gps` | `on`, `fix`, `lat`, `lon`, `elev`, `sats` | `on: false` stops the NMEA sentences. `fix: false` sends sentences without a fix. `lat`, `lon` are also the true site of the simulated sky. |
+| `sim_mount` | `tilt`, `tilt_az`, `north`, `alt_zero` | The base's tilt (degrees, towards azimuth `tilt_az`), where north is in axis degrees, and the tube's altitude at axis 0. For alignment tests. |
+| `sim_fault` | `axis`, `slip` | Adds `slip` microsteps to an axis (`az` or `alt`) without the firmware knowing (a stalled or slipping motor). |
+| `sim_point` | `ra`, `dec` or `alt`, `az` | Points the tube there, as if the user had centred it with the joystick (the step counters follow). |
+| `sim_truth` | — | Where the tube really points (`alt`, `az`, `ra`, `dec`), the true UTC, the LEDs and whether the drivers are on. |
+
+- The simulator's clock drives everything, including the status rate: at ×1000,
+  `stream` at 10 Hz sends 10 000 events per second of real time.
+- The simulator's build, options and tests are described in
+  [`firmware/sim/`](../firmware/sim/).
 
 ## Example session
 
