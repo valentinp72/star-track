@@ -169,7 +169,7 @@ tfoot td { font-weight: 600; border-bottom: 0; }
     <p>The model follows the CAD model of the current build, checked against the real parts: a T of 30×60 bars (650 mm crossbar, 350 mm stem) on three levelling feet, and the same L. Differences:</p>
     <ol class="steps">
       <li><b>Both 95×70 cases come out,</b> with their thrust bearings. Each axis gets a 20 mm shaft through the bar, with a flange bearing on each wide face.</li>
-      <li><b>Azimuth.</b> The shaft stands in a round-flange shaft holder (STHRB20) on the existing 95×70 plate, which still rests on the four 30×30 blocks. The motor moves from the base to under the far end of the bar, 152 mm from the axis, and the printed 250-tooth pulley lies on the holder's flange: four M5 × 20 screws with printed knobs, through the pulley and a printed ring, hold it, and the holder, down on the plate.</li>
+      <li><b>Azimuth.</b> The shaft stands in a round-flange shaft holder (STHRB20) on the existing plate, now cut to 90×90×6.7 and fixed on top of the stem with two 30×30 angle brackets. The motor moves from the base to under the far end of the bar, 152 mm from the axis, and the printed 250-tooth pulley lies on the holder's flange and a printed ring. Four M6 screws, in the plate's holes from the old turntable, fix the pulley and the ring to the plate; the holder's own M5 screws sit in notches in the pulley. No shaft collar: the bearings' set screws hold the head on the shaft.</li>
       <li><b>Altitude.</b> The shaft goes through the arm 70 mm below its top. The pulley and motor move to the outer face of the arm: the pulley is bolted to a second shaft holder on the outer end of the shaft, and the motor sits 152 mm below the shaft. The tube still hangs over the bar, held by its original clasp on an aluminium plate bolted to a third shaft holder. The two altitude holders are glued to the shaft with retaining compound, since their set screws alone barely hold torque.</li>
       <li><b>Electronics and battery.</b> A smaller case without the touch screen sits lower on the outer face of the arm, below the altitude motor, because the outer bearing and pulley take the current case's place. A 12.8 V LiFePO4 battery sits at the far end of the bar. Both turn with the L. The joystick and buttons move to a hand unit on a cable.</li>
       <li><b>The L sits about 8 cm higher,</b> because the azimuth bearing stack is taller than the current case. Near the zenith the back of the tube still clears the top of the azimuth shaft.</li>
@@ -193,7 +193,6 @@ tfoot td { font-weight: 600; border-bottom: 0; }
           <tr data-part="altbrg"><td>Flange bearing UCFL204GP (Gopart, from Kramp)</td><td class="n">2</td><td class="n">2</td><td class="n">check Kramp</td><td><span class="src buy">Buy</span></td></tr>
           <tr data-part="azshaft"><td>Bright steel rod Ø20 h9 (C45 or S235, not hardened), 200 mm, not cut</td><td class="n">1</td><td class="n">1</td><td class="n">€5 each</td><td><span class="src buy">Buy</span></td></tr>
           <tr data-part="altcpl"><td>Round-flange shaft holder STHRB20, 20 mm bore (altitude: one for the tube, one for the pulley)</td><td class="n">2</td><td class="n">1</td><td class="n">check seller</td><td><span class="src buy">Buy</span></td></tr>
-          <tr data-part="azcollar"><td>Shaft collar 20 × 32 × 14 mm (Kramp "stelring", listed as 705A20)</td><td class="n">–</td><td class="n">1</td><td class="n">€2.50</td><td><span class="src buy">Buy</span></td></tr>
           <tr data-part="azbrg"><td>M8 bolts, large washers (DIN 9021) and T-nuts for 45-series slots</td><td class="n">4</td><td class="n">4</td><td class="n">€5 per bag</td><td><span class="src buy">Buy</span></td></tr>
           <tr data-part="belts"><td>Closed GT2 belt 610 mm + 20-tooth motor pulley</td><td class="n">1</td><td class="n">1</td><td class="n">already have</td><td><span class="src yours">Existing</span></td></tr>
           <tr data-part="altpul"><td>250-tooth GT2 pulley (PETG, fits an A1 mini bed)</td><td class="n">1</td><td class="n">1</td><td class="n">filament</td><td><span class="src print">Print</span></td></tr>
@@ -201,13 +200,13 @@ tfoot td { font-weight: 600; border-bottom: 0; }
           <tr data-part="motplate"><td>NEMA 17 motor plate (Motedis, 3 mm aluminium)</td><td class="n">1</td><td class="n">1</td><td class="n">already have</td><td><span class="src yours">Existing</span></td></tr>
           <tr data-part="azpul"><td>Pulley ring (PETG), under the azimuth pulley</td><td class="n">–</td><td class="n">1</td><td class="n">filament</td><td><span class="src print">Print</span></td></tr>
           <tr data-part="altpulcpl"><td>M5 × 20 screws and nuts (pulley to holder), M5 × 20 cut to 16 mm (holder to clasp plate), retaining compound for the two altitude holders</td><td class="n">8</td><td class="n">–</td><td class="n">€11</td><td><span class="src buy">Buy</span></td></tr>
-          <tr data-part="spacer"><td>M5 heat-set inserts and M5 × 10 screws (plate to spacer); M6 × 20 screws, DIN 125 washers and slot-10 M6 T-nuts (spacer to L); M3 × 8 screws (motor to plate)</td><td class="n">3 + 4 + 4</td><td class="n">3 + 4 + 4</td><td class="n">€6</td><td><span class="src buy">Buy</span></td></tr>
+          <tr data-part="spacer"><td>M3 heat-set inserts (Ø5 outside) and M3 × 8 screws (plate to spacer); M6 × 20 screws, DIN 125 washers and slot-10 M6 T-nuts (spacer to L); M3 × 8 screws (motor to plate)</td><td class="n">3 + 4 + 4</td><td class="n">3 + 4 + 4</td><td class="n">€6</td><td><span class="src buy">Buy</span></td></tr>
           <tr data-part="L"><td>Ø24 mm hole through the extrusion</td><td class="n">1</td><td class="n">1</td><td class="n">step drill</td><td><span class="src drill">Drill</span></td></tr>
         </tbody>
         <tfoot><tr><td colspan="3">Both axes together</td><td class="n" colspan="2">≈ €40–50 + the 4 bearings</td></tr></tfoot>
       </table>
     </div>
-    <p class="note">The bearings in the model now match the UCFL204GP's listed dimensions: 113 mm long, 60 mm wide, 33.3 mm tall, 11 mm flange, Ø12 mm bolt holes 90 mm apart. The holes would take M10, but 45-series slots usually take M8 T-nuts, so use M8 with large washers. Get the bearings and collar at Kramp. The shafts are plain bright steel rods (Ø20 h9, not hardened), so the holders' set screws can sit in a drilled seat. For the holders, search AliExpress for <b>STHRB20</b> (round flange, 20 mm bore). Prices are rough. Tap a row to find that part in the model.</p>
+    <p class="note">The bearings in the model now match the UCFL204GP's listed dimensions: 113 mm long, 60 mm wide, 33.3 mm tall, 11 mm flange, Ø12 mm bolt holes 90 mm apart. The holes would take M10, but 45-series slots usually take M8 T-nuts, so use M8 with large washers. Get the bearings at Kramp. The shafts are plain bright steel rods (Ø20 h9, not hardened), so the holders' set screws can sit in a drilled seat. For the holders, search AliExpress for <b>STHRB20</b> (round flange, 20 mm bore). Prices are rough. Tap a row to find that part in the model.</p>
   </section>
 
   <section>
@@ -216,32 +215,30 @@ tfoot td { font-weight: 600; border-bottom: 0; }
       <li>Drill a Ø24 mm hole through the 45 mm thickness of the bar, in the middle of the wide face, between its two slots. Use a step drill from both sides. It doesn't need to be precise, because the bearings hold the shaft, not the hole.</li>
       <li>Bolt a flange bearing on each wide face. Turn it 30° from the length of the bar so that one bolt lands in each slot: the T-nuts sit about 39 mm either side of the hole, one in each slot. Leave the bolts snug, push the shaft through, then tighten. The bearings line themselves up with the shaft.</li>
       <li>Tighten the set screws on one bearing. Push the other bearing's inner ring firmly toward the extrusion and tighten its set screws. The play is gone.</li>
-      <li>Azimuth only: before fitting the L onto the shaft, clamp the shaft collar just below where the lower bearing will sit. It carries the weight.</li>
     </ol>
     <p class="note">Bar lengths, bearing heights and the base layout come from the CAD export (STEP). The telescope tube wasn't in it, so its size (900 mm long, Ø145 mm) comes from the earlier Fusion 360 design.</p>
   </section>
 
   <section>
     <h2>Taking it in the car</h2>
-    <p>Split it into three pieces that come apart in about a minute, without tools. Turn on <b>Pack for transport</b> in the model to see them laid out, with their sizes.</p>
+    <p>Split it into three pieces that come apart in a few minutes, with a hex key. Turn on <b>Pack for transport</b> in the model to see them laid out, with their sizes.</p>
     <ol class="pieces">
       <li><b>Telescope.</b> Open the knob of its original clasp and lift the tube out. The clasp and its plate stay on the head. The tube travels in its bag or box.</li>
-      <li><b>Mount head</b> (the L with bearings, shafts, pulleys, motors, belts, electronics case, battery and clasp). Four knob screws hold the azimuth pulley, and the shaft holder under it, to the base: undo them and lift the head off. The bearings stay assembled, so they keep their preload, and the belts keep their tension. A plastic crate with some foam protects the printed pulleys and belts.</li>
-      <li><b>Base.</b> The T stays in one piece with its feet and plate, and lies flat in the trunk.</li>
+      <li><b>Mount head</b> (the L with bearings, shafts, pulleys, motors, belts, electronics case, battery and clasp). Slide the azimuth motor spacer toward the axis and lift the belt off the azimuth pulley, which stays bolted to the base. Undo the shaft holder's M5 screws through the pulley's notches and lift the head off, with the azimuth shaft and its holder. The bearings stay assembled, so they keep their preload, and the altitude belt keeps its tension. A plastic crate with some foam protects the printed pulleys and belts.</li>
+      <li><b>Base.</b> The T stays in one piece with its feet, plate, ring and azimuth pulley, and lies flat in the trunk.</li>
     </ol>
     <p>Putting it back doesn't need to be precise: the two-star alignment at the start of each night absorbs any small shift. The battery travels on the head, so there is nothing to plug in between the pieces.</p>
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col">Transport extras</th><th scope="col">Qty</th><th scope="col">≈ Price</th><th scope="col">Source</th></tr></thead>
         <tbody>
-                    <tr data-part="knob"><td>Knobs (PETG) pressed onto M5 × 20 socket head screws</td><td class="n">4</td><td class="n">filament</td><td><span class="src print">Print</span></td></tr>
           <tr><td>Plastic crate and foam for the head</td><td class="n">1</td><td class="n">€10–20</td><td><span class="src buy">Buy</span></td></tr>
         </tbody>
         <tfoot><tr><td colspan="2">Total</td><td class="n" colspan="2">≈ €10–20</td></tr></tfoot>
       </table>
     </div>
     <p class="note">If the head is too tall for the car, the arm can be made removable too: replace the corner bracket's bolts with knob bolts. The alignment again absorbs the small differences each time.</p>
-    <p class="note"><b>Stable base.</b> With the 650 mm crossbar, the azimuth axis sits near the middle of the triangle of feet: about 11 cm of margin toward the crossbar and 15.5 cm toward each long side. The plate and blocks are held by T-nuts in the stem, so the axis can still be slid along it.</p>
+    <p class="note"><b>Stable base.</b> With the 650 mm crossbar, the azimuth axis sits near the middle of the triangle of feet: about 11 cm of margin toward the crossbar and 15.5 cm toward each long side. The plate's brackets are held by T-nuts in the stem, so the axis can still be slid along it.</p>
   </section>
 </main>
 
@@ -293,7 +290,7 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   P('L', 'L (45×90 bars, existing)', 'yours', 'Existing', 'As in the current build: the 380 mm bar lies flat, centred on the azimuth axis, and the 620 mm arm stands on its end with an 85 mm corner bracket, 90 mm wide. The only change is one Ø24 mm hole through the 45 mm thickness of each bar. Turn on "See through aluminium" to see them.');
   P('tube', 'Telescope (900 mm)', 'yours', 'Existing', 'Over the bar, as in the current build, held by its original clasp. Slide it in the clasp to balance it, or open the clasp to lift it out for transport.');
   P('clasp', 'Original tube clasp on a 100 × 121 × 8 mm aluminium plate', 'yours', 'Existing + make', 'The Omegon clasp bolts onto the plate, and the plate onto the tube-side shaft holder with four M5 screws on Ø39, turned 45° to clear the clasp bolts (60 mm apart). The tube can slide about −60 / +40 mm in it for balancing.');
-  P('base', 'T base (30×60 bars, existing)', 'yours', 'Existing', 'A 650 mm crossbar and a 350 mm stem standing on edge, joined by two 60 mm angle brackets. Three levelling feet (Ø40 mm, M8 × 80 mm rod) raise it about 50 mm. The 95×70 plate rests on the stem and four 30×30 blocks, about 30 mm long, held by hammer T-nuts; it carries the azimuth shaft holder and a printed ring under the pulley.');
+  P('base', 'T base (30×60 bars, existing)', 'yours', 'Existing', 'A 650 mm crossbar and a 350 mm stem standing on edge, joined by two 60 mm angle brackets. Three levelling feet (Ø40 mm, M8 × 80 mm rod) raise it about 50 mm. The 90×90×6.7 plate rests on the stem, held by two 30×30 angle brackets with T-nuts in the slots of the stem; it carries the azimuth shaft holder and a printed ring under the pulley.');
   P('board', 'Electronics case (new, no screen)', 'print', 'Print', 'Smaller than the current case: the touch screen is gone and the phone is the display. Holds the ESP32-S3 board, the two TMC2209 drivers, the DC-DC converter and the breaker switch (main switch and resettable fuse in one). On its face: the E-stop and a red and a blue LED for feedback. Underneath: a female XT60 socket for the battery (or a lab supply) and an 8-pin socket for the hand unit with the joystick and buttons. Low on the outer face of the arm, below the altitude motor. Schematic in electronics/ of the repository.');
   P('battery', 'LiFePO4 battery 12.8 V 6 Ah, with BMS', 'buy', 'Buy', 'At the far end of the bar, opposite the arm, in a printed cradle hooked over the end of the bar and bolted into its top slots. It overhangs the end by about 4 cm to stay clear of the tube rings. It turns with the L, like the motors and the case, so no cable crosses the azimuth joint. One XT60 cable runs along the side of the bar to the case. Lift it out to charge it at home. Until it is bought, a lab supply plugs into the same XT60 socket.');
   P('altbrg', '2 × flange bearing UCFL204GP (Gopart, Kramp), altitude', 'buy', 'Buy', 'Cast iron, 113 × 60 mm, 33.3 mm tall, with a grease nipple and two set screws. One on each wide face of the arm, 70 mm below its top. Each is turned 30° so its two M8 bolts (with large washers, as the holes are 12 mm) land in T-nuts in the two slots. Clamped toward each other, they leave no play.');
@@ -301,16 +298,14 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   P('altshaft', 'Bright steel rod Ø20 × 200 mm, altitude', 'buy', 'Buy', 'Turns with the tube. Not cut: flush with the tube-side holder, it sticks out about 16 mm through the pulley. Plain (not hardened) steel, so the set screws can have a drilled seat.');
   P('azshaft', 'Bright steel rod Ø20 × 200 mm, azimuth', 'buy', 'Buy', 'Stands in the shaft holder on the base plate and never turns. The L turns around it. Not cut: it ends about 18 mm above the upper bearing, about 97 mm below the tube at the zenith.');
   P('altcpl', 'Shaft holder STHRB20, altitude (tube side)', 'buy', 'Buy', 'Round flange Ø50 × 8 mm, hub Ø28, 32 mm long, two M5 set screws. Its flange bolts to the clasp plate with four M5 screws. Fixed to the shaft with retaining compound, because set screws alone barely hold torque.');
-  P('azcpl', 'Shaft holder STHRB20, azimuth', 'buy', 'Buy', 'Holds the shaft upright on the existing 95×70 plate. The pulley lies on its flange and four M5 × 20 screws with printed knobs, outside the flange, go through the pulley and a printed ring into M5 holes tapped in the plate: the pulley clamps the holder down, and the whole mount head lifts off without tools.');
-  P('knob', '4 × knob (printed, PETG)', 'print', 'Print', 'Ø24 × 10 mm, six finger scallops. The head of an M5 × 20 socket head screw is pressed into it from below, and a hex key in its pocket engages the screw socket. The head stands 0.2 mm proud, so it clamps the pulley, not the knob. Print it top down, no supports.');
-  P('azcollar', 'Shaft collar 20 × 32 × 14 mm (Kramp "stelring")', 'buy', 'Buy', 'The lower bearing rests on it, so it carries the weight of everything above.');
-  P('altpul', '250-tooth GT2 pulley, altitude', 'print', 'Print', 'Bolted with four M5 × 20 screws and nuts to a second shaft holder on the outer end of the shaft. The same part as on azimuth: Ø168 mm over the flanges, so it fits the 180 mm bed of an A1 mini.');
+  P('azcpl', 'Shaft holder STHRB20, azimuth', 'buy', 'Buy', 'Holds the shaft upright on the 90×90 plate. Four M5 screws hold its flange to the base, two into the plate and two into hammer-head T-nuts. Their heads sit in notches in the pulley, so a hex key reaches them through it. Undo them to lift the mount head off.');
+  P('altpul', '250-tooth GT2 pulley, altitude', 'print', 'Print', 'Bolted with four M5 × 20 screws, nuts and large washers (the pulley has notches there) to a second shaft holder on the outer end of the shaft. The same part as on azimuth: Ø168 mm over the flanges, so it fits the 180 mm bed of an A1 mini.');
   P('altpulcpl', 'Shaft holder STHRB20, altitude (pulley side)', 'buy', 'Buy', 'On the outer end of the shaft, hub toward the bearing, about 3 mm clear of it. Carries the pulley. Fixed to the shaft with retaining compound.');
-  P('azpul', '250-tooth GT2 pulley, azimuth', 'print', 'Print', 'Lies on the shaft holder flange, its bore over the hub, with a printed 8 mm ring under its web. The four knob screws pass through it, so the motor torque goes through steel screws into the base plate. It lifts off with the head, so the belt keeps its tension; the ring stays on the plate.');
+  P('azpul', '250-tooth GT2 pulley, azimuth', 'print', 'Print', 'Lies on the shaft holder flange, its bore over the hub, with a printed 8 mm ring under its web. Four M6 screws on a 48 mm square fix it and the ring to the base plate, so the motor torque goes through steel screws into the plate. It stays on the base when the head comes off.');
   P('altmot', 'Altitude motor (17HS4401S)', 'yours', 'Existing', 'On the outer face of the arm, 152 mm below the shaft, set by the 610 mm belt. Bolted to an aluminium motor plate on a printed spacer.');
-  P('azmot', 'Azimuth motor (17HS4401S)', 'yours', 'Existing', 'Moved from the base to under the far end of the bar, 152 mm from the axis, so it turns with the L. Bolted to an aluminium motor plate that hangs from the bar on a printed spacer. With the battery and the electronics case also on the L, no cable crosses the turning joint.');
+  P('azmot', 'Azimuth motor (17HS4401S)', 'yours', 'Existing', 'Moved from the base to under the arm end of the bar, 152 mm from the axis, so it turns with the L and its cable to the electronics case stays short. Bolted to an aluminium motor plate that hangs from the bar on a printed spacer. With the battery and the electronics case also on the L, no cable crosses the turning joint.');
   P('belts', 'Closed GT2 belts, 610 mm', 'yours', 'Existing', 'With a 20-tooth motor pulley and a 250-tooth pulley, a 610 mm belt puts the motor 152 mm from the axis. The spacers slide along the extrusion slot to tension it.');
-  P('motplate', 'NEMA 17 motor plate (Motedis, 3 mm aluminium)', 'yours', 'Existing', 'The motor face bolts to it with four M3 × 8 screws (the motor's threads are only about 4.5 mm deep). Its other half bolts to the printed spacer with three M5 screws into heat-set inserts.');
+  P('motplate', 'NEMA 17 motor plate (Motedis, 3 mm aluminium)', 'yours', 'Existing', 'The motor face bolts to it with four M3 × 8 screws (the motor\'s threads are only about 4.5 mm deep). Its other half bolts to the printed spacer with three M3 × 8 screws into M3 heat-set inserts (Ø5 outside).');
   P('spacer', 'Motor spacer (printed, PETG)', 'print', 'Print', 'A chunky block between the motor plate and the L, clamped by bolts so it works in compression. Four M6 × 20 screws, in counterbores with washers, and T-nuts fix it to the extrusion; sliding it along the slot tensions the belt. Azimuth: 80 mm tall under the bar. Altitude: 63 mm out from the arm.');
   P('feet', '3 × levelling foot (existing)', 'yours', 'Existing', 'Ball-joint feet with a Ø40 mm pad and an M8 × 80 mm rod, one at each end of the T. Screwed in fully they raise the base about 50 mm; unscrew them to level it.');
 
@@ -466,11 +461,13 @@ tfoot td { font-weight: 600; border-bottom: 0; }
     var cross = extrusion(650, 30, 60); cross.translate(110, 30, -325); addMesh(baseG, cross, 'alu', 'base');
     var stem = extrusion(350, 30, 60); stem.rotateY(Math.PI / 2); stem.translate(-255, 30, 0); addMesh(baseG, stem, 'alu', 'base');
     [1, -1].forEach(function (sg) {
-      [-17.5, 17.5].forEach(function (x) { var blk = extrusion(30, 30, 30); blk.translate(x, 45, sg > 0 ? 15 : -45); addMesh(baseG, blk, 'alu', 'base'); });
+      // 30×30 angle bracket on each side of the stem, under the plate (plate drawn with its top at the old height)
+      addMesh(baseG, boxAt(30, 3, 30, 0, 61.3, sg * 30), 'dark', 'base');
+      addMesh(baseG, boxAt(30, 30, 3, 0, 47.8, sg * 16.5), 'dark', 'base');
       addMesh(baseG, boxAt(4, 60, 60, 93, 30, sg * 45), 'dark', 'base');
       addMesh(baseG, boxAt(60, 60, 4, 65, 30, sg * 17), 'dark', 'base');
     });
-    addMesh(baseG, boxAt(70, 9.5, 95, 0, 64.75, 0), 'base', 'base');
+    addMesh(baseG, boxAt(90, 6.7, 90, 0, 66.15, 0), 'base', 'base');
     [[110, 305], [110, -305], [-235, 0]].forEach(function (f) {
       addMesh(baseG, cylY(20, 8, -FEET, 40).translate(f[0], 0, f[1]), 'dark', 'feet');
       addMesh(baseG, cylY(9, 12, 8 - FEET, 24).translate(f[0], 0, f[1]), 'dark', 'feet');
@@ -486,13 +483,8 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   var azCplG = G(fixedG); holder('azcpl', azCplG, new THREE.Vector3(0, 69.5, 0), qUp);
   (function () { var r = new THREE.Shape(); r.absarc(0, 0, 44, 0, Math.PI * 2, false); var h = new THREE.Path(); h.absarc(0, 0, 25.5, 0, Math.PI * 2, true); r.holes.push(h);
     var rg = new THREE.ExtrudeGeometry(r, { depth: 8, bevelEnabled: false, curveSegments: 48 }); rg.rotateX(-Math.PI / 2); rg.translate(0, 69.5, 0); addMesh(baseG, rg, 'printed', 'azpul'); })();
-  // M5 × 20 screws on Ø68 with printed knobs on the pulley web; the screws go through the ring into the plate
-  for (var tk = 0; tk < 4; tk++) { var ta = Math.PI / 4 + tk * Math.PI / 2, kn = cylY(12, 10, 83.5, 24); kn.translate(34 * Math.cos(ta), 0, 34 * Math.sin(ta)); addMesh(azCplG, kn, 'printed', 'knob'); }
-  var azPulG = G(fixedG); bigPulley('azpul', azPulG, new THREE.Vector3(0, 83.5, 0), qUp, -1, 0);  // on the holder flange
+  var azPulG = G(baseG); bigPulley('azpul', azPulG, new THREE.Vector3(0, 83.5, 0), qUp, -1, 0);  // on the holder flange, bolted to the plate
   var azShaftG = G(fixedG); addMesh(azShaftG, cylY(10, 200, 69.5, 32), 'steel', 'azshaft');
-  var azCollarG = G(fixedG);
-  addMesh(azCollarG, cylY(16, 14, 125.5, 40), 'steel', 'azcollar');
-  (function () { var c = new THREE.CylinderGeometry(2.6, 2.6, 7, 12); c.rotateZ(Math.PI / 2); c.translate(17.5, 132.5, 0); addMesh(azCollarG, c, 'dark', 'azcollar', { noEdges: true }); })();
   var azInLowG = G(fixedG), azInUpG = G(fixedG);
   axisLine(fixedG, new THREE.Vector3(0, -10, 0), new THREE.Vector3(0, 300, 0));
 
@@ -520,12 +512,12 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   var MOT_D = 152.4;
   var azMotG = G(LG);
   // Motor face on a 3 mm aluminium plate, hung from the bar by a printed spacer (T-nuts in the bar's bottom slots)
-  addMesh(azMotG, boxAt(82, 3, 39.5, -MOT_D + 19.8, 92, 0), 'base', 'motplate');
-  addMesh(azMotG, boxAt(31, BAR_Y0 - 103.5, 30, -110.5, (93.5 + BAR_Y0 - 10) / 2, 0), 'printed', 'spacer');
-  addMesh(azMotG, boxAt(31, 10, 70, -110.5, BAR_Y0 - 5, 0), 'printed', 'spacer');
-  stepper('azmot', azMotG, new THREE.Vector3(-MOT_D, 93.5, 0), qUp);
+  addMesh(azMotG, boxAt(82, 3, 39.5, MOT_D - 19.8, 92, 0), 'base', 'motplate');
+  addMesh(azMotG, boxAt(31, BAR_Y0 - 103.5, 30, 110.5, (93.5 + BAR_Y0 - 10) / 2, 0), 'printed', 'spacer');
+  addMesh(azMotG, boxAt(31, 10, 70, 110.5, BAR_Y0 - 5, 0), 'printed', 'spacer');
+  stepper('azmot', azMotG, new THREE.Vector3(MOT_D, 93.5, 0), qUp);  // under the arm end of the bar
   var azBeltG = G(LG);
-  belt(azBeltG, [0, 0], 80.8, [-MOT_D, 0], 7.2, function (a, b) { return new THREE.Vector3(a, 83.5, b); }, new THREE.Vector3(0, 1, 0));
+  belt(azBeltG, [0, 0], 80.8, [MOT_D, 0], 7.2, function (a, b) { return new THREE.Vector3(a, 83.5, b); }, new THREE.Vector3(0, 1, 0));
 
   // Altitude: shaft through the arm's 45 mm thickness, 70 mm below its top; pulley and motor outside, tube inside over the bar
   var q30yz = [0, Math.cos(Math.PI / 6), Math.sin(Math.PI / 6)];
@@ -617,8 +609,7 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   label('pulley (fixed)', azPulG, 70, 117.5, 95, true);
   label('motor', altMotG, ARM_X1 + 40, ALT_Y - MOT_D + 30, 0);
   label('motor plate + printed spacer', altMotG, ARM_X1 + 40, ALT_Y - MOT_D - 70, 0, true);
-  label('motor (on the L)', azMotG, -MOT_D, 100, 60);
-  label('shaft collar', azCollarG, -70, 132, 20, true);
+  label('motor (on the L)', azMotG, MOT_D, 100, 60);
   label('shaft holder → base plate', azCplG, -120, 75, 40, true);
   label('shaft holder', altCplG, 97 - ALT_PX, 60, 0, true);
   label('existing L', legArmG, -150, 195, -62);
@@ -627,7 +618,6 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   label('T base', baseG, 110, 80, 250, 'far');
   label('levelling foot', baseG, -235, -30, 0, true);
   label('tube clasp', claspG, TUBE_X, 92, 0, true);
-  label('knobs', azCplG, 60, 82, -45, true);
   label('electronics case', boardG, CASE_X + 42, 390, 0);
   label('E-stop', boardG, CASE_X + 30, 438, 0, true);
   label('XT60 and hand-unit sockets', boardG, ARM_X1 + 28, 286, 0, true);
@@ -636,7 +626,7 @@ tfoot td { font-weight: 600; border-bottom: 0; }
   // ---------- explode (pull apart) ----------
   var ex = [];
   function E(obj, x, y, z) { ex.push({ o: obj, v: new THREE.Vector3(x, y, z) }); }
-  E(azCplG, 0, 30, 0); E(azPulG, 0, 70, 0); E(azShaftG, 0, 110, 0); E(azCollarG, 0, 150, 0); E(azInLowG, 0, 200, 0); E(azInUpG, 0, 330, 0);
+  E(azCplG, 0, 30, 0); E(azPulG, 0, 70, 0); E(azShaftG, 0, 110, 0); E(azInLowG, 0, 200, 0); E(azInUpG, 0, 330, 0);
   E(LG, 0, 260, 0); E(azHLowG, 0, -60, 0); E(azHUpG, 0, 70, 0); E(azMotG, 0, -100, 0);
   E(altHAG, -60, 0, 0); E(altHBG, 60, 0, 0); E(altMotG, 115, 0, 0); E(boardG, 60, 0, 0); E(batG, 0, 110, 0);
   E(altInAG, -60, 0, 0); E(altInBG, 60, 0, 0); E(altCplG, -125, 0, 0); E(claspG, -165, 0, 0); E(tubeWG, -215, 0, 0); E(altPulG, 150, 0, 0); E(altPulCplG, 100, 0, 0);

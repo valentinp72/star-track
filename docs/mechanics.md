@@ -69,8 +69,6 @@ screws.
    bolts; the self-aligning inserts line up with the shaft.
 3. Tighten the set screws of one bearing. Push the other bearing's inner ring firmly
    toward the bar and tighten its set screws. This removes the play.
-4. Azimuth only: clamp the shaft collar just below the lower bearing before fitting
-   the L; it carries the weight.
 
 Thread-locker on the set screws keeps them from loosening.
 
@@ -78,41 +76,46 @@ Thread-locker on the set screws keeps them from loosening.
 
 - The shaft stands in a round-flange shaft holder STHRB20 (aluminium, 32 long,
   Ø28 hub, Ø50 × 8 flange with 4 × Ø5.5 holes on Ø39, two M5 set screws) on the
-  existing 95 × 70 plate.
+  existing plate, now cut to 90 × 90 × 6.7 (threaded for the screws below). The
+  plate sits on top of the 30×60 stem, centred on it, held by two 30×30 angle
+  brackets with T-nuts in the stem's slots; the 30×30 blocks are no longer used.
+- No shaft collar: the set screws of the two bearings' inner rings hold the head
+  on the shaft.
 - A printed ring (8 thick, Ø51 inside, Ø88 outside) lies around the holder's
-  flange. Four M5 × 20 socket head screws (DIN 912) with printed knobs go through
-  the pulley web (on Ø68, at 45°) and the ring into M5 holes tapped in the plate:
-  the pulley clamps the holder's flange onto the plate, so the mount head lifts off
-  without tools. The screws sit outside the holder because a Ø24 knob does not fit
-  next to its Ø28 hub. Each screw goes about 6 into the 9.5 plate.
-- Knob ([`cad/knob-m5.solidcraft`](../cad/knob-m5.solidcraft), STL next to it):
-  Ø24 × 10, six finger scallops, a Ø8.4 × 4.8 pocket for the screw head and a
-  3.8 hex key that goes into the head's 4 socket. Press the head in with a vice
-  (or warm it first); the head stands 0.2 proud, so the screw, not the knob,
-  clamps the pulley. Printed top down, no supports.
-- A 20 × 32 × 14 shaft collar (Kramp "stelring", listed by a reseller as 705A20)
-  under the lower bearing carries the weight.
-- The printed 250-tooth pulley (the old one is broken) lies on the holder's
-  flange, its Ø28.5 bore over the hub. The motor torque goes through the four
-  screws into the plate, not through the holder's set screws. The pulley lifts off
-  with the head (it rests on the holder's flange), so the belt keeps its tension;
-  the ring stays on the plate.
-- The azimuth motor moves from the base to under the far end of the 380 bar and
-  turns with the L. It sits 152.4 from the axis: with a 20-tooth motor pulley, that
+  flange. The printed 250-tooth pulley (the old one is broken) lies on the flange
+  and the ring, its Ø28.5 bore over the hub.
+- Four M6 screws on a 48 × 48 square (Ø68, at 45°), with DIN 125 washers, go
+  through the pulley web and the ring (Ø6.6 holes) into the plate's threads: they
+  fix the pulley to the plate and take the motor torque. Washer, web and ring add
+  15.6, so an M6 × 22 fills the 6.7 plate; an M6 × 25 sticks out 2.7 below it.
+- The holder is held to the base by four M5 socket head screws (DIN 912) through
+  its flange: two into the plate's threads (M5 × 20), two into hammer-head
+  T-nuts. Their heads (Ø8.4 × 5) sit in four Ø9.5 notches in the pulley, on Ø39
+  and open to its bore, on the square's centre lines between the M6 screws. The
+  pulley does not touch them, and a hex key or the whole screw passes through
+  the notch. The pulley still centres on the hub on the four arcs of the bore
+  between the notches.
+- The azimuth motor moves from the base to under the arm end of the 380 bar, below
+  the arm and the electronics box, and turns with the L. Its cable to the box
+  stays short; the battery on the other end partly balances it. It sits 152.4 from the axis: with a 20-tooth motor pulley, that
   is the centre distance of a 610 closed GT2 belt. The battery and the electronics
   are on the L too, so no cable crosses the turning joint.
 - The motor's face is bolted to a Motedis NEMA 17 motor plate (82 × 39.5 × 3
   aluminium), which hangs from the bar's bottom slots on a printed spacer (80 tall,
   four M6 × 20 screws and T-nuts). Sliding the spacer along the bar tensions the belt.
-- Turning the head, the lowest part (the motor pulley) clears the T by about 10.
+- Turning the head, the lowest parts (the motor and its pulley) clear the T by
+  about 7.7 in the model; setting the bearings higher on the shaft adds to it.
 - The bearing stack is taller than the current case: in the model, standing on its
-  feet, the 380 bar sits at height 223–268.
+  feet, the 380 bar sits at height 220–265. The bearings slide on the shaft
+  until their set screws are tightened, so the head height is set at assembly:
+  line the motor pulley up with the 250-tooth pulley's teeth.
 
 ### Altitude
 
 - The shaft crosses the arm 70 below its top (height ≈ 818 in the model).
 - Pulley and motor move to the outer face of the arm. The pulley (the same part as
-  on azimuth) is bolted with four M5 × 20 screws and nuts, through its Ø39 holes, to
+  on azimuth) is bolted with four M5 × 20 screws and nuts, through its Ø9.5
+  notches on Ø39 with a DIN 9021 washer (Ø15) under each head, to
   a second STHRB20 holder on the outer end of the shaft, hub toward the bearing
   (about 3 clear of the outer bearing's insert).
 - The motor sits 152.4 below the shaft (610 closed GT2 belt, as on azimuth), on a
@@ -253,16 +256,18 @@ switches, which are not printed.
   bracket flexing 0.05 at the motor would turn the axis by about 2′ each time the
   torque reverses.
 - Files: [`cad/pulley-gt2-250t.solidcraft`](../cad/pulley-gt2-250t.solidcraft)
-  and its STL (three bodies that overlap by 0.1, fused by the slicer; about 160 g
+  and its STL (three bodies that overlap by 0.1, fused by the slicer; about 145 g
   of PETG, no supports), [`cad/azimuth-motor-spacer.stl`](../cad/azimuth-motor-spacer.stl),
   [`cad/altitude-motor-spacer.stl`](../cad/altitude-motor-spacer.stl),
-  [`cad/azimuth-pulley-ring.stl`](../cad/azimuth-pulley-ring.stl),
-  [`cad/knob-m5.stl`](../cad/knob-m5.stl). The spacers take M5 heat-set inserts
-  for the plate. Their four Ø6.6 holes to the extrusion have Ø13 × 2.5
+  [`cad/azimuth-pulley-ring.stl`](../cad/azimuth-pulley-ring.stl). The spacers
+  take three M3 heat-set inserts (Ø5 outside, in Ø4.4 × 7 holes) for the plate,
+  with M3 × 8 screws. Their four Ø6.6 holes to the extrusion have Ø13 × 2.5
   counterbores for an M6 head and a DIN 125 washer, which leaves 7.5 of
   plastic, so an M6 × 20 screw reaches about 6 into a slot-10 T-nut.
-- The pulley's centre (Ø28.5 bore, 4 × Ø5.5 on Ø39) follows the STHRB20 table
-  from the seller; check it against the real holder before printing.
+- The pulley's centre (Ø28.5 bore, four Ø9.5 notches on Ø39) follows the STHRB20
+  table from the seller; check it against the real holder before printing. Its
+  four Ø6.6 holes on the 48 × 48 square are for the azimuth M6 screws; on
+  altitude they stay empty. Six curved slots (16 wide, on R58) lighten the web.
 - Not printed: anything that carries the telescope's weight in bending (bearing
   housings, shaft supports, the link between tube and shaft). Plastic creeps under
   constant load and the play would come back.
@@ -279,23 +284,24 @@ switches, which are not printed.
 - Azimuth axis 95 from the crossbar's inner face (as in the model): about 11 cm of
   margin toward the crossbar and about 15.5 cm toward each of the two long sides of
   the support triangle. The axis is close to the triangle's centre (5 from it).
-- The plate and its blocks are held by T-nuts in the stem's slot, so the axis can be
+- The plate's brackets are held by T-nuts in the stem's slots, so the axis can be
   moved by sliding them along the stem.
 
 ## Transport
 
-Three pieces, separated without tools:
+Three pieces:
 
 | Piece | Joint | Size in the model |
 | --- | --- | --- |
-| Base (T with feet, plate and ring) | four knob screws through the azimuth pulley | ≈ 65 × 38 × 12 cm |
+| Base (T with feet, plate, ring and azimuth pulley) | the shaft holder's M5 screws, through the pulley's notches | ≈ 65 × 38 × 12 cm |
 | Mount head (L with bearings, shafts, motors, belts, electronics case, battery, clasp) | — | ≈ 77 × 49 × 17 cm |
 | Telescope (tube) | the knob of the tube clasp | ≈ 90 × 15 × 17 cm |
 
-- The bearings stay assembled, so the preload is kept. The azimuth shaft, its
-  holder and the 250-tooth pulley come off with the head; the belts keep their
-  tension.
-- The knob screws go into four M5 holes tapped in the 95 × 70 plate.
+- The bearings stay assembled, so the preload is kept. The azimuth shaft and its
+  holder come off with the head.
+- The azimuth pulley stays bolted to the base. Before lifting the head, slide the
+  azimuth motor spacer toward the axis and lift the belt off the 250-tooth
+  pulley; it stays on the motor pulley. The altitude belt keeps its tension.
 - Re-assembly does not need to be precise: the star alignment at the start of each
   session absorbs small shifts.
 - The battery travels on the head, so nothing has to be plugged in between the
@@ -312,7 +318,6 @@ Prices are rough estimates and were not checked against current listings.
 | Flange bearing UCFL204GP | 2 | 2 | not checked | Kramp |
 | Bright steel rod Ø20 h9 (C45 or S235), 200 long, not hardened | 1 | 1 | — | — |
 | Round-flange shaft holder STHRB20 (20 mm bore, set screws) | 2 | 1 | — | AliExpress |
-| Shaft collar 20 × 32 × 14 | – | 1 | €2.50 | Kramp |
 | M8 bolts, DIN 9021 washers, 45-series T-nuts (bearings) | 4 | 4 | €5 per bag | — |
 | Closed GT2 belt 610, 6 wide | 1 | 1 | — | existing |
 | GT2 pulley 20 teeth, 5 bore | 1 | 1 | — | existing |
@@ -320,13 +325,14 @@ Prices are rough estimates and were not checked against current listings.
 | GT2 pulley 250 teeth, motor spacer (PETG) | 1 | 1 | filament | printed |
 | Pulley ring (PETG) | – | 1 | filament | printed |
 | NEMA 17 motor plate, 3 mm aluminium | 1 | 1 | — | existing (Motedis) |
-| M5 heat-set inserts and M5 × 10 screws (plate to spacer), M3 × 8 screws (motor to plate) | 3 + 4 | 3 + 4 | €5 | — |
+| M3 heat-set inserts (Ø5 outside) and M3 × 8 screws (plate to spacer), M3 × 8 screws (motor to plate) | 3 + 4 | 3 + 4 | €5 | — |
 | M6 × 20 screws (DIN 912), DIN 125 washers, slot-10 M6 T-nuts (spacer to L) | 4 | 4 | €4 | — |
-| M5 × 20 screws and nuts, pulley to holder | 4 | – | €1 | — |
+| M5 × 20 screws, nuts and DIN 9021 washers, pulley to holder | 4 | – | €1 | — |
+| M5 × 20 socket head screws, holder to plate (two with hammer-head T-nuts) | – | 4 | — | existing |
+| M6 × 22 screws and DIN 125 washers, pulley and ring to plate | – | 4 | — | — |
 | M5 × 20 screws cut to 16, holder to clasp plate | 4 | – | — | — |
 | Retaining compound (Loctite 638 or 648), thread-locker | 1 | – | €10 | — |
 | Aluminium plate 100 × 121 × 8 for the tube clasp | 1 | – | not checked | — |
-| M5 × 20 screws (DIN 912) with printed knobs (PETG) | – | 4 | filament | printed |
 
 The battery is listed in [architecture](architecture.md#power), the electronics in
 its [parts list](architecture.md#parts-list).
@@ -339,5 +345,5 @@ altitude, and a "pack for transport" layout with the size of each piece. Clickin
 part shows what it is and whether it is bought, printed or existing.
 
 Geometry is simplified (profiles, bearings, shaft holders, pulleys, motors, belts,
-battery, case and tube as basic shapes). Fasteners other than the bearing bolts and
-knobs are not drawn, and neither are the motor cables.
+battery, case and tube as basic shapes). Fasteners other than the bearing bolts are
+not drawn, and neither are the motor cables.
