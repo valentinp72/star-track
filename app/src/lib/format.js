@@ -48,6 +48,13 @@ export function formatClock(utc) {
   return `${pad(t.getHours())}:${pad(t.getMinutes())}:${pad(t.getSeconds())}`;
 }
 
+// Hours and minutes in the phone's time zone: "22:41".
+export function formatTime(utc) {
+  if (utc == null) return '—';
+  const t = new Date(utc);
+  return `${pad(t.getHours())}:${pad(t.getMinutes())}`;
+}
+
 export const MODES = {
   estop: 'E-stop',
   idle: 'Idle',

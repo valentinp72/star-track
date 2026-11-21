@@ -24,8 +24,24 @@ export class Mount {
   link = $state('connecting');
   info = $state(null); // the hello reply: proto, fw, board, sim
   status = $state(null); // the last status event or reply
+  config = $state(null); // the mount's settings (get_config), read on each connection
   logs = $state([]); // the last log events, newest first
   error = $state(null); // the last connection problem, as text
+
+  // The mount's site, as an object that stays the same while its values do
+  // (a new status arrives ten times a second). null when unknown.
+  #siteKey = $derived(this.status?.site ? [this.status.site.lat, this.status.site.lon, this.status.site.elev ?? 0].join(' ') : '');
+  site = $derived.by(() => {
+    if (!this.#siteKey) return null;
+    const [lat, lon, elev] = this.#siteKey.split(' ').map(Number);
+    return { lat, lon, elev };
+  });
+
+  // The time for computing positions: the mount's clock when it is set, the
+  // phone's otherwise (UTC ms).
+  now() {
+    return this.status?.time_ok ? this.status.utc : Date.now();
+  }
 
   #url;
   #WebSocket;
@@ -75,6 +91,16 @@ export class Mount {
     } else if (this.link === 'open') {
       this.#checkStale();
       if (this.link === 'open') this.send('set_time', { utc: Date.now() }).catch(() => {});
+    }
+  }
+
+  // Reads the mount's settings again (after a set_config, for example).
+  async refreshConfig() {
+    try {
+      const r = await this.send('get_config');
+      this.config = r.config;
+    } catch {
+      // kept as it was; the views use defaults
     }
   }
 
@@ -142,6 +168,7 @@ export class Mount {
       this.error = hello.proto === PROTO ? null : `The mount speaks protocol ${hello.proto}, the app expects ${PROTO}: some commands may fail.`;
       this.link = 'open';
       this.#retryDelay = RETRY_MIN;
+      this.refreshConfig();
     } catch (e) {
       if (this.#ws !== ws) return;
       this.error = `No answer from the mount (${e.message}).`;

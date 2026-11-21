@@ -19,5 +19,8 @@ export default defineConfig({
   },
   test: {
     include: ['src/**/*.test.js'],
+    // A browser-like environment, so that Svelte code is compiled and run as in
+    // the browser (effects do nothing in its server build).
+    environment: 'happy-dom',
   },
 });

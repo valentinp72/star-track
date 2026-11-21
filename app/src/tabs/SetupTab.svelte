@@ -1,10 +1,35 @@
 <!-- The connection, the mount's state, the app's appearance and the mount's messages. -->
 <script>
-  import { BlockTitle, BlockFooter, List, ListItem, Segmented, SegmentedButton, Block } from 'konsta/svelte';
+  import { BlockTitle, BlockFooter, List, ListItem, Segmented, SegmentedButton, Block, Toggle } from 'konsta/svelte';
+  import SiteSheet from '../components/SiteSheet.svelte';
+  import { explain } from '../lib/errors.js';
+  import { ui } from '../lib/ui.svelte.js';
   import { appearance } from '../lib/appearance.svelte.js';
   import { formatClock, formatLat, formatLon, MODES, SOURCES } from '../lib/format.js';
 
-  let { mount } = $props();
+  let { mount, askSolar } = $props();
+
+  let siteOpen = $state(false);
+
+  // The switch shows the mount's solar mode: it only changes when the mount
+  // says so (turning it on first asks for the filter check).
+  let solarSwitch = $state(false);
+  $effect(() => {
+    solarSwitch = !!mount.status?.solar;
+  });
+
+  async function toggleSolar() {
+    solarSwitch = !!mount.status?.solar;
+    if (!mount.status?.solar) {
+      askSolar();
+      return;
+    }
+    try {
+      await mount.send('solar', { on: false });
+    } catch (e) {
+      ui.showAlert('Solar mode', explain(e));
+    }
+  }
 
   const st = $derived(mount.status);
   const yesNo = (v) => (v == null ? '—' : v ? 'Yes' : 'No');
@@ -26,11 +51,21 @@
 <List strong inset>
   <ListItem title="Mode" after={st ? (MODES[st.mode] ?? st.mode) : '—'} />
   <ListItem title="Clock" after={st?.time_ok ? `${formatClock(st.utc)} (${SOURCES[st.time_src]})` : 'Not set'} />
-  <ListItem title="Site" after={st?.site ? `${formatLat(st.site.lat)}, ${formatLon(st.site.lon)}` : 'Not set'} footer={st?.site ? SOURCES[st.site_src] : ''} />
+  <ListItem
+    link
+    title="Site"
+    after={st?.site ? `${formatLat(st.site.lat)}, ${formatLon(st.site.lon)}` : 'Not set'}
+    footer={st?.site ? SOURCES[st.site_src] : ''}
+    onClick={() => (siteOpen = true)}
+  />
   <ListItem title="GPS" after={gps} />
   <ListItem title="Aligned" after={yesNo(st?.aligned)} />
   <ListItem title="Position known" after={yesNo(st?.pos_ok)} />
-  <ListItem title="Solar mode" after={st ? (st.solar ? 'On' : 'Off') : '—'} />
+  <ListItem title="Solar mode" footer="Needs a solar filter">
+    {#snippet after()}
+      <Toggle bind:checked={solarSwitch} disabled={!mount.connected} onChange={toggleSolar} />
+    {/snippet}
+  </ListItem>
 </List>
 
 <BlockTitle>Connection</BlockTitle>
@@ -49,3 +84,10 @@
     {/each}
   </List>
 {/if}
+
+
+<BlockFooter class="mb-4!">
+  Star catalogue: HYG database. Deep-sky catalogue: OpenNGC. Both CC BY-SA 4.0. Positions: Astronomy Engine.
+</BlockFooter>
+
+<SiteSheet {mount} bind:opened={siteOpen} />

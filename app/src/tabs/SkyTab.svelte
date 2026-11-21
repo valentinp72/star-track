@@ -3,7 +3,7 @@
   import { BlockTitle, List, ListItem } from 'konsta/svelte';
   import { formatAz, formatDec, formatDeg, formatRa } from '../lib/format.js';
 
-  let { mount } = $props();
+  let { mount, targets } = $props();
 
   const pos = $derived(mount.status?.pos);
   const target = $derived(mount.status?.target);
@@ -18,7 +18,7 @@
 </List>
 
 {#if target}
-  <BlockTitle>Target</BlockTitle>
+  <BlockTitle>Target{targets.current ? ` · ${targets.current.obj.title}` : ''}</BlockTitle>
   <List strong inset>
     <ListItem title="Right ascension" after={formatRa(target.ra)} />
     <ListItem title="Declination" after={formatDec(target.dec)} />

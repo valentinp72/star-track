@@ -76,8 +76,25 @@ another network), so its password is what keeps others from driving the mount.
   WPA2's limits), applied at the next power-on. Never sent back by `get_config`.
 - A forgotten password is read again on the USB console: physical access to the
   mount gives full control anyway.
-- Possible later: a subset of the LX200 protocol over TCP so that SkySafari or
-  Stellarium can also drive the mount.
+
+### Later
+
+- A subset of the LX200 protocol over TCP, so that SkySafari or Stellarium can
+  also drive the mount.
+- Satellites (the ISS, Tiangong), after the phone app's settings and before or
+  with the ESP32 layer, as it changes the app, the protocol and the firmware:
+  - orbits from TLEs (CelesTrak), downloaded while the phone has internet and
+    kept on it, with their age shown; an ISS TLE is good for 2 to 3 days.
+    Positions with satellite.js (SGP4, MIT licence). A list of the next passes;
+  - a pass lasts about 6 minutes at up to about 1°/s: positions every second or
+    so, sent in parts (64 points per table) or with a table command made for
+    passes. The mount waits where the satellite appears, then follows it;
+  - at 1°/s, 1 s of clock error is 1° on the sky (the field of view with a 25 mm
+    eyepiece is 1.4°): the GPS time, or a check of the phone's time over Wi-Fi;
+  - passes near the zenith need azimuth speeds the mount cannot reach (as for
+    any alt-azimuth mount): shown as partly trackable. Slew speed and
+    acceleration (`slew.speed`, `slew.accel`) checked against the pass;
+  - tested on the simulator with recorded passes, faster than real time.
 
 ## Firmware
 

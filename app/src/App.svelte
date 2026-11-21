@@ -4,14 +4,22 @@
   import Icon from './components/Icon.svelte';
   import ModeBadge from './components/ModeBadge.svelte';
   import Banners from './components/Banners.svelte';
+  import Messages from './components/Messages.svelte';
+  import SolarDialog from './components/SolarDialog.svelte';
   import SkyTab from './tabs/SkyTab.svelte';
   import ObjectsTab from './tabs/ObjectsTab.svelte';
   import ControlTab from './tabs/ControlTab.svelte';
   import SetupTab from './tabs/SetupTab.svelte';
   import { Mount } from './lib/mount.svelte.js';
+  import { Targets } from './lib/targets.svelte.js';
   import { appearance } from './lib/appearance.svelte.js';
 
   const mount = new Mount();
+  const targets = new Targets(mount);
+
+  // The solar filter check: {then} while open. `then` runs once solar mode is on.
+  let solarRequest = $state(null);
+  const askSolar = (then) => (solarRequest = { then });
 
   const TABS = [
     { id: 'sky', label: 'Sky', view: SkyTab },
@@ -51,7 +59,7 @@
     </Navbar>
     <Banners {mount} />
     <div class="pb-[calc(var(--k-safe-area-bottom)+104px)]">
-      <current.view {mount} />
+      <current.view {mount} {targets} {askSolar} />
     </div>
     <Tabbar
       labels
@@ -68,6 +76,8 @@
       {/each}
     </Tabbar>
   </Page>
+  <SolarDialog {mount} bind:request={solarRequest} />
+  <Messages />
   {#if appearance.night}
     <div class="night-filter"></div>
   {/if}

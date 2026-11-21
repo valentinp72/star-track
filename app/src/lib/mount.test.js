@@ -23,6 +23,7 @@ class FakeSocket {
     else if (m.cmd === 'set_time') this.reply(m.id, { source: 'phone' });
     else if (m.cmd === 'stream') this.reply(m.id, {});
     else if (m.cmd === 'status') this.reply(m.id, { mode: 'idle', utc: 1 });
+    else if (m.cmd === 'get_config') this.reply(m.id, { config: { 'sun.min_sep': 15 } });
   }
   reply(id, fields, ok = true) {
     this.receive({ re: id, ok, ...fields });
@@ -50,14 +51,15 @@ function start() {
 }
 
 describe('Mount', () => {
-  it('says hello and sends its clock on connecting', async () => {
+  it('says hello, sends its clock and reads the settings on connecting', async () => {
     const m = start();
     expect(m.link).toBe('connecting');
     await vi.advanceTimersByTimeAsync(50);
     expect(m.link).toBe('open');
     expect(m.info.fw).toBe('0.1.0');
     const cmds = sockets[0].sent.map((s) => s.cmd);
-    expect(cmds).toEqual(['hello', 'set_time']);
+    expect(cmds).toEqual(['hello', 'set_time', 'get_config']);
+    expect(m.config['sun.min_sep']).toBe(15);
     expect(sockets[0].sent[0].proto).toBe(1);
     m.stop();
   });
