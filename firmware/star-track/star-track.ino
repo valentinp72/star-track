@@ -34,6 +34,10 @@ void setup() {
   inputs.begin();
   gps.begin();
 
+  char hand[100];
+  inputs.describe(hand, sizeof hand);
+  Network::consoleLog("info", hand);
+
   engine.init();
   if (!az.begin(engine, kPinAzStep, kPinAzDir) || !alt.begin(engine, kPinAltStep, kPinAltDir))
     Network::consoleLog("error", "no step generator for an axis: the motors will not move");

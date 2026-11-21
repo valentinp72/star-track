@@ -117,6 +117,10 @@ void EspInputs::begin() {
   const int pins[2] = {kPinJoyX, kPinJoyY};
   for (int i = 0; i < 2; i++) {
     analogRead(pins[i]);  // sets the pin up as an ADC input, which turns its pulls off
+    // On the S3 the RTC pulls are separate from the GPIO ones, and the ADC uses
+    // the pin through the GPIO matrix: the GPIO pull-down is the one that acts.
+    gpio_pullup_dis((gpio_num_t)pins[i]);
+    gpio_pulldown_en((gpio_num_t)pins[i]);
     rtc_gpio_pullup_dis((gpio_num_t)pins[i]);
     rtc_gpio_pulldown_en((gpio_num_t)pins[i]);
   }
@@ -127,6 +131,14 @@ void EspInputs::begin() {
     // A joystick held off centre at power-on: keep the nominal centre.
     if (c > kAdcMax / 4 && c < kAdcMax * 3 / 4) centre_[i] = c;
   }
+}
+
+void EspInputs::describe(char *out, size_t n) {
+  int x = read(kPinJoyX), y = read(kPinJoyY);
+  if (connected())
+    snprintf(out, n, "hand unit connected: X %d, Y %d, centre %d, %d (0-4095)", x, y, centre_[0], centre_[1]);
+  else
+    snprintf(out, n, "no hand unit: X %d, Y %d (both below %d)", x, y, kAbsent);
 }
 
 bool EspInputs::connected() { return read(kPinJoyX) >= kAbsent || read(kPinJoyY) >= kAbsent; }

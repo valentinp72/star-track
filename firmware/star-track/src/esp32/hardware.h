@@ -58,6 +58,7 @@ class EspInputs : public core::Inputs {
   bool joySwitch() override;
   bool button(int i) override;
   bool connected();  // the hand unit's joystick is plugged in
+  void describe(char *out, size_t n);  // its raw readings, for the boot log
 
  private:
   float axis(int i);
