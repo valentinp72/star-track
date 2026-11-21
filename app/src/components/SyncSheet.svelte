@@ -3,7 +3,7 @@
      date, to find the position again after the E-stop. -->
 <script>
   import { untrack } from 'svelte';
-  import { Sheet, BlockTitle, BlockFooter, List, ListItem, Link } from 'konsta/svelte';
+  import { Sheet, Block, BlockTitle, List, ListItem, Link } from 'konsta/svelte';
   import { bodies, stars } from '../lib/catalog.js';
   import { apparent, bodyMagnitude, horizon } from '../lib/sky.js';
   import { formatAz, formatDeg } from '../lib/format.js';
@@ -65,14 +65,12 @@
     <div class="text-[22px] font-bold">Which one is centred?</div>
     <Link onClick={() => (opened = false)}>Cancel</Link>
   </div>
-  <BlockFooter class="mt-2!">
-    Centre it in the eyepiece with the joystick, then tap it.
-  </BlockFooter>
+  <Block class="my-2! text-sm opacity-70">Centre it in the eyepiece with the joystick, then tap it.</Block>
   <div class="max-h-[60vh] overflow-auto">
     {#if !mount.site}
-      <BlockFooter>The mount does not know its site: set it in Setup.</BlockFooter>
+      <Block class="text-center text-sm opacity-70">The mount does not know its site: set it in Setup.</Block>
     {:else if list.length === 0}
-      <BlockFooter>No bright star or planet between {MIN_ALT}° and {MAX_ALT}° now.</BlockFooter>
+      <Block class="text-center text-sm opacity-70">No bright star or planet between {MIN_ALT}° and {MAX_ALT}° now.</Block>
     {:else}
       <BlockTitle>Brightest first</BlockTitle>
       <List strong inset>

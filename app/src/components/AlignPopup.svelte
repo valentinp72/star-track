@@ -149,12 +149,12 @@
       </Block>
     {/if}
 
-    <BlockTitle>{picked ? 'Other stars' : 'Pick a star'}</BlockTitle>
     {#if !mount.site}
-      <BlockFooter>The mount does not know its site: set it in Setup.</BlockFooter>
+      <Block class="text-center text-sm opacity-70">The mount does not know its site: set it in Setup.</Block>
     {:else if list.length === 0}
-      <BlockFooter>No bright star between 15° and 70° altitude now.</BlockFooter>
+      <Block class="text-center text-sm opacity-70">No bright star between 15° and 70° altitude now.</Block>
     {:else}
+      <BlockTitle>{picked ? 'Other stars' : 'Pick a star'}</BlockTitle>
       <List strong inset>
         {#each list.slice(0, 12) as c, i (c.o.key)}
           <ListItem

@@ -91,7 +91,7 @@
   <Button rounded tonal disabled={!mount.connected || mode !== 'estop' || st?.estop} onClick={() => run('arm', {}, 'Arm')}>
     Arm
   </Button>
-  <Button rounded tonal disabled={!mount.connected || !mount.site || mode === 'estop'} onClick={() => (alignOpen = true)}>
+  <Button rounded tonal disabled={!mount.connected || mode === 'estop'} onClick={() => (alignOpen = true)}>
     Align
   </Button>
   <Button rounded tonal disabled={!canSync} onClick={sync}>Sync</Button>
