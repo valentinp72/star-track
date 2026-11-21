@@ -40,4 +40,4 @@
   {/each}
 </Block>
 
-<SyncSheet {mount} action="sync" bind:opened={syncOpen} />
+<SyncSheet {mount} bind:opened={syncOpen} />

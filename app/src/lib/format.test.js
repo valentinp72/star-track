@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatAz, formatDec, formatDeg, formatLat, formatLon, formatRa } from './format.js';
+import { formatAngle, formatAz, formatDec, formatDeg, formatLat, formatLon, formatRa } from './format.js';
 
 describe('format', () => {
   it('right ascension', () => {
@@ -17,6 +17,11 @@ describe('format', () => {
     expect(formatDeg(23.41)).toBe('23.4°');
     expect(formatDeg(-1.25)).toBe('−1.3°');
     expect(formatDeg(-0.01)).toBe('0.0°');
+  });
+  it('small angles', () => {
+    expect(formatAngle(0.0002)).toBe('1″');
+    expect(formatAngle(0.0517)).toBe('3.1′');
+    expect(formatAngle(1.25)).toBe('1.25°');
   });
   it('azimuth', () => {
     expect(formatAz(162.03)).toBe('162.0° SSE');

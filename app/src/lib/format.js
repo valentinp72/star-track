@@ -25,6 +25,15 @@ export function formatDeg(d, digits = 1) {
   return `${t.startsWith('-') && Number(t) !== 0 ? '−' + t.slice(1) : t.replace(/^-/, '')}°`;
 }
 
+// A small angle in the unit that suits it: "42″", "3.1′", "1.25°".
+export function formatAngle(d) {
+  if (d == null) return '—';
+  const a = Math.abs(d);
+  if (a < 1 / 60) return `${Math.round(a * 3600)}″`;
+  if (a < 1) return `${(a * 60).toFixed(1)}′`;
+  return `${a.toFixed(2)}°`;
+}
+
 // Azimuth with the compass point: "162.0° SSE".
 const POINTS = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
 export function formatAz(a) {

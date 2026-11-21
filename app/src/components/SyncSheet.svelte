@@ -1,8 +1,6 @@
-<!-- "I have centred this one": bright stars and planets at a useful altitude,
-     sent with their position of date.
-     action "align": adds an alignment star (align_add).
-     action "sync": sync (align_add before any alignment star), to find the
-     position again after the E-stop. -->
+<!-- "I have centred this one": bright stars and planets at a useful altitude.
+     Sends sync (align_add before any alignment star) with its position of
+     date, to find the position again after the E-stop. -->
 <script>
   import { untrack } from 'svelte';
   import { Sheet, BlockTitle, BlockFooter, List, ListItem, Link } from 'konsta/svelte';
@@ -12,7 +10,7 @@
   import { explain } from '../lib/errors.js';
   import { ui } from '../lib/ui.svelte.js';
 
-  let { mount, action = 'sync', opened = $bindable(false) } = $props();
+  let { mount, opened = $bindable(false) } = $props();
 
   // Between 5° and 75°: near the zenith the mount refuses (the azimuth is too
   // uncertain there), near the horizon refraction varies.
@@ -46,7 +44,7 @@
     // The position now, not when the list was made.
     const p = apparent(c.o, mount.now(), mount.site);
     try {
-      if (action === 'sync' && mount.status?.aligned) {
+      if (mount.status?.aligned) {
         await mount.send('sync', { ra: p.ra, dec: p.dec });
         ui.showToast(`Position set on ${c.o.title}`);
       } else {
@@ -68,7 +66,7 @@
     <Link onClick={() => (opened = false)}>Cancel</Link>
   </div>
   <BlockFooter class="mt-2!">
-    Centre it in the eyepiece with the joystick, then tap it.{action === 'align' ? ' Two stars or more, far apart, for an exact pointing.' : ''}
+    Centre it in the eyepiece with the joystick, then tap it.
   </BlockFooter>
   <div class="max-h-[60vh] overflow-auto">
     {#if !mount.site}

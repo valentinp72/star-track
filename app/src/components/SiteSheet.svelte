@@ -1,7 +1,7 @@
 <!-- Enter the site by hand and send it to the mount (saved in its flash). The
      GPS, when it has a fix, takes precedence on the mount. -->
 <script>
-  import { Sheet, Block, BlockTitle, BlockFooter, Button, List, ListInput, Link, Segmented, SegmentedButton } from 'konsta/svelte';
+  import { Sheet, Block, BlockFooter, Button, List, ListInput, Link, Segmented, SegmentedButton } from 'konsta/svelte';
   import { explain } from '../lib/errors.js';
   import { ui } from '../lib/ui.svelte.js';
 
@@ -65,30 +65,45 @@
     <div class="text-[22px] font-bold">Site</div>
     <Link onClick={() => (opened = false)}>Cancel</Link>
   </div>
-  <BlockTitle>Latitude</BlockTitle>
-  <List strong inset class="my-2!">
-    <ListInput type="text" inputmode="decimal" placeholder="45.0" value={lat} onInput={(e) => (lat = e.target.value)} error={lat !== '' && !latOk ? '0 to 90°' : ''} />
+  <List strong inset class="mt-4!">
+    <ListInput
+      label="Latitude (°)"
+      type="text"
+      inputmode="decimal"
+      placeholder="45.0"
+      value={lat}
+      onInput={(e) => (lat = e.target.value)}
+      error={lat !== '' && !latOk ? '0 to 90' : ''}
+    />
+    <ListInput
+      label="Longitude (°)"
+      type="text"
+      inputmode="decimal"
+      placeholder="5.0"
+      value={lon}
+      onInput={(e) => (lon = e.target.value)}
+      error={lon !== '' && !lonOk ? '0 to 180' : ''}
+    />
+    <ListInput
+      label="Elevation (m)"
+      type="text"
+      inputmode="numeric"
+      placeholder="0"
+      value={elev}
+      onInput={(e) => (elev = e.target.value)}
+      error={!elevOk ? 'Metres above sea level' : ''}
+    />
   </List>
-  <Block class="my-2!">
+  <Block class="grid grid-cols-2 gap-3">
     <Segmented strong>
-      <SegmentedButton strong active={!south} onClick={() => (south = false)}>North</SegmentedButton>
-      <SegmentedButton strong active={south} onClick={() => (south = true)}>South</SegmentedButton>
+      <SegmentedButton strong active={!south} onClick={() => (south = false)}>N</SegmentedButton>
+      <SegmentedButton strong active={south} onClick={() => (south = true)}>S</SegmentedButton>
+    </Segmented>
+    <Segmented strong>
+      <SegmentedButton strong active={!west} onClick={() => (west = false)}>E</SegmentedButton>
+      <SegmentedButton strong active={west} onClick={() => (west = true)}>W</SegmentedButton>
     </Segmented>
   </Block>
-  <BlockTitle>Longitude</BlockTitle>
-  <List strong inset class="my-2!">
-    <ListInput type="text" inputmode="decimal" placeholder="5.0" value={lon} onInput={(e) => (lon = e.target.value)} error={lon !== '' && !lonOk ? '0 to 180°' : ''} />
-  </List>
-  <Block class="my-2!">
-    <Segmented strong>
-      <SegmentedButton strong active={!west} onClick={() => (west = false)}>East</SegmentedButton>
-      <SegmentedButton strong active={west} onClick={() => (west = true)}>West</SegmentedButton>
-    </Segmented>
-  </Block>
-  <BlockTitle>Elevation (m)</BlockTitle>
-  <List strong inset class="my-2!">
-    <ListInput type="text" inputmode="numeric" placeholder="0" value={elev} onInput={(e) => (elev = e.target.value)} error={!elevOk ? 'Metres above sea level' : ''} />
-  </List>
   <BlockFooter>Degrees with decimals. The town is close enough: the star alignment absorbs a few kilometres.</BlockFooter>
   <Block class="my-4!">
     <Button large rounded disabled={!latOk || !lonOk || !elevOk || busy || !mount.connected} onClick={send}>Send to the mount</Button>
