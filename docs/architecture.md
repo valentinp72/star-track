@@ -75,7 +75,8 @@ calculations, so tracking continues when the phone is locked or disconnected.
   and an unknown north). Requires a known altitude zero (tube level at power-on or a
   home switch). A sync after each goto improves local accuracy.
 - One JSON message set for WebSocket and serial: `set_time`, `set_site`, `goto`,
-  `track`, `jog {x, y}`, `stop`, `align_add`, `sync`, `park`.
+  `track`, `jog {x, y}`, `stop`, `align_add`, `sync`, `park`. Described in
+  [protocol](protocol.md).
 - Safety:
   - jog commands expire after about 200 ms if not repeated (dead-man);
   - losing the phone connection stops manual motion, not tracking;
