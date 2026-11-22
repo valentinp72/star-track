@@ -138,8 +138,9 @@ The app is about 1.6 MB gzipped, most of it the pictures of the object sheet
 - Safety:
   - jog commands expire after about 200 ms if not repeated (dead-man);
   - losing the phone connection stops manual motion, not tracking;
-  - software limits for altitude. Azimuth needs no cable-wrap limit, because no
-    cable crosses the azimuth joint (see [Power](#power)).
+  - software limits for altitude. Azimuth has no cable-wrap limit: on the battery
+    no cable crosses the azimuth joint; on mains only the mains cord does and is
+    watched by hand (see [Power](#power)).
 
 ## Electrical
 
@@ -319,14 +320,17 @@ hand-unit pins are next to each other on header J3.
 ### Power
 
 The battery and all the electronics are on the L, which carries the motors too.
-No cable crosses the azimuth joint, so the head can turn round any number of
-times.
+The battery, the mains supply and all the electronics are on the L. On the
+battery no cable crosses the azimuth joint, so the head can turn round any number
+of times; on mains only the mains cord does (see Mains below).
 
 | Item | Choice |
 | --- | --- |
 | Input | Female XT60 socket on the case. |
 | Battery | LiFePO4 12.8 V (4 cells in series), 6 Ah (about 77 Wh), with a built-in BMS, on a male XT60 lead. |
 | Before the battery | A lab supply plugs into the same socket with an XT60 cable: 12–14 V, current limit about 2 A. |
+| Mains | A 12 V 10 A supply in the power box under the far end of the bar ([mechanics](mechanics.md#power-box)). Its 4 m mains cord stays connected and is wound on the box when not in use. On mains, this cord crosses the azimuth joint: it is left slack and untwisted by hand; the firmware has no cable-wrap limit. |
+| Source selector | LA38 3-position rotary switch on the power box, MAIN / OFF / BATT, with two NO contact blocks: MAIN joins the supply's +12 V to OUT, BATT joins the battery's + to OUT, OFF neither. The supply and the battery are never connected together. Negatives are common. OUT (female XT60) goes to the case's socket by a male–male XT60 cable; the battery plugs into the box's BATT socket. The breaker in the case stays the fuse. |
 | Charging | At home, off the mount, with a 12 V car battery charger (see below). No charging circuit on the mount. |
 | Switch and protection | A resettable breaker switch (3–5 A, rated for DC) right after the XT60 socket: it is both the main switch and the fuse. |
 | Motor supply | The switched rail (12.0–14.6 V) goes straight to the drivers' VM pins, with 100 µF at each. |

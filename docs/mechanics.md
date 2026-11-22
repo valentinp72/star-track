@@ -120,7 +120,9 @@ Thread-locker on the set screws keeps them from loosening.
   the outer bearing's insert), bolted to it with four M5 × 20 screws and nuts.
 - The motor sits 152.4 below the shaft (610 closed GT2 belt, as on azimuth), on a
   Motedis motor plate held 63 from the arm by a printed spacer bolted into the
-  arm's slots. Sliding the spacer down tensions the belt.
+  arm's slots. The spacer is above the motor, under the pulley (plate and spacer
+  turned half a turn about the motor's axis), which leaves the arm below the
+  motor free. Sliding the spacer down tensions the belt.
 - On the inner face, a third STHRB20 holder carries a 100 × 121 × 8 aluminium
   plate with the original Omegon tube clasp. The plate has 4 M5 tapped holes on
   Ø39 for the holder (at 45°, M5 × 20 screws cut to 16 so they stay flush with the
@@ -153,8 +155,70 @@ Thread-locker on the set screws keeps them from loosening.
   tube rings when the tube points at the zenith.
 - It sits on the other side of the azimuth axis from the arm, so it partly balances
   the arm's weight.
-- Its cable runs along the side of the bar and up the arm to the case. Wiring and
-  runtime: [architecture](architecture.md#power).
+- Its XT60 lead plugs into the BATT socket of the [power box](#power-box) under
+  the bar; the box's OUT cable runs along the side of the bar and up the arm to the
+  case. Wiring and runtime: [architecture](architecture.md#power).
+- Not bought yet: the cradle in the model is a placeholder, and the battery module
+  will be designed to the real battery.
+
+### Power box
+
+[`cad/power-box.solidcraft`](../cad/power-box.solidcraft), STLs next to it
+(`power-box.stl`, `power-box-lid.stl`). It holds a 12 V 10 A mains supply
+(60 × 143 × 40) and the MAIN/OFF/BATT selector, so the mount runs on mains or on
+the battery. The battery itself goes in a separate module, to be designed once it
+is bought, that plugs into the box's BATT socket. Wiring:
+[architecture](architecture.md#power).
+
+- Under the far end of the 380 bar, below the battery: hung from the bar's two
+  bottom slots by four M6 screws (button head, slot-10 M6 T-nuts) through the
+  4 thick floor, 100 apart along the bar, 45 across. The box starts 64 from the
+  azimuth axis (clear of the lower bearing housing) and ends 52 past the end of
+  the bar. It turns with the head; its lowest point (the lid, 147 high) clears
+  the azimuth pulley by 9 and is above everything else on the base.
+- Box 178 × 90 × 70 plus a 3 lid, walls 3, vertical corners rounded R3: as wide
+  as the bar. Only the cord
+  cleats stick out on one side. Inside 172 × 84 × 66: a 41 wide supply pocket,
+  a 2 partition and a 41 wide bay beside it. An 18 space at the outer end, beyond
+  the supply, holds the mains entry.
+- The supply lies on its side (40 wide, 60 tall, 143 long), its terminal face
+  towards the bay. The partition stops 35 short of the supply's outer end, so its
+  wires go straight into the bay. It sits on four ribs 4 tall on the floor (the
+  M6 heads fit between them); two pads on the lid hold it against the ribs, so it
+  stays put with the box upside down. It is not screwed: the pocket walls
+  (0.5 clear), an inner corner column and two end stops at its outer end keep it
+  in place. Its own threaded base holes could take screws through the floor once
+  their positions are measured.
+- Lid screws: four M3 into heat-set inserts (Ø4 × 7) in 9 × 9 corner columns.
+  Three run full height; the one over the switch is only 12 deep, under the lid.
+- End panel (outer end): the LA38 selector in a plain Ø22.3 hole, in front of the
+  bay (its contact blocks sit in the bay). A small key (1.5 wide, 0.8 into the
+  hole) at the top, as mounted, fits the indent in the switch's thread so it
+  cannot turn; file it down if it is too big. Seen from outside with the box
+  mounted, the positions are engraved 0.6 deep (4 high): MAIN at the upper left,
+  OFF at the top, BATT at the upper right. The box hangs upside down, so in the
+  design (and on the print bed) the key is at the bottom and the labels read
+  upside down. To fit the switch: unclip the base with the contact blocks from the
+  operator, unscrew the ring nut, put the operator through the hole from outside
+  with its indent on the key, screw the nut back on from inside (panel 3 thick;
+  LA38 takes 1–6) and clip the base back on. The left contact block (MAIN) takes
+  the supply's +12 V, the right one (BATT) the battery's +. The mains cord (Ø6.8)
+  comes in through a Ø7.2 hole on the supply side, tied to an anchor behind it
+  (4 × 2.5 tunnel for a cable tie).
+- Bay side wall: two female XT60, OUT (to the electronics box, male–male cable)
+  nearer the axis and BATT (from the battery module) nearer the end, in the same
+  hole and 5.5 lip as on the electronics box. Their names are engraved above them
+  (as mounted), 4 high and 0.6 deep.
+- Cord wrap: two cleats on the supply side, 138 apart, each a post 28 long
+  (diamond section, 12 × 12) and a 40 × 70 flange with R10 corners and its outer
+  edge rounded R1.5. The 4 m mains cord stays
+  connected and is wound round them (about 12 turns) when the mount runs on the
+  battery.
+- Seven vent slots 3 × 28 in the lid. The lid is underneath once mounted, so they
+  face down.
+- Printed open side up, no supports (the cleat posts' diamond section and the
+  short corner column's bridge print as they are); the lid flat. 178 long: it
+  fits the A1 mini's 180 bed, without a brim.
 
 ### Electronics box
 
@@ -245,6 +309,88 @@ switches, which are not printed.
   when the case is closed. A cable tie inside takes the pull.
 - Printed with no supports: the bottom on its floor, the top on its top face, the
   buttons on their flange.
+
+### Slot covers
+
+[`cad/slot-cover-10-flat.solidcraft`](../cad/slot-cover-10-flat.solidcraft), STLs
+next to it: `slot-cover-10-flat-100.stl` and `slot-cover-10-flat-25.stl` (modules
+100 and 25 long), `slot-cover-10-flat-25-end.stl` (25, no tab, to finish a run).
+They close the slots of the 45×90 L where cables run (motor cables down the arm
+below the electronics box, the battery cable along the bar and up the arm).
+
+- Slot sizes from the Motedis STEP model of the 45×90L B-type slot 10
+  (`45x90L_N10_B.stp`): 10.0 opening from 1.8 to 5.8 deep; flat lip undersides
+  6.0 below the face; chamber 20.1 wide, its floor a V about 15 deep. At the
+  mouth, a recess 11.6 wide and 1.5 deep, chamfered 0.5 at the face. Parameters
+  `slot_w`, `lip_t` (face to lip underside) and `recess_w`.
+- Cap 11.4 × 1.5 in the recess, flush with the face, chamfered 0.3 on its outer
+  edges.
+- Modules snap end to end: a round tab (Ø4.4 on a 3 wide neck, 5.9 long) on one
+  end of the cap fits a socket in the next module's cap (0.15 clearance). Any
+  multiple of 25 is made from 100 and 25 modules, with an end module last. The
+  socket of the first module stays open.
+- One pair of clips every 25: two walls 1.2 thick, 8.55 tall, 0.4 clear of the
+  sides of the opening. Each wall is fixed to the cap over its first 3 and free
+  over 12, standing in a window cut through the cap (0.4 gap inside, 0.3
+  outside), so it bends sideways. A barb on the last 5 sticks out 0.8 past the
+  opening. Its underside slopes about 28° and meets the lip corner at 6.0.
+- The 6.8 wide channel between the walls and the rest of the chamber hold the
+  cables.
+- A mock slot body in the design, drawn from the STEP model, shows the fit; it is
+  not printed.
+- Printed flat on the cap, no supports; the walls bend within the layers. Other
+  lengths: set `pitch` (a multiple of `clip_pitch`); unsuppress `End piece: no
+  tab` for an end module.
+
+### Motor cable hoods
+
+[`cad/motor-cable-hood.solidcraft`](../cad/motor-cable-hood.solidcraft), STLs next
+to it: `motor-cable-hood-az.stl` (hood 54 long) and `motor-cable-hood-alt.stl`
+(37). Each covers a motor's cable from its connector across the gap to the
+extrusion, and is one module of the slot-cover chain there.
+
+- Both motors sit centred on their extrusion with their back toward it: AZ 40
+  below the bar's bottom face, ALT 23 from the arm's outer face. Their side faces
+  are 21.15 from the extrusion's centre line, beside the slots (22.5), so one design
+  serves both: the hood goes in the slot on the motor's connector side, level with
+  the connector. Turn the motor on its plate (90° steps) so its connector faces
+  that slot; for the other slot, mirror the part in the slicer.
+- In the model: AZ in the bar's bottom slot, the module running from the connector
+  toward the arm end of the bar (it ends 0.6 short of it, clear of the motor
+  spacer on the other side); ALT in the arm's slot, the module running down from
+  the connector, below the motor, since the spacer is above it.
+- Base: a slot-cover module 50 long (two 25 steps): the same 11.4 × 1.5 cap in the
+  slot recess, chamfered 0.3, and the same clip walls and barbs, one pair per 25.
+  Both ends have the slot covers' tab socket, so slot-cover modules plug in on
+  either side (on the far side, a module turned round so its tab faces the hood);
+  the chain carries on along the slot. A 3.8 × 10 window between the first pair
+  of walls lets the wires into the slot.
+- Hood: a three-sided channel, inside 10.5 × 16, walls 1.6, from the extrusion face
+  to 14 past the motor's back, so it covers the connector. Its open side faces the
+  motor: the wires are laid in from the side, and the motor body closes it where
+  they leave the connector.
+- Printed on its side, the hood's floor on the bed: the clip walls stand up on a
+  45° foot and the hood's roof slopes at 45°, so no supports. PETG, about 6 g.
+- The assembly's simplified profile has no recess, so each cap shows a 1.5 overlap
+  with the extrusion there; nothing else touches.
+
+### End caps
+
+[`cad/extrusion-end-caps.solidcraft`](../cad/extrusion-end-caps.solidcraft), STLs
+next to it: `end-cap-45x90.stl`, `end-cap-30x60.stl`, and `-notched` versions.
+Sizes from the Motedis STEP models (45×90L B-type slot 10, 30×60 B-type slot 8).
+
+- A 3 plate the size of the profile, corners R2, visible edges chamfered 0.8,
+  and two hollow pins that push into the profile's two core holes (45×90: 45
+  apart, lands Ø10.0; 30×60: 30 apart, lands Ø7.3).
+- Each pin is split into four prongs (slits 1.2 / 1.0 wide, 9 long) and is 0.1
+  over the lands, with a ridge 0.45 over them near the tip (45° both sides), so it
+  clicks in and holds. Pins 9 long.
+- Notched version: openings at every slot mouth (45×90: 12 × 15; 30×60: 10 × 9),
+  for ends where a cable leaves a slot. Unsuppress `Cable notches at the slot ends
+  (variant)` in the design.
+- Printed on the visible face, pins up, no supports. 45×90 about 17 g, 30×60
+  about 8 g.
 
 ### Printed parts
 
