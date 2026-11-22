@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatAngle, formatAz, formatDec, formatDeg, formatLat, formatLon, formatRa } from './format.js';
+import { formatAngle, formatAz, formatDec, formatDeg, formatLat, formatLon, formatRa, formatUptime } from './format.js';
 
 describe('format', () => {
   it('right ascension', () => {
@@ -31,5 +31,15 @@ describe('format', () => {
   it('site', () => {
     expect(formatLat(-33.8688)).toBe('33.869° S');
     expect(formatLon(5)).toBe('5.000° E');
+  });
+});
+
+describe('formatUptime', () => {
+  it('picks the unit', () => {
+    expect(formatUptime(45)).toBe('45 s');
+    expect(formatUptime(12 * 60 + 5)).toBe('12 min');
+    expect(formatUptime(3 * 3600 + 5 * 60)).toBe('3 h 05 min');
+    expect(formatUptime(2 * 86400 + 4 * 3600 + 59)).toBe('2 d 4 h');
+    expect(formatUptime(undefined)).toBe('—');
   });
 });

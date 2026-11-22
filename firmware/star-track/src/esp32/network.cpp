@@ -124,6 +124,7 @@ void Network::onEvent(AsyncWebSocketClient *c, AwsEventType type, void *arg, uin
   switch (type) {
     case WS_EVT_CONNECT:
       if (ws_.count() > kMaxWebSockets) {
+        refused_++;
         c->close(1008, "too many clients");
         return;
       }

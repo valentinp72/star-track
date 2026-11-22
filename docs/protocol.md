@@ -184,7 +184,9 @@ Sent by the client after connecting. The mount answers with what it is.
 
 ```json
 {"cmd": "hello", "id": 1, "proto": 1}
-{"re": 1, "ok": true, "proto": 1, "fw": "0.1.0", "board": "esp32s3", "sim": false}
+{"re": 1, "ok": true, "proto": 1, "fw": "0.3.0", "board": "esp32s3", "sim": false,
+ "uptime": 2710, "boots": 14, "reset": "brownout",
+ "reset_msg": "restarted after a brown-out: the ESP32's supply dropped too low (motor current, supply current limit, 5 V converter)"}
 ```
 
 - `proto` is the protocol version. It changes only when a message changes in a way an
@@ -192,6 +194,16 @@ Sent by the client after connecting. The mount answers with what it is.
   If the versions differ, the app shows a warning and carries on.
 - `board` is `esp32s3` on the mount and `sim` in the simulator; `sim` is true in
   the simulator.
+- `uptime`: seconds since the board started. `boots`: how many times it has
+  started, counted in flash.
+- `reset`: why it last started: `poweron`, `sw` (the firmware restarted it,
+  after an update), `ext` (the reset button), `brownout` (the supply dropped
+  too low), `panic` (a crash), `wdt` (a watchdog: the firmware hung) or
+  `other`. `reset_msg` says more, with the crash's place in the code after a
+  crash; absent after a power-on. A supply that collapses fast enough gives
+  `poweron`, as when the mount is switched on: a small `uptime` without a
+  power-on by the user means the power failed. The simulator always says
+  `poweron`.
 
 ### status
 
@@ -244,8 +256,13 @@ The app's stop button sends it; button 1 of the hand unit does the same.
 ```
 
 - `x` turns the azimuth axis (positive: east, clockwise seen from above), `y` the
-  altitude axis (positive: up). Each from −1 to 1; the speed is
-  `jog.max_speed × |value|²` (fine control near the centre).
+  altitude axis (positive: up). Each from −1 to 1. `(x, y)` is a point of the
+  round joystick: it is first mapped onto the square, so that a push in any
+  direction moves each axis as a straight push of the same length along it
+  would (`(0.71, 0.71)` becomes `(1, 1)`, `(0.35, 0.35)` becomes `(0.5, 0.5)`).
+  Each axis then runs at `jog.max_speed × |value|²` (fine control near the
+  centre). A 45° push thus moves the tube about 1.4 times faster than a straight
+  one. The hand unit's joystick goes through the same mapping.
 - **Dead-man**: a jog lasts 200 ms. The app repeats it every 100 ms while the finger
   is on the joystick; when the messages stop, the mount decelerates to a stop. A jog
   of `0, 0` stops at once.
@@ -442,7 +459,7 @@ Sent at 10 Hz (see [`stream`](#stream)), and at once on a change of mode.
 
 ```json
 {"ev": "status",
- "utc": 1795300000123, "mode": "tracking",
+ "utc": 1795300000123, "mode": "tracking", "uptime": 2710,
  "time_ok": true, "site_ok": true, "aligned": true, "pos_ok": true,
  "time_src": "gps", "site_src": "saved",
  "site": {"lat": 45.0, "lon": 5.0, "elev": 200},
@@ -459,6 +476,8 @@ Sent at 10 Hz (see [`stream`](#stream)), and at once on a change of mode.
 | --- | --- |
 | `utc` | The mount's clock. |
 | `mode` | See [Modes](#modes). |
+| `uptime` | Seconds since the board started. |
+| `sys` | On the mount only, for diagnosis: `heap` (internal RAM free, bytes), `heap_min` (its lowest since the start), `heap_block` (its largest free block), `psram` (PSRAM free), `ws` (WebSocket clients), `ws_refused` (WebSocket clients refused, over 4, since the start), `stations` (devices joined to the access point). |
 | `time_src`, `site_src` | `gps`, `phone`, `saved` or `none`. |
 | `gps` | `fix`, `sats`; `null` when no NMEA is received. |
 | `pos` | Where the tube points, from the axis positions through the alignment. `ra`/`dec` are `null` without `time_ok`, `site_ok` and `aligned`; `az` is `null` before alignment. |
@@ -526,7 +545,7 @@ starting points, to be checked on the mount.
 | --- | --- | --- |
 | `az.steps_per_rev`, `alt.steps_per_rev` | 160000 | Microsteps per turn of the axis. |
 | `az.reverse`, `alt.reverse` | false | Swap the motor direction. |
-| `alt.min`, `alt.max` | 0, 90 | Altitude limits in degrees. Gotos and jogs stop there. |
+| `alt.min`, `alt.max` | 0, 90 | Altitude limits in degrees. Gotos and jogs stop there. Jogs brake before them. Before the first alignment star the tube's altitude is unknown: jogs have no limit. |
 | `slew.speed` | 3 | Goto speed, °/s. |
 | `slew.accel` | 2 | Acceleration for gotos and stops, °/s². |
 | `jog.max_speed` | 3 | Jog speed at full deflection, °/s. |
@@ -596,7 +615,7 @@ out):
 
 ```
 > {"cmd":"hello","id":1,"proto":1}
-< {"re":1,"ok":true,"proto":1,"fw":"0.1.0","board":"esp32s3","sim":false}
+< {"re":1,"ok":true,"proto":1,"fw":"0.3.0","board":"esp32s3","sim":false,"uptime":95,"boots":3,"reset":"poweron"}
 > {"cmd":"set_time","id":2,"utc":1795300000000}
 < {"re":2,"ok":true,"source":"phone"}
 > {"cmd":"get_config","id":3}

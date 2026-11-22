@@ -4,8 +4,9 @@
 
 export const JOG_EVERY = 100;
 
-// Speed choices: a factor on the joystick's deflection. The mount squares the
-// deflection (speed = jog.max_speed × |value|²), so 0.3 is 9 % of full speed.
+// Speed choices: a factor on the joystick's deflection. The mount maps the
+// round joystick onto the square, then squares each axis's value
+// (speed = jog.max_speed × |value|²), so 0.3 is 9 % of full speed.
 export const SPEEDS = [
   { id: 'fine', label: 'Fine', factor: 0.3 },
   { id: 'medium', label: 'Medium', factor: 0.6 },

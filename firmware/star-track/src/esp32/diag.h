@@ -9,6 +9,8 @@ namespace esp32 {
 void readResetReason();
 // A sentence for the console and the app; empty after a normal power-on.
 const char *resetReport();
+// The reason as a word: poweron, sw, ext, brownout, panic, wdt or other.
+const char *resetCode();
 // True after a brown-out, a crash or a watchdog reset.
 bool resetWasFault();
 

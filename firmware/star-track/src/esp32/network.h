@@ -34,6 +34,8 @@ class Network : public core::Link {
   // While `updating`, commands get the error "updating" instead.
   void poll(core::Mount &mount, bool updating);
   bool wifiUp() const { return wifiUp_; }
+  size_t webSockets() const { return ws_.count(); }
+  uint32_t refused() const { return refused_; }  // WebSocket clients refused (more than 4)
   AsyncWebServer &server() { return server_; }
   void send(int client, const char *text) override;
 
@@ -59,6 +61,7 @@ class Network : public core::Link {
   std::string line_;
   uint32_t lastCleanup_ = 0;
   bool wifiUp_ = false;
+  uint32_t refused_ = 0;
 };
 
 }  // namespace esp32

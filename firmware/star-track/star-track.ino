@@ -1,6 +1,9 @@
 // The mount's firmware for the ESP32-S3: the core (src/core/, the same code as
 // in the simulator) on the board's hardware (src/esp32/). See README.md.
 
+#include <WiFi.h>
+#include <esp_heap_caps.h>
+
 #include "src/core/mount.h"
 #include "src/esp32/diag.h"
 #include "src/esp32/hardware.h"
@@ -18,10 +21,22 @@ static EspInputs inputs;
 static EspGps gps;
 static EspLeds leds;
 static EspStorage storage;
-static Network net;
+static esp32::Network net;
 static Ota ota(estop, az, alt);
 static core::Platform platform{clock_, az, alt, estop, inputs, gps, leds, storage, net, "esp32s3"};
 static core::Mount mount(platform);
+
+// The status's `sys`: internal RAM free now, its lowest since boot, its largest
+// free block (bytes), PSRAM free, WebSocket clients, stations on the access point.
+static void sysStatus(JsonObject o) {
+  o["heap"] = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
+  o["heap_min"] = heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL);
+  o["heap_block"] = heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL);
+  o["psram"] = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+  o["ws"] = net.webSockets();
+  o["ws_refused"] = net.refused();
+  o["stations"] = WiFi.softAPgetStationNum();
+}
 
 void setup() {
   estop.begin();  // drivers off before anything else
@@ -32,20 +47,23 @@ void setup() {
   leds.begin();
   net.beginConsole();
   readResetReason();
-  if (*resetReport()) Network::consoleLog(resetWasFault() ? "warn" : "info", resetReport());
+  if (*resetReport()) esp32::Network::consoleLog(resetWasFault() ? "warn" : "info", resetReport());
+  platform.reset = resetCode();
+  platform.resetMsg = resetReport();
+  platform.sys = sysStatus;
   storage.begin();
   inputs.begin();
   gps.begin();
 
   char hand[100];
   inputs.describe(hand, sizeof hand);
-  Network::consoleLog("info", hand);
+  esp32::Network::consoleLog("info", hand);
 
   engine.init();
   if (!az.begin(engine, kPinAzStep, kPinAzDir) || !alt.begin(engine, kPinAltStep, kPinAltDir))
-    Network::consoleLog("error", "no step generator for an axis: the motors will not move");
+    esp32::Network::consoleLog("error", "no step generator for an axis: the motors will not move");
 
-  mount.onConnect(Network::kConsole, core::ClientKind::Console);
+  mount.onConnect(esp32::Network::kConsole, core::ClientKind::Console);
   mount.begin();
 
   net.beginWifi(mount);

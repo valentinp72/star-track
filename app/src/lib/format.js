@@ -73,4 +73,26 @@ export const MODES = {
   parked: 'Parked',
 };
 
+// Seconds since the mount started: "45 s", "12 min", "3 h 05 min", "2 d 4 h".
+export function formatUptime(s) {
+  if (s == null) return '—';
+  if (s < 60) return `${s} s`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m} min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} h ${String(m % 60).padStart(2, '0')} min`;
+  return `${Math.floor(h / 24)} d ${h % 24} h`;
+}
+
+// Why the mount last started (hello's `reset`).
+export const RESETS = {
+  poweron: 'Power on',
+  sw: 'Restart after an update',
+  ext: 'Reset button',
+  brownout: 'Brown-out (supply too low)',
+  panic: 'Crash',
+  wdt: 'Watchdog (firmware hung)',
+  other: 'Other',
+};
+
 export const SOURCES = { gps: 'GPS', phone: 'Phone', saved: 'Saved', none: 'Not set' };

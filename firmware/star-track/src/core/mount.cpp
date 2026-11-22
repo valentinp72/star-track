@@ -41,6 +41,18 @@ float deadZone(float v) {
   return (v - copysignf(kDeadZone, v)) / (1 - kDeadZone);
 }
 
+// A round joystick's position mapped onto the square: a push in any direction
+// moves each axis as a straight push of the same length along that axis would
+// (at the rim, 45° gives both axes full speed). A joystick that already reaches
+// its corners is unchanged there.
+void toSquare(float &x, float &y) {
+  float m = fmaxf(fabsf(x), fabsf(y));
+  if (m == 0) return;
+  float r = fminf(hypotf(x, y), 1.0f);
+  x *= r / m;
+  y *= r / m;
+}
+
 // Correction speed for a position error: limited by the slew speed, by the
 // distance needed to brake, and proportional (gain k) near the target.
 double correction(double err, double vmax, double accel, double k) {
@@ -90,6 +102,9 @@ const char *modeName(Mode m) {
 
 void Mount::begin() {
   loadConfig();
+  p_.storage.load("boots", &boots_, sizeof boots_);
+  boots_++;
+  p_.storage.save("boots", &boots_, sizeof boots_);
   SiteRecord site;
   if (p_.storage.load("site", &site, sizeof site)) {
     lat_ = site.lat;
@@ -306,6 +321,7 @@ void Mount::control(double dt) {
     jx = appJogX_;
     jy = appJogY_;
   }
+  toSquare(jx, jy);
   double vAz = cfg_.jogMaxSpeed * jx * fabsf(jx);
   double vAlt = cfg_.jogMaxSpeed * jy * fabsf(jy);
   bool jogging = vAz != 0 || vAlt != 0;
@@ -355,15 +371,23 @@ void Mount::control(double dt) {
       sunJogWarned_ = false;
     }
     double sAlt, sAz;
-    if (align_.count() == 0 && sunWatch(sAlt, sAz) && sAlt > 0 && !sunJogWarned_) {
+    if (align_.count() == 0 && (sunUnalignedWarned_ < 0 || now() - sunUnalignedWarned_ >= kSunWarnEveryMs) &&
+        sunWatch(sAlt, sAz) && sAlt > 0) {
       log("warn", "the Sun is up and the mount is not aligned: it cannot keep the tube away from the Sun");
-      sunJogWarned_ = true;
+      sunUnalignedWarned_ = now();
     }
   }
 
   if (mode_ == Mode::Manual && !manualFromTracking_) {
-    double alt = altAxisDeg();
-    if ((alt <= cfg_.altMin && vAlt < 0) || (alt >= cfg_.altMax && vAlt > 0)) vAlt = 0;
+    // The altitude limits, once aligned: before, the tube's altitude is unknown
+    // and jogs go anywhere. The jog stops early enough to brake before the limit.
+    double alt, az;
+    if (horizonFromAxis(alt, az)) {
+      double v = altSpeedDeg(), brake = v * v / (2 * cfg_.slewAccel);
+      if ((alt - (v < 0 ? brake : 0) <= cfg_.altMin && vAlt < 0) ||
+          (alt + (v > 0 ? brake : 0) >= cfg_.altMax && vAlt > 0))
+        vAlt = 0;
+    }
     runAz(vAz);
     runAlt(vAlt);
     return;
@@ -636,6 +660,8 @@ void Mount::fillStatus(JsonObject o) {
   else
     o["utc"] = nullptr;
   o["mode"] = modeName(mode_);
+  o["uptime"] = now() / 1000;
+  if (p_.sys) p_.sys(o["sys"].to<JsonObject>());
   o["time_ok"] = timeOk_;
   o["site_ok"] = siteOk_;
   o["aligned"] = align_.count() > 0;
@@ -850,6 +876,10 @@ bool Mount::cmdHello(JsonObjectConst, JsonObject r) {
   r["fw"] = kFirmwareVersion;
   r["board"] = p_.board;
   r["sim"] = !strcmp(p_.board, "sim");
+  r["uptime"] = now() / 1000;
+  r["boots"] = boots_;
+  r["reset"] = p_.reset;
+  if (*p_.resetMsg) r["reset_msg"] = p_.resetMsg;
   return true;
 }
 

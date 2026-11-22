@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "json.h"
+
 namespace core {
 
 // Monotonic time since boot. The simulator can pause it or speed it up.
@@ -90,6 +92,13 @@ struct Platform {
   Storage &storage;
   Link &link;
   const char *board;  // "esp32s3" or "sim"
+  // Why the board last started: poweron, sw (the firmware, after an update),
+  // ext (reset button), brownout, panic (crash), wdt (watchdog) or other; and a
+  // sentence about it, empty after a power-on.
+  const char *reset = "poweron";
+  const char *resetMsg = "";
+  // Fills the status's `sys` object (memory, connections); none in the simulator.
+  void (*sys)(JsonObject out) = nullptr;
 };
 
 }  // namespace core

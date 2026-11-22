@@ -6,7 +6,7 @@
   import { explain } from '../lib/errors.js';
   import { ui } from '../lib/ui.svelte.js';
   import { appearance } from '../lib/appearance.svelte.js';
-  import { formatClock, formatLat, formatLon, MODES, SOURCES } from '../lib/format.js';
+  import { formatClock, formatLat, formatLon, formatUptime, MODES, RESETS, SOURCES } from '../lib/format.js';
 
   let { mount, askSolar } = $props();
 
@@ -77,6 +77,22 @@
   <ListItem title="Firmware" after={mount.info?.fw ?? '—'} />
   <ListItem title="Board" after={mount.info ? (mount.info.sim ? 'Simulator' : mount.info.board) : '—'} />
   <ListItem title="Protocol" after={mount.info?.proto ?? '—'} />
+  {#if mount.info?.reset}
+    <ListItem title="Running for" after={formatUptime(st?.uptime)} />
+    <ListItem
+      title="Last start"
+      after={RESETS[mount.info.reset] ?? mount.info.reset}
+      footer={mount.info.reset_msg ?? ''}
+    />
+    <ListItem title="Starts" after={mount.info.boots} footer="Since the first boot" />
+    {#if st?.sys}
+      <ListItem
+        title="Free memory"
+        after={`${Math.round(st.sys.heap / 1024)} KB`}
+        footer={`Lowest ${Math.round(st.sys.heap_min / 1024)} KB · ${st.sys.ws} app connections · ${st.sys.stations} on Wi-Fi`}
+      />
+    {/if}
+  {/if}
 </List>
 
 {#if mount.logs.length}

@@ -115,6 +115,15 @@ def align_and_goto(s):
     # From here, the tube was 4° above level at power-on: the alignment finds it.
     s.ok("sim_mount", alt_zero=4)
 
+    # Before the alignment the tube's altitude is unknown: no limit on jogs.
+    s.ok("sim_point", alt=1, az=200)
+    s.ok("sim_hand", x=0, y=-1)
+    s.run(3)
+    s.ok("sim_hand", x=0, y=0)
+    s.run(2)
+    alt = s.ok("sim_truth")["alt"]
+    check("before alignment, jogs are not stopped at alt.min", alt < -3, f"{alt:.2f}°")
+
     r = s.cmd("goto", ra=M42[0], dec=M42[1])
     check("goto before alignment is refused", r["err"] == "not_ready", r["msg"])
 
@@ -169,11 +178,34 @@ def track_m42(s):
 def jog_and_hand(s):
     s.ok("stop")
     check("stop ends tracking", s.status()["mode"] == "idle")
+
+    # The jog's altitude limit is on the sky once aligned: the tube was 4° up at
+    # power-on, so the axis reads about -4° at the horizon. Full speed down from
+    # 6°: it brakes in time.
+    s.ok("sim_point", alt=6, az=200)
+    s.ok("sim_hand", x=0, y=-1)
+    s.run(8)
+    s.ok("sim_hand", x=0, y=0)
+    s.run(2)
+    alt = s.ok("sim_truth")["alt"]
+    check("a jog down stops at alt.min on the sky, not on the axis", -0.3 < alt < 0.5, f"{alt:.2f}°")
     s.send({"cmd": "jog", "x": 1, "y": 0})  # no id: no reply
     s.run(0.1)
     check("jog starts manual mode", s.status()["mode"] == "manual")
     s.run(1)
     check("jog expires after 200 ms (dead-man)", s.status()["mode"] == "idle")
+
+    # A diagonal push moves each axis as a straight push of the same length.
+    for x, want in ((0.7071, 3.0), (0.3536, 0.75)):
+        for _ in range(30):
+            s.send({"cmd": "jog", "x": x, "y": x})
+            s.run(0.1)
+        ax = s.status()["axes"]
+        s.ok("stop")
+        s.run(3)
+        check(f"a 45° jog of length {x * 2 ** 0.5:.1f} runs both axes at {want}°/s",
+              abs(abs(ax["az"]["speed"]) - want) < 0.05 and abs(abs(ax["alt"]["speed"]) - want) < 0.05,
+              f"az {ax['az']['speed']:.2f}, alt {ax['alt']['speed']:.2f}°/s")
 
     s.ok("sim_hand", x=0.8, y=0)
     s.run(0.2)
@@ -355,6 +387,20 @@ def sun_safety(s):
     s.wait_mode("parked", 240)
     check("park turns solar mode off", not s.status()["solar"])
     s.ok("unpark")
+
+    # Not aligned with the Sun up: one warning, not one per control step.
+    s.ok("align_clear")
+    s.logs.clear()
+    s.ok("sim_hand", x=0.5, y=0)
+    s.run(3)
+    s.ok("sim_hand", x=0, y=0)
+    s.run(1)
+    s.ok("sim_hand", x=-0.5, y=0)
+    s.run(3)
+    s.ok("sim_hand", x=0, y=0)
+    s.run(1)
+    n = sum("not aligned" in m["msg"] for m in s.logs)
+    check("the unaligned-Sun warning is logged once, not at every step", n == 1, f"{n} times")
 
 
 def main():

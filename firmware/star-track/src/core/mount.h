@@ -22,13 +22,14 @@ const char *modeName(Mode m);
 class Mount {
  public:
   static constexpr int kProto = 1;
-  static constexpr const char *kFirmwareVersion = "0.2.0";
+  static constexpr const char *kFirmwareVersion = "0.3.2";
   static constexpr int kMaxMessage = 4096;
   static constexpr int kMaxClients = 8;
   static constexpr int kMaxTablePoints = 64;
   static constexpr int kMaxSettings = 1024;  // bytes of the settings' JSON record
   static constexpr int kControlPeriodMs = 50;  // 20 Hz
   static constexpr int kJogLifetimeMs = 200;
+  static constexpr int kSunWarnEveryMs = 5 * 60 * 1000;  // the unaligned-Sun warning, while jogging
 
   explicit Mount(Platform &p) : p_(p) {}
 
@@ -163,6 +164,7 @@ class Mount {
   Source timeSrc_ = Source::None, siteSrc_ = Source::None;
   double lat_ = 0, lon_ = 0, elev_ = 0;
   int64_t gpsTimeMono_ = -1, gpsSiteMono_ = -1, gpsSeenMono_ = -1;
+  uint32_t boots_ = 0;  // starts of the board, counted in flash
 
   Target target_;
   bool gotoTrack_ = false, gotoPark_ = false;
@@ -176,6 +178,7 @@ class Mount {
   bool stopButton_ = false;
   bool solar_ = false;          // solar mode: the user confirmed a solar filter
   bool sunJogWarned_ = false;
+  int64_t sunUnalignedWarned_ = -1;  // when "the Sun is up and the mount is not aligned" was last logged
 
   int64_t lastControl_ = 0;
   int currentClient_ = -1;  // sender of the command being handled

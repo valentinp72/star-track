@@ -8,11 +8,23 @@ namespace esp32 {
 
 namespace {
 char report[300] = "";
+const char *code = "poweron";
 bool fault = false;
 }  // namespace
 
 void readResetReason() {
   esp_reset_reason_t r = esp_reset_reason();
+  switch (r) {
+    case ESP_RST_POWERON: code = "poweron"; break;
+    case ESP_RST_SW: code = "sw"; break;
+    case ESP_RST_EXT: code = "ext"; break;
+    case ESP_RST_BROWNOUT: code = "brownout"; break;
+    case ESP_RST_PANIC: code = "panic"; break;
+    case ESP_RST_INT_WDT:
+    case ESP_RST_TASK_WDT:
+    case ESP_RST_WDT: code = "wdt"; break;
+    default: code = "other"; break;
+  }
   int n = 0;
   switch (r) {
     case ESP_RST_POWERON:
@@ -53,6 +65,8 @@ void readResetReason() {
 }
 
 const char *resetReport() { return report; }
+
+const char *resetCode() { return code; }
 
 bool resetWasFault() { return fault; }
 
