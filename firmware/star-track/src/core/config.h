@@ -19,6 +19,7 @@ struct Config {
   float parkAlt = 0, parkAz = 0;  // axis degrees
   float trackGain = 1;            // 1/s
   float sunMinSep = 15;           // degrees kept from the Sun outside solar mode
+  bool handEnabled = true;        // read the hand unit's joystick and buttons
   char wifiSsid[33] = "star-track";
   char wifiPassword[65] = "";
 };

@@ -38,6 +38,11 @@
       keys: [{ key: 'sun.min_sep', label: 'Keep-out radius (°)', min: 5, max: 45 }],
     },
     {
+      title: 'Hand unit',
+      footer: "When off, the hand unit's joystick and buttons are ignored. The E-stop still works.",
+      keys: [{ key: 'hand.enabled', label: 'Use the hand unit', bool: true }],
+    },
+    {
       title: 'Park position',
       footer: 'Axis angles from the power-on position.',
       keys: [

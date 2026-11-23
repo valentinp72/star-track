@@ -215,6 +215,19 @@ def jog_and_hand(s):
     s.run(0.2)
     check("hand joystick released", s.status()["mode"] == "idle")
 
+    # Turned off: the joystick is ignored, a goto runs on.
+    s.ok("set_config", config={"hand.enabled": False})
+    s.ok("goto", ra=M42[0], dec=M42[1])
+    s.run(0.5)
+    s.ok("sim_hand", x=0.8, y=0)
+    s.run(0.5)
+    st = s.status()
+    check("hand unit off: its joystick is ignored", st["mode"] == "goto" and not st["hand"], st["mode"])
+    s.ok("sim_hand", x=0, y=0)
+    s.ok("stop")
+    s.wait_mode("idle", 30)
+    s.ok("set_config", config={"hand.enabled": True})
+
     # Jog while tracking: the mount moves off the target and keeps tracking.
     s.ok("goto", ra=M42[0], dec=M42[1])
     s.wait_mode("tracking", 120)

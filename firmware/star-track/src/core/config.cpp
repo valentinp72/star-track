@@ -32,6 +32,7 @@ const Key kKeys[] = {
     K("park.az", FLOAT, parkAz, -360, 360),
     K("track.gain", FLOAT, trackGain, 0.05, 10),
     K("sun.min_sep", FLOAT, sunMinSep, 5, 45),
+    K("hand.enabled", BOOL, handEnabled, 0, 0),
     K("wifi.ssid", TEXT, wifiSsid, 1, 32),
     K("wifi.password", TEXT, wifiPassword, 8, 63),
 };

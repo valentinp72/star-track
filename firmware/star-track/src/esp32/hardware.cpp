@@ -103,6 +103,7 @@ bool EspEStop::pressed() {
 namespace {
 constexpr int kAdcMax = 4095;
 constexpr int kAbsent = 120;  // both axes below this (about 0.1 V): no hand unit
+constexpr uint32_t kPresentMs = 300;  // above it this long before the joystick counts
 }  // namespace
 
 int EspInputs::read(int pin) {
@@ -146,7 +147,20 @@ bool EspInputs::connected() { return read(kPinJoyX) >= kAbsent || read(kPinJoyY)
 float EspInputs::axis(int i) {
   int x = read(i == 0 ? kPinJoyX : kPinJoyY);
   int y = read(i == 0 ? kPinJoyY : kPinJoyX);
-  if (x < kAbsent && y < kAbsent) return 0;
+  // Without the hand unit the pins hang on the weak pull-downs, and the stepper
+  // drivers' noise can lift a reading above kAbsent for a moment; against the
+  // nominal centre that is a full push down and left. So the joystick counts
+  // only once it has read as plugged in for kPresentMs without a break.
+  uint32_t t = millis();
+  if (x < kAbsent && y < kAbsent) {
+    plugged_ = false;
+    return 0;
+  }
+  if (!plugged_) {
+    plugged_ = true;
+    pluggedSince_ = t;
+  }
+  if (t - pluggedSince_ < kPresentMs) return 0;
   int c = centre_[i];
   float v = x >= c ? (float)(x - c) / (kAdcMax - c) : (float)(x - c) / c;
   return v > 1 ? 1 : (v < -1 ? -1 : v);

@@ -552,6 +552,7 @@ starting points, to be checked on the mount.
 | `park.alt`, `park.az` | 0, 0 | Park position in axis degrees (from the power-on position). |
 | `track.gain` | 1 | k in "speed = predicted rate + k × position error" (1/s). |
 | `sun.min_sep` | 15 | Keep-out radius around the Sun outside solar mode, degrees (5 to 45). |
+| `hand.enabled` | true | Read the hand unit. When false, its joystick and buttons are ignored (the E-stop still works). |
 | `wifi.ssid`, `wifi.password` | `star-track`, (random, made at first boot) | The access point (WPA2). The password has 8 to 63 characters, and `get_config` returns `********` in its place. Changes apply at the next power-on. See [Wi-Fi access](architecture.md#wi-fi-access). |
 
 ## Simulator commands

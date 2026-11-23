@@ -307,9 +307,11 @@ void Mount::startGoto(bool track, bool park) {
 
 void Mount::control(double dt) {
   // Hand unit first: it has priority over the app.
-  float hx = deadZone(p_.inputs.joyX()), hy = deadZone(p_.inputs.joyY());
+  // Unless it is turned off (hand.enabled).
+  bool hand = cfg_.handEnabled;
+  float hx = hand ? deadZone(p_.inputs.joyX()) : 0, hy = hand ? deadZone(p_.inputs.joyY()) : 0;
   handActive_ = hx != 0 || hy != 0;
-  bool button = p_.inputs.button(0);
+  bool button = hand && p_.inputs.button(0);
   if (button && !stopButton_) stopMotion();
   stopButton_ = button;
 
@@ -339,7 +341,10 @@ void Mount::control(double dt) {
     case Mode::Goto:
       if (jogging) {
         manualFromTracking_ = false;
-        log("info", "goto cancelled by a jog");
+        if (handActive_)
+          log("info", "goto cancelled by the hand unit's joystick (x %.2f, y %.2f)", hx, hy);
+        else
+          log("info", "goto cancelled by a jog from the app");
         setMode(Mode::Manual);
       }
       break;

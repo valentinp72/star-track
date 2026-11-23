@@ -64,6 +64,8 @@ class EspInputs : public core::Inputs {
   float axis(int i);
   int read(int pin);
   int centre_[2] = {2048, 2048};
+  bool plugged_ = false;  // the last reading had an axis above kAbsent
+  uint32_t pluggedSince_ = 0;
 };
 
 class EspGps : public core::Gps {
